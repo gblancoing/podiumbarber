@@ -12,7 +12,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
         <Image
-          src="/peluqueria_v1.png"
+          src="https://picsum.photos/1200/800"
           alt="Interior de un salón de belleza moderno"
           data-ai-hint="hair salon"
           fill
