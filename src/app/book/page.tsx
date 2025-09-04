@@ -1,19 +1,5 @@
-import { BookingClient } from "./BookingClient";
 import { CalendarCheck } from "lucide-react";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-
-function BookingSkeleton() {
-    return (
-        <div className="space-y-4">
-            <Skeleton className="h-8 w-1/2 mx-auto" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-64 w-full" />
-            <Skeleton className="h-10 w-full" />
-        </div>
-    )
-}
+import { BookingPageClient } from "./BookingPageClient";
 
 export default function BookAppointmentPage() {
   return (
@@ -27,9 +13,7 @@ export default function BookAppointmentPage() {
           Selecciona tu servicio, estilista y la hora deseada. Es así de simple.
         </p>
       </div>
-      <Suspense fallback={<BookingSkeleton />}>
-        <BookingClient />
-      </Suspense>
+      <BookingPageClient />
     </div>
   );
 }
