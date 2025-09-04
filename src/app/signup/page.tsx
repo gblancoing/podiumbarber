@@ -9,30 +9,30 @@ export default function SignupPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Create an Account</CardTitle>
-          <CardDescription>Join us to easily book and manage your appointments.</CardDescription>
+          <CardTitle className="text-2xl font-headline">Crear una Cuenta</CardTitle>
+          <CardDescription>Únete para reservar y gestionar tus citas fácilmente.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" type="text" placeholder="Your Name" required />
+              <Label htmlFor="name">Nombre</Label>
+              <Input id="name" type="text" placeholder="Tu Nombre" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" required />
+              <Input id="email" type="email" placeholder="tu@ejemplo.com" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Create Account
+              Crear Cuenta
             </Button>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              ¿Ya tienes una cuenta?{" "}
               <Link href="/login" className="underline">
-                Log in
+                Inicia sesión
               </Link>
             </div>
           </div>

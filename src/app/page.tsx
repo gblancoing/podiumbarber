@@ -13,7 +13,7 @@ export default function Home() {
       <section className="relative w-full h-[60vh] md:h-[70vh] text-white">
         <Image
           src="https://picsum.photos/1800/1200"
-          alt="Modern hair salon interior"
+          alt="Interior de un salón de belleza moderno"
           data-ai-hint="salon interior"
           fill
           className="object-cover"
@@ -21,15 +21,15 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
         <div className="relative h-full flex flex-col justify-end p-8 md:p-16">
           <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg">
-            Experience Your Best Look
+            Experimenta Tu Mejor Look
           </h1>
           <p className="mt-4 max-w-lg text-lg md:text-xl drop-shadow-md">
-            Discover talented stylists, explore trending services, and book your next appointment with ease.
+            Descubre estilistas talentosos, explora servicios de moda y reserva tu próxima cita con facilidad.
           </p>
           <div className="mt-8">
             <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
               <Link href="/book">
-                Book an Appointment <ArrowRight className="ml-2" />
+                Reservar una Cita <ArrowRight className="ml-2" />
               </Link>
             </Button>
           </div>
@@ -40,9 +40,9 @@ export default function Home() {
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h2 className="text-4xl font-headline font-bold">Our Services</h2>
+            <h2 className="text-4xl font-headline font-bold">Nuestros Servicios</h2>
             <p className="mt-2 text-lg text-muted-foreground">
-              Tailored treatments to bring out your best.
+              Tratamientos a medida para resaltar lo mejor de ti.
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -62,7 +62,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-12">
             <Button asChild variant="outline">
-              <Link href="/services">View All Services</Link>
+              <Link href="/services">Ver Todos los Servicios</Link>
             </Button>
           </div>
         </div>
@@ -72,9 +72,9 @@ export default function Home() {
       <section className="py-16 md:py-24 bg-card">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h2 className="text-4xl font-headline font-bold">Meet Our Stylists</h2>
+            <h2 className="text-4xl font-headline font-bold">Conoce a Nuestros Estilistas</h2>
             <p className="mt-2 text-lg text-muted-foreground">
-              The creative hands behind your perfect style.
+              Las manos creativas detrás de tu estilo perfecto.
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -91,7 +91,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-12">
             <Button asChild variant="outline">
-              <Link href="/stylists">View All Stylists</Link>
+              <Link href="/stylists">Ver Todos los Estilistas</Link>
             </Button>
           </div>
         </div>
@@ -104,20 +104,20 @@ export default function Home() {
             <div className="grid md:grid-cols-2 items-center">
               <div className="p-8 md:p-12">
                 <Sparkles className="h-10 w-10 text-accent mb-4"/>
-                <h2 className="text-3xl md:text-4xl font-headline font-bold">Unsure About Your Style?</h2>
+                <h2 className="text-3xl md:text-4xl font-headline font-bold">¿No estás seguro de tu estilo?</h2>
                 <p className="mt-4 text-lg opacity-90">
-                  Our AI Style Advisor can help! Get personalized recommendations based on your hair type and preferences. Discover your next favorite look.
+                  ¡Nuestro Asesor de Estilo con IA puede ayudarte! Obtén recomendaciones personalizadas basadas en tu tipo de cabello y preferencias. Descubre tu próximo look favorito.
                 </p>
                 <Button asChild variant="secondary" className="mt-8">
                   <Link href="/ai-advisor">
-                    Try the AI Advisor <ArrowRight className="ml-2" />
+                    Prueba el Asesor con IA <ArrowRight className="ml-2" />
                   </Link>
                 </Button>
               </div>
               <div className="hidden md:block h-full">
                 <Image
                   src="https://picsum.photos/800/600"
-                  alt="AI style abstract"
+                  alt="Resumen de estilo de IA"
                   data-ai-hint="futuristic hair"
                   width={800}
                   height={600}

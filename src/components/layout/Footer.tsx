@@ -12,27 +12,27 @@ export function Footer() {
               BooksyStyle
             </Link>
             <p className="mt-2 text-sm text-muted-foreground">
-              Your next haircut, just a click away.
+              Tu próximo corte de pelo, a solo un clic de distancia.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold">Explore</h3>
+            <h3 className="font-semibold">Explorar</h3>
             <ul className="mt-4 space-y-2 text-sm">
-              <li><Link href="/services" className="text-muted-foreground hover:text-primary">Services</Link></li>
-              <li><Link href="/stylists" className="text-muted-foreground hover:text-primary">Stylists</Link></li>
-              <li><Link href="/book" className="text-muted-foreground hover:text-primary">Book Now</Link></li>
+              <li><Link href="/services" className="text-muted-foreground hover:text-primary">Servicios</Link></li>
+              <li><Link href="/stylists" className="text-muted-foreground hover:text-primary">Estilistas</Link></li>
+              <li><Link href="/book" className="text-muted-foreground hover:text-primary">Reservar Ahora</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold">About</h3>
+            <h3 className="font-semibold">Nosotros</h3>
             <ul className="mt-4 space-y-2 text-sm">
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">Our Story</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">Careers</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">Contact Us</Link></li>
+              <li><Link href="#" className="text-muted-foreground hover:text-primary">Nuestra Historia</Link></li>
+              <li><Link href="#" className="text-muted-foreground hover:text-primary">Trabaja con Nosotros</Link></li>
+              <li><Link href="#" className="text-muted-foreground hover:text-primary">Contáctanos</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold">Connect</h3>
+            <h3 className="font-semibold">Conecta</h3>
             <div className="flex mt-4 space-x-4">
               <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
               <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
@@ -41,7 +41,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-4 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} BooksyStyle. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} BooksyStyle. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>

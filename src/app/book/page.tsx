@@ -8,9 +8,9 @@ export default function BookAppointmentPage() {
         <div className="inline-block p-4 bg-primary/10 rounded-full">
             <CalendarCheck className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="text-4xl font-headline font-bold mt-4">Book Your Appointment</h1>
+        <h1 className="text-4xl font-headline font-bold mt-4">Reserva tu Cita</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Select your service, stylist, and desired time. It's that simple.
+          Selecciona tu servicio, estilista y la hora deseada. Es así de simple.
         </p>
       </div>
       <BookingClient />

@@ -4,7 +4,7 @@ export interface Service {
   description: string;
   price: number;
   duration: number; // in minutes
-  category: 'Cutting & Styling' | 'Coloring' | 'Treatments' | 'Other';
+  category: 'Corte y Peinado' | 'Coloración' | 'Tratamientos' | 'Otros';
 }
 
 export interface Stylist {

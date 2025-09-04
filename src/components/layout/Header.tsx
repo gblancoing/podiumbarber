@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const navLinks = [
-  { href: "/services", label: "Services" },
-  { href: "/stylists", label: "Stylists" },
-  { href: "/ai-advisor", label: "AI Advisor" },
+  { href: "/services", label: "Servicios" },
+  { href: "/stylists", label: "Estilistas" },
+  { href: "/ai-advisor", label: "Asesor con IA" },
 ];
 
 export function Header() {
@@ -41,10 +41,10 @@ export function Header() {
         </nav>
         <div className="hidden md:flex items-center gap-4">
           <Button variant="ghost" asChild>
-            <Link href="/login">Log In</Link>
+            <Link href="/login">Ingresar</Link>
           </Button>
           <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            <Link href="/book">Book Now</Link>
+            <Link href="/book">Reservar Ahora</Link>
           </Button>
         </div>
         <div className="md:hidden">
@@ -52,7 +52,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">Abrir menú</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
@@ -78,10 +78,10 @@ export function Header() {
                 </nav>
                 <div className="mt-8 pt-8 border-t flex flex-col gap-4">
                   <Button variant="outline" asChild onClick={() => setIsOpen(false)}>
-                    <Link href="/login">Log In</Link>
+                    <Link href="/login">Ingresar</Link>
                   </Button>
                   <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setIsOpen(false)}>
-                    <Link href="/book">Book Now</Link>
+                    <Link href="/book">Reservar Ahora</Link>
                   </Button>
                 </div>
               </div>

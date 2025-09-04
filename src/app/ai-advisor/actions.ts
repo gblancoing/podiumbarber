@@ -7,6 +7,6 @@ export async function getStyleAdvice(input: AIPoweredStyleAdvisorInput) {
         return { success: true, data: result };
     } catch (error) {
         console.error('AI Style Advisor Error:', error);
-        return { success: false, error: 'Failed to get style advice. The model may be unavailable. Please try again later.' };
+        return { success: false, error: 'No se pudo obtener el consejo de estilo. Es posible que el modelo no esté disponible. Por favor, inténtalo de nuevo más tarde.' };
     }
 }

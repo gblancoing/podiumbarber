@@ -9,26 +9,26 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
-          <CardDescription>Log in to manage your appointments.</CardDescription>
+          <CardTitle className="text-2xl font-headline">Bienvenido de Vuelta</CardTitle>
+          <CardDescription>Inicia sesión para gestionar tus citas.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" required />
+              <Input id="email" type="email" placeholder="tu@ejemplo.com" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input id="password" type="password" required />
             </div>
             <Button type="submit" className="w-full">
-              Log In
+              Iniciar Sesión
             </Button>
             <div className="mt-4 text-center text-sm">
-              Don't have an account?{" "}
+              ¿No tienes una cuenta?{" "}
               <Link href="/signup" className="underline">
-                Sign up
+                Regístrate
               </Link>
             </div>
           </div>

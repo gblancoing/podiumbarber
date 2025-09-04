@@ -14,18 +14,18 @@ export default function ServicesPage() {
     return acc;
   }, {} as Record<string, Service[]>);
 
-  const categoryOrder: Service['category'][] = ['Cutting & Styling', 'Coloring', 'Treatments', 'Other'];
+  const categoryOrder: Service['category'][] = ['Corte y Peinado', 'Coloración', 'Tratamientos', 'Otros'];
   const sortedCategories = Object.keys(categories).sort((a, b) => categoryOrder.indexOf(a as any) - categoryOrder.indexOf(b as any));
 
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline font-bold">Our Services</h1>
+        <h1 className="text-4xl font-headline font-bold">Nuestros Servicios</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Find the perfect treatment to elevate your style.
+          Encuentra el tratamiento perfecto para elevar tu estilo.
         </p>
       </div>
-      <Accordion type="single" collapsible className="w-full" defaultValue="Cutting & Styling">
+      <Accordion type="single" collapsible className="w-full" defaultValue="Corte y Peinado">
         {sortedCategories.map((category) => (
           <AccordionItem value={category} key={category}>
             <AccordionTrigger className="text-2xl font-headline">

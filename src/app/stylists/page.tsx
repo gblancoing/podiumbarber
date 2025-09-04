@@ -10,9 +10,9 @@ export default function StylistsPage() {
     <div className="bg-background">
       <div className="container mx-auto py-12 px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-headline font-bold">Meet Our Stylists</h1>
+          <h1 className="text-4xl font-headline font-bold">Conoce a Nuestros Estilistas</h1>
           <p className="mt-2 text-lg text-muted-foreground">
-            The talented artists who will bring your vision to life.
+            Los talentosos artistas que darán vida a tu visión.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -33,7 +33,7 @@ export default function StylistsPage() {
               </CardContent>
               <CardFooter>
                  <Button asChild>
-                    <Link href={`/book?stylist=${stylist.id}`}>Book with {stylist.name.split(' ')[0]}</Link>
+                    <Link href={`/book?stylist=${stylist.id}`}>Reservar con {stylist.name.split(' ')[0]}</Link>
                 </Button>
               </CardFooter>
             </Card>

@@ -11,10 +11,19 @@ import { services, stylists, getAvailableTimeSlots } from "@/lib/data";
 import type { Service, Stylist } from "@/lib/types";
 import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 
 type Step = "service" | "stylist" | "datetime" | "confirm" | "complete";
+
+const stepTranslations: Record<Step, string> = {
+    service: "Servicio",
+    stylist: "Estilista",
+    datetime: "Fecha y Hora",
+    confirm: "Confirmar",
+    complete: "Completo",
+};
 
 export function BookingClient() {
   const searchParams = useSearchParams();
@@ -73,8 +82,8 @@ export function BookingClient() {
   };
 
   const handleConfirmBooking = () => {
-    // Here you would typically make an API call to save the booking
-    console.log("Booking confirmed:", { selectedService, selectedStylist, selectedDate, selectedTime });
+    // Aquí normalmente harías una llamada a la API para guardar la reserva
+    console.log("Reserva confirmada:", { selectedService, selectedStylist, selectedDate, selectedTime });
     setStep("complete");
   };
   
@@ -99,34 +108,34 @@ export function BookingClient() {
       case "service":
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold">1. Select a Service</h3>
+            <h3 className="text-xl font-semibold">1. Selecciona un Servicio</h3>
             <Select onValueChange={(id) => setSelectedService(services.find(s => s.id === id) || null)}>
-              <SelectTrigger><SelectValue placeholder="Choose a service..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Elige un servicio..." /></SelectTrigger>
               <SelectContent>
                 {availableServices.map(s => <SelectItem key={s.id} value={s.id}>{s.name} - ${s.price}</SelectItem>)}
               </SelectContent>
             </Select>
             <Button onClick={handleNextStep} disabled={!selectedService} className="w-full">
-              Next <ArrowRight className="ml-2 h-4 w-4" />
+              Siguiente <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         );
       case "stylist":
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold">2. Select a Stylist</h3>
+            <h3 className="text-xl font-semibold">2. Selecciona un Estilista</h3>
             <Select onValueChange={(id) => setSelectedStylist(stylists.find(s => s.id === id) || null)} defaultValue={selectedStylist?.id}>
-              <SelectTrigger><SelectValue placeholder="Choose a stylist..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Elige un estilista..." /></SelectTrigger>
               <SelectContent>
                 {availableStylists.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
               </SelectContent>
             </Select>
             <div className="flex gap-4">
               <Button onClick={handlePrevStep} variant="outline" className="w-full">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
               </Button>
               <Button onClick={handleNextStep} disabled={!selectedStylist} className="w-full">
-                Next <ArrowRight className="ml-2 h-4 w-4" />
+                Siguiente <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -134,7 +143,7 @@ export function BookingClient() {
       case "datetime":
         return (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold">3. Select Date & Time</h3>
+            <h3 className="text-xl font-semibold">3. Selecciona Fecha y Hora</h3>
             <div className="grid md:grid-cols-2 gap-4">
               <Calendar
                 mode="single"
@@ -142,6 +151,7 @@ export function BookingClient() {
                 onSelect={setSelectedDate}
                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1)) || date.getDay() === 0}
                 className="rounded-md border justify-center"
+                locale={es}
               />
               <div className="max-h-64 overflow-y-auto grid grid-cols-3 gap-2">
                 {selectedDate && availableTimeSlots.length > 0 ? (
@@ -151,16 +161,16 @@ export function BookingClient() {
                     </Button>
                   ))
                 ) : (
-                  <p className="col-span-3 text-center text-muted-foreground p-4">{selectedDate ? "No available slots." : "Please select a date."}</p>
+                  <p className="col-span-3 text-center text-muted-foreground p-4">{selectedDate ? "No hay horas disponibles." : "Por favor, selecciona una fecha."}</p>
                 )}
               </div>
             </div>
             <div className="flex gap-4">
               <Button onClick={handlePrevStep} variant="outline" className="w-full">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
               </Button>
               <Button onClick={handleNextStep} disabled={!selectedDate || !selectedTime} className="w-full">
-                Next <ArrowRight className="ml-2 h-4 w-4" />
+                Siguiente <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -169,7 +179,7 @@ export function BookingClient() {
         if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) return null;
         return (
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-center">4. Confirm Your Appointment</h3>
+            <h3 className="text-xl font-semibold text-center">4. Confirma tu Cita</h3>
             <div className="border rounded-lg p-4 space-y-4">
               <div className="flex items-start gap-4">
                 <Image src={selectedStylist.avatarUrl} alt={selectedStylist.name} width={80} height={80} className="rounded-full" />
@@ -179,9 +189,9 @@ export function BookingClient() {
                 </div>
               </div>
               <div className="space-y-2 text-sm">
-                <p className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" /> {format(selectedDate, "PPP")}</p>
+                <p className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" /> {format(selectedDate, "PPP", { locale: es })}</p>
                 <p className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {selectedTime}</p>
-                <p className="flex items-center gap-2"><Scissors className="h-4 w-4 text-primary" /> {selectedService.duration} minutes</p>
+                <p className="flex items-center gap-2"><Scissors className="h-4 w-4 text-primary" /> {selectedService.duration} minutos</p>
               </div>
               <div className="text-right font-bold text-lg">
                 Total: ${selectedService.price}
@@ -189,10 +199,10 @@ export function BookingClient() {
             </div>
             <div className="flex gap-4">
               <Button onClick={handlePrevStep} variant="outline" className="w-full">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
               </Button>
               <Button onClick={handleConfirmBooking} className="w-full">
-                Confirm Booking
+                Confirmar Reserva
               </Button>
             </div>
           </div>
@@ -202,14 +212,14 @@ export function BookingClient() {
         return (
           <div className="text-center space-y-4 animate-in fade-in duration-500">
             <CheckCircle className="mx-auto h-16 w-16 text-green-500"/>
-            <h3 className="text-2xl font-bold">Appointment Confirmed!</h3>
-            <p className="text-muted-foreground">We're looking forward to seeing you.</p>
+            <h3 className="text-2xl font-bold">¡Cita Confirmada!</h3>
+            <p className="text-muted-foreground">Te esperamos con ansias.</p>
             <Card className="text-left p-4">
-              <p><strong>Stylist:</strong> {selectedStylist.name}</p>
-              <p><strong>Service:</strong> {selectedService.name}</p>
-              <p><strong>Date:</strong> {format(selectedDate, "PPP")} at {selectedTime}</p>
+              <p><strong>Estilista:</strong> {selectedStylist.name}</p>
+              <p><strong>Servicio:</strong> {selectedService.name}</p>
+              <p><strong>Fecha:</strong> {format(selectedDate, "PPP", { locale: es })} a las {selectedTime}</p>
             </Card>
-            <Button onClick={handleStartOver} className="w-full">Book Another Appointment</Button>
+            <Button onClick={handleStartOver} className="w-full">Reservar Otra Cita</Button>
           </div>
         );
       default:
@@ -221,8 +231,8 @@ export function BookingClient() {
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>Booking Progress</span>
-          <span className="text-sm font-normal text-muted-foreground">{step.charAt(0).toUpperCase() + step.slice(1)}</span>
+          <span>Progreso de la Reserva</span>
+          <span className="text-sm font-normal text-muted-foreground">{stepTranslations[step]}</span>
         </CardTitle>
         <Progress value={progressValue} className="w-full" />
       </CardHeader>

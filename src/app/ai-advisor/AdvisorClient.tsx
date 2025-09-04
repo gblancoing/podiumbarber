@@ -15,8 +15,8 @@ import { Bot, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const formSchema = z.object({
-  hairType: z.string().min(1, 'Please select your hair type.'),
-  preferences: z.string().min(10, 'Please describe your preferences in at least 10 characters.'),
+  hairType: z.string().min(1, 'Por favor, selecciona tu tipo de cabello.'),
+  preferences: z.string().min(10, 'Por favor, describe tus preferencias en al menos 10 caracteres.'),
 });
 
 export function AdvisorClient() {
@@ -48,7 +48,7 @@ export function AdvisorClient() {
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle>Describe Your Hair</CardTitle>
+        <CardTitle>Describe tu Cabello</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -58,18 +58,18 @@ export function AdvisorClient() {
               name="hairType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Hair Type</FormLabel>
+                  <FormLabel>Tipo de Cabello</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your hair type..." />
+                        <SelectValue placeholder="Selecciona tu tipo de cabello..." />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="straight">Straight</SelectItem>
-                      <SelectItem value="wavy">Wavy</SelectItem>
-                      <SelectItem value="curly">Curly</SelectItem>
-                      <SelectItem value="coily">Coily</SelectItem>
+                      <SelectItem value="straight">Liso</SelectItem>
+                      <SelectItem value="wavy">Ondulado</SelectItem>
+                      <SelectItem value="curly">Rizado</SelectItem>
+                      <SelectItem value="coily">Crespo</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -81,10 +81,10 @@ export function AdvisorClient() {
               name="preferences"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Styles & Preferences</FormLabel>
+                  <FormLabel>Estilos y Preferencias</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., 'I like short, low-maintenance styles', 'I'm thinking of going blonde', 'Something for a professional look'..."
+                      placeholder="Ej: 'Me gustan los estilos cortos y de bajo mantenimiento', 'Estoy pensando en teñirme rubia', 'Algo para un look profesional'..."
                       {...field}
                     />
                   </FormControl>
@@ -94,7 +94,7 @@ export function AdvisorClient() {
             />
             <Button type="submit" disabled={isPending} className="w-full">
               {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-              Get Advice
+              Obtener Consejo
             </Button>
           </form>
         </Form>
@@ -102,7 +102,7 @@ export function AdvisorClient() {
         {isPending && (
             <div className="mt-8 text-center">
                 <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                <p className="mt-2 text-muted-foreground">Our AI is thinking...</p>
+                <p className="mt-2 text-muted-foreground">Nuestra IA está pensando...</p>
             </div>
         )}
 
@@ -115,10 +115,10 @@ export function AdvisorClient() {
 
         {result && (
           <div className="mt-8 space-y-6 animate-in fade-in duration-500">
-            <h3 className="text-2xl font-headline font-semibold text-center">Your Personalized Recommendations</h3>
+            <h3 className="text-2xl font-headline font-semibold text-center">Tus Recomendaciones Personalizadas</h3>
             <Card>
               <CardHeader>
-                <CardTitle>Style Recommendations</CardTitle>
+                <CardTitle>Recomendaciones de Estilo</CardTitle>
               </CardHeader>
               <CardContent>
                 <p>{result.styleRecommendations}</p>
@@ -126,7 +126,7 @@ export function AdvisorClient() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Service Recommendations</CardTitle>
+                <CardTitle>Recomendaciones de Servicio</CardTitle>
               </CardHeader>
               <CardContent>
                 <p>{result.serviceRecommendations}</p>
