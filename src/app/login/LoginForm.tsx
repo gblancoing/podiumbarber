@@ -30,7 +30,7 @@ export function LoginForm() {
           title: "¡Éxito!",
           description: "Has iniciado sesión correctamente.",
         });
-        router.push('/admin/appointments');
+        router.push('/admin/dashboard');
         router.refresh(); // Asegura que la página se actualice
       } else {
         setError(result.error);
