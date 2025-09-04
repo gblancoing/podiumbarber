@@ -21,7 +21,7 @@ export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
             console.log('Para:', newBooking.customerEmail);
             console.log('Asunto:', emailContent.subject);
             // En un entorno real, aquí se enviaría el correo.
-            // console.log('Cuerpo:', emailContent.body);
+            console.log('Cuerpo:', emailContent.body);
         } catch (emailError) {
              console.error('Error al generar el correo de confirmación:', emailError);
              // No devolvemos un error al cliente por esto, ya que la reserva fue exitosa.

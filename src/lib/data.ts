@@ -91,24 +91,40 @@ export const featuredStylists = stylists.slice(0, 4);
 
 
 // --- Simulación de base de datos de citas ---
-let bookings: Booking[] = [];
-let nextBookingId = 1;
+// Usamos una variable global para simular una base de datos persistente en memoria.
+// En un entorno de desarrollo con recarga rápida, esto puede reiniciarse,
+// pero en un servidor de producción, persistirá mientras el proceso esté vivo.
+const globalForDb = globalThis as unknown as { 
+    bookings: Booking[]; 
+    nextBookingId: number 
+};
+
+if (!globalForDb.bookings) {
+  globalForDb.bookings = [];
+  globalForDb.nextBookingId = 1;
+}
+
+const db = {
+  bookings: globalForDb.bookings,
+  nextBookingId: globalForDb.nextBookingId,
+};
+
 
 export async function getBookings(): Promise<Booking[]> {
   // En una app real, esto consultaría una base de datos.
   // Devolvemos una copia para evitar mutaciones directas.
-  return Promise.resolve([...bookings]);
+  return Promise.resolve([...db.bookings]);
 }
 
 export async function saveNewBooking(bookingData: Omit<Booking, 'id' | 'status'>): Promise<Booking> {
   const newBooking: Booking = {
     ...bookingData,
-    id: (nextBookingId++).toString(),
+    id: (db.nextBookingId++).toString(),
     status: 'confirmed',
   };
-  bookings.push(newBooking);
+  db.bookings.push(newBooking);
   console.log('Cita guardada:', newBooking);
-  console.log('Todas las citas:', bookings);
+  console.log('Todas las citas:', db.bookings);
   return Promise.resolve(newBooking);
 }
 
@@ -128,7 +144,7 @@ export const getAvailableTimeSlots = (date: Date, stylistId: string) => {
   if (date.getDay() === 0) return []; // Cerrado los domingos
   if (date.getDay() === 6) return allSlots.slice(0, 8); // Horario más corto los sábados
 
-  const existingBookings = bookings.filter(b => b.stylistId === stylistId && b.date === `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`);
+  const existingBookings = db.bookings.filter(b => b.stylistId === stylistId && b.date === `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`);
   const bookedTimes = new Set(existingBookings.map(b => b.time));
 
   const availableSlots = allSlots.filter((_, index) => (index + seed) % 3 !== 0); // Eliminar algunos horarios aleatoriamente
