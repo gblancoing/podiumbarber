@@ -11,8 +11,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getSession } from "@/app/login/actions";
+import { redirect } from "next/navigation";
+import { AdminHeader } from "./AdminHeader";
 
 export default async function AppointmentsPage() {
+  const session = await getSession();
+  if (!session?.loggedIn) {
+    redirect('/login');
+  }
+
   const appointments = await getBookings();
 
   const getServiceName = (id: string) => services.find(s => s.id === id)?.name || 'Desconocido';
@@ -20,12 +28,7 @@ export default async function AppointmentsPage() {
 
   return (
     <div className="container mx-auto max-w-6xl py-12 px-4">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline font-bold">Panel de Administración</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          Gestión de Citas
-        </p>
-      </div>
+      <AdminHeader />
       <div className="border rounded-lg">
         <Table>
           <TableCaption>
@@ -36,6 +39,7 @@ export default async function AppointmentsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Cliente</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead>Fecha</TableHead>
               <TableHead>Hora</TableHead>
               <TableHead>Estilista</TableHead>
@@ -47,6 +51,7 @@ export default async function AppointmentsPage() {
             {appointments.map((appt) => (
               <TableRow key={appt.id}>
                 <TableCell className="font-medium">{appt.customerName}</TableCell>
+                <TableCell>{appt.customerEmail}</TableCell>
                 <TableCell>{format(new Date(appt.date), 'PPP', { locale: es })}</TableCell>
                 <TableCell>{appt.time}</TableCell>
                 <TableCell>{getStylistName(appt.stylistId)}</TableCell>
