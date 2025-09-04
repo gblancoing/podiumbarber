@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative w-full h-[60vh] md:h-[70vh] text-white">
+      <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
         <Image
           src="https://picsum.photos/1800/1200"
           alt="Interior de un salón de belleza moderno"
@@ -18,16 +18,16 @@ export default function Home() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-        <div className="relative h-full flex flex-col justify-end p-8 md:p-16">
-          <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+        <div className="relative h-full flex flex-col items-center justify-center text-center p-8">
+          <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg max-w-4xl">
             Experimenta Tu Mejor Look
           </h1>
-          <p className="mt-4 max-w-lg text-lg md:text-xl drop-shadow-md">
+          <p className="mt-4 max-w-2xl text-lg md:text-xl drop-shadow-md">
             Descubre estilistas talentosos, explora servicios de moda y reserva tu próxima cita con facilidad.
           </p>
           <div className="mt-8">
-            <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-lg">
               <Link href="/book">
                 Reservar una Cita <ArrowRight className="ml-2" />
               </Link>
@@ -47,11 +47,13 @@ export default function Home() {
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredServices.map((service) => (
-              <Card key={service.id} className="transform hover:scale-105 transition-transform duration-300 shadow-lg">
+              <Card key={service.id} className="transform hover:scale-105 transition-transform duration-300 shadow-lg rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <Scissors className="text-primary"/>
-                    {service.name}
+                    <div className="p-3 bg-primary/10 rounded-full">
+                      <Scissors className="text-primary h-6 w-6"/>
+                    </div>
+                    <span className="text-xl">{service.name}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -80,7 +82,7 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredStylists.map((stylist) => (
               <div key={stylist.id} className="text-center flex flex-col items-center">
-                <Avatar className="w-32 h-32 border-4 border-primary">
+                <Avatar className="w-32 h-32 border-4 border-primary shadow-lg">
                   <AvatarImage src={stylist.avatarUrl} alt={stylist.name} />
                   <AvatarFallback>{stylist.name.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -100,7 +102,7 @@ export default function Home() {
       {/* AI Advisor Section */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <Card className="bg-primary text-primary-foreground overflow-hidden">
+          <Card className="bg-primary text-primary-foreground overflow-hidden rounded-2xl shadow-xl">
             <div className="grid md:grid-cols-2 items-center">
               <div className="p-8 md:p-12">
                 <Sparkles className="h-10 w-10 text-accent mb-4"/>
@@ -108,7 +110,7 @@ export default function Home() {
                 <p className="mt-4 text-lg opacity-90">
                   ¡Nuestro Asesor de Estilo con IA puede ayudarte! Obtén recomendaciones personalizadas basadas en tu tipo de cabello y preferencias. Descubre tu próximo look favorito.
                 </p>
-                <Button asChild variant="secondary" className="mt-8">
+                <Button asChild variant="secondary" className="mt-8 rounded-full px-8 py-6 text-lg">
                   <Link href="/ai-advisor">
                     Prueba el Asesor con IA <ArrowRight className="ml-2" />
                   </Link>
