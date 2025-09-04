@@ -46,15 +46,15 @@ const prompt = ai.definePrompt({
   name: 'aiPoweredStyleAdvisorPrompt',
   input: {schema: AIPoweredStyleAdvisorInputSchema},
   output: {schema: AIPoweredStyleAdvisorOutputSchema},
-  prompt: `You are an AI style advisor for a hair salon. Based on the user's hair type and preferences, provide personalized style and service recommendations.
+  prompt: `Eres un asesor de estilo de IA para un salón de belleza. Basado en el tipo de cabello y las preferencias del usuario, proporciona recomendaciones personalizadas de estilo y servicio. Todas tus respuestas deben ser en español.
 
-Hair Type: {{{hairType}}}
-Preferences: {{{preferences}}}
+Tipo de Cabello: {{{hairType}}}
+Preferencias: {{{preferences}}}
 
-Provide style recommendations and service recommendations that align with their hair type and preferences. Be creative and suggest options the user may not have considered. Focus on styles and services offered at our salon.
+Proporciona recomendaciones de estilo y recomendaciones de servicios que se alineen con su tipo de cabello y preferencias. Sé creativo y sugiere opciones que el usuario quizás no haya considerado. Concéntrate en los estilos y servicios ofrecidos en nuestro salón.
 
-Style Recommendations:
-Service Recommendations: `,
+Recomendaciones de Estilo:
+Recomendaciones de Servicio:`,
 });
 
 const aiPoweredStyleAdvisorFlow = ai.defineFlow(
