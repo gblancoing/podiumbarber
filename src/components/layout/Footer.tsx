@@ -12,28 +12,27 @@ export function Footer() {
               BooksyStyle
             </Link>
             <p className="mt-2 text-sm text-muted-foreground">
-              Tu próximo corte de pelo, a solo un clic de distancia.
+              Experimenta tu mejor look.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold">Explorar</h3>
+            <h3 className="font-semibold">Navegación</h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/services" className="text-muted-foreground hover:text-primary">Servicios</Link></li>
               <li><Link href="/stylists" className="text-muted-foreground hover:text-primary">Estilistas</Link></li>
               <li><Link href="/book" className="text-muted-foreground hover:text-primary">Reservar Ahora</Link></li>
+               <li><Link href="/admin/dashboard" className="text-muted-foreground hover:text-primary">Admin</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold">Nosotros</h3>
+            <h3 className="font-semibold">Legal</h3>
             <ul className="mt-4 space-y-2 text-sm">
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">Nuestra Historia</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">Trabaja con Nosotros</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-primary">Contáctanos</Link></li>
-               <li><Link href="/admin/appointments" className="text-muted-foreground hover:text-primary">Admin</Link></li>
+              <li><Link href="#" className="text-muted-foreground hover:text-primary">Términos y Condiciones</Link></li>
+              <li><Link href="#" className="text-muted-foreground hover:text-primary">Política de Privacidad</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold">Conecta</h3>
+            <h3 className="font-semibold">Redes Sociales</h3>
             <div className="flex mt-4 space-x-4">
               <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
               <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
