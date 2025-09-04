@@ -1,0 +1,244 @@
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { services, stylists, getAvailableTimeSlots } from "@/lib/data";
+import type { Service, Stylist } from "@/lib/types";
+import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock } from "lucide-react";
+import { format } from "date-fns";
+import Image from "next/image";
+import { Progress } from "@/components/ui/progress";
+
+type Step = "service" | "stylist" | "datetime" | "confirm" | "complete";
+
+export function BookingClient() {
+  const searchParams = useSearchParams();
+  const [step, setStep] = useState<Step>("service");
+  
+  const [selectedService, setSelectedService] = useState<Service | null>(() => {
+    const serviceId = searchParams.get("service");
+    return services.find(s => s.id === serviceId) || null;
+  });
+
+  const [selectedStylist, setSelectedStylist] = useState<Stylist | null>(() => {
+    const stylistId = searchParams.get("stylist");
+    return stylists.find(s => s.id === stylistId) || null;
+  });
+
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedService && selectedStylist) {
+        setStep("datetime");
+    } else if (selectedService) {
+        setStep("stylist");
+    } else if (selectedStylist) {
+        setStep("service");
+    } else {
+        setStep("service");
+    }
+  }, [selectedService, selectedStylist]);
+
+  const availableStylists = useMemo(() => {
+    if (!selectedService) return stylists;
+    return stylists.filter((stylist) => stylist.services.includes(selectedService.id));
+  }, [selectedService]);
+  
+  const availableServices = useMemo(() => {
+    if (!selectedStylist) return services;
+    return services.filter((service) => selectedStylist.services.includes(service.id));
+  }, [selectedStylist]);
+
+  const availableTimeSlots = useMemo(() => {
+    if (!selectedDate || !selectedStylist) return [];
+    return getAvailableTimeSlots(selectedDate, selectedStylist.id);
+  }, [selectedDate, selectedStylist]);
+
+  const handleNextStep = () => {
+    if (step === "service") setStep("stylist");
+    else if (step === "stylist") setStep("datetime");
+    else if (step === "datetime") setStep("confirm");
+  };
+
+  const handlePrevStep = () => {
+    if (step === "confirm") setStep("datetime");
+    else if (step === "datetime") setStep("stylist");
+    else if (step === "stylist") setStep("service");
+  };
+
+  const handleConfirmBooking = () => {
+    // Here you would typically make an API call to save the booking
+    console.log("Booking confirmed:", { selectedService, selectedStylist, selectedDate, selectedTime });
+    setStep("complete");
+  };
+  
+  const handleStartOver = () => {
+    setSelectedService(null);
+    setSelectedStylist(null);
+    setSelectedDate(undefined);
+    setSelectedTime(null);
+    setStep("service");
+  }
+
+  const progressValue = {
+    service: 0,
+    stylist: 25,
+    datetime: 50,
+    confirm: 75,
+    complete: 100,
+  }[step];
+
+  const renderStep = () => {
+    switch (step) {
+      case "service":
+        return (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">1. Select a Service</h3>
+            <Select onValueChange={(id) => setSelectedService(services.find(s => s.id === id) || null)}>
+              <SelectTrigger><SelectValue placeholder="Choose a service..." /></SelectTrigger>
+              <SelectContent>
+                {availableServices.map(s => <SelectItem key={s.id} value={s.id}>{s.name} - ${s.price}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Button onClick={handleNextStep} disabled={!selectedService} className="w-full">
+              Next <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      case "stylist":
+        return (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">2. Select a Stylist</h3>
+            <Select onValueChange={(id) => setSelectedStylist(stylists.find(s => s.id === id) || null)} defaultValue={selectedStylist?.id}>
+              <SelectTrigger><SelectValue placeholder="Choose a stylist..." /></SelectTrigger>
+              <SelectContent>
+                {availableStylists.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <div className="flex gap-4">
+              <Button onClick={handlePrevStep} variant="outline" className="w-full">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+              <Button onClick={handleNextStep} disabled={!selectedStylist} className="w-full">
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        );
+      case "datetime":
+        return (
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">3. Select Date & Time</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1)) || date.getDay() === 0}
+                className="rounded-md border justify-center"
+              />
+              <div className="max-h-64 overflow-y-auto grid grid-cols-3 gap-2">
+                {selectedDate && availableTimeSlots.length > 0 ? (
+                  availableTimeSlots.map(time => (
+                    <Button key={time} variant={selectedTime === time ? "default" : "outline"} onClick={() => setSelectedTime(time)}>
+                      {time}
+                    </Button>
+                  ))
+                ) : (
+                  <p className="col-span-3 text-center text-muted-foreground p-4">{selectedDate ? "No available slots." : "Please select a date."}</p>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <Button onClick={handlePrevStep} variant="outline" className="w-full">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+              <Button onClick={handleNextStep} disabled={!selectedDate || !selectedTime} className="w-full">
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        );
+      case "confirm":
+        if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) return null;
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-center">4. Confirm Your Appointment</h3>
+            <div className="border rounded-lg p-4 space-y-4">
+              <div className="flex items-start gap-4">
+                <Image src={selectedStylist.avatarUrl} alt={selectedStylist.name} width={80} height={80} className="rounded-full" />
+                <div>
+                  <p className="font-bold">{selectedStylist.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedService.name}</p>
+                </div>
+              </div>
+              <div className="space-y-2 text-sm">
+                <p className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" /> {format(selectedDate, "PPP")}</p>
+                <p className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {selectedTime}</p>
+                <p className="flex items-center gap-2"><Scissors className="h-4 w-4 text-primary" /> {selectedService.duration} minutes</p>
+              </div>
+              <div className="text-right font-bold text-lg">
+                Total: ${selectedService.price}
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <Button onClick={handlePrevStep} variant="outline" className="w-full">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+              <Button onClick={handleConfirmBooking} className="w-full">
+                Confirm Booking
+              </Button>
+            </div>
+          </div>
+        );
+      case "complete":
+        if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) return null;
+        return (
+          <div className="text-center space-y-4 animate-in fade-in duration-500">
+            <CheckCircle className="mx-auto h-16 w-16 text-green-500"/>
+            <h3 className="text-2xl font-bold">Appointment Confirmed!</h3>
+            <p className="text-muted-foreground">We're looking forward to seeing you.</p>
+            <Card className="text-left p-4">
+              <p><strong>Stylist:</strong> {selectedStylist.name}</p>
+              <p><strong>Service:</strong> {selectedService.name}</p>
+              <p><strong>Date:</strong> {format(selectedDate, "PPP")} at {selectedTime}</p>
+            </Card>
+            <Button onClick={handleStartOver} className="w-full">Book Another Appointment</Button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Card className="shadow-lg">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between">
+          <span>Booking Progress</span>
+          <span className="text-sm font-normal text-muted-foreground">{step.charAt(0).toUpperCase() + step.slice(1)}</span>
+        </CardTitle>
+        <Progress value={progressValue} className="w-full" />
+      </CardHeader>
+      <CardContent className="min-h-[300px]">
+        <AnimatePresence mode="wait">
+            <motion.div
+                key={step}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+            >
+                {renderStep()}
+            </motion.div>
+        </AnimatePresence>
+      </CardContent>
+    </Card>
+  );
+}
