@@ -5,8 +5,10 @@ export async function getStyleAdvice(input: AIPoweredStyleAdvisorInput) {
     try {
         const result = await aiPoweredStyleAdvisor(input);
         return { success: true, data: result };
-    } catch (error) {
+    } catch (error: any) {
         console.error('AI Style Advisor Error:', error);
-        return { success: false, error: 'No se pudo obtener el consejo de estilo. Es posible que el modelo no esté disponible. Por favor, inténtalo de nuevo más tarde.' };
+        // Extraer un mensaje de error más útil si está disponible
+        const errorMessage = error.cause?.message || error.message || 'No se pudo obtener el consejo de estilo. Por favor, inténtalo de nuevo más tarde.';
+        return { success: false, error: `Error de la IA: ${errorMessage}` };
     }
 }
