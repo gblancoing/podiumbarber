@@ -9,7 +9,7 @@ import { AdminSidebar } from './AdminSidebar';
 export function AdminHeader() {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-end gap-4 border-b bg-background px-4 md:px-6">
-      <div className="md:hidden">
+      <div className="block md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon">
@@ -22,11 +22,13 @@ export function AdminHeader() {
           </SheetContent>
         </Sheet>
       </div>
-      <form action={logout}>
-        <Button type="submit" variant="outline">
-          Cerrar Sesión
-        </Button>
-      </form>
+      <div className="hidden md:block">
+        <form action={logout}>
+          <Button type="submit" variant="outline">
+            Cerrar Sesión
+          </Button>
+        </form>
+      </div>
     </header>
   );
 }
