@@ -23,7 +23,7 @@ export function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline">
           <Scissors className="h-6 w-6 text-primary" />
-          BooksyStyle
+          LookStyle
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
@@ -59,7 +59,7 @@ export function Header() {
               <div className="flex flex-col p-4">
                 <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline mb-8" onClick={() => setIsOpen(false)}>
                   <Scissors className="h-6 w-6 text-primary" />
-                  BooksyStyle
+                  LooksyStyle
                 </Link>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (
