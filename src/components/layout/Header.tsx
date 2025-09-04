@@ -18,12 +18,17 @@ export function Header() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
+  // No renderizar el header en las rutas de admin
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline">
           <Scissors className="h-6 w-6 text-primary" />
-          LookStyle
+          BooksyStyle
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
@@ -59,7 +64,7 @@ export function Header() {
               <div className="flex flex-col p-4">
                 <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline mb-8" onClick={() => setIsOpen(false)}>
                   <Scissors className="h-6 w-6 text-primary" />
-                  LooksyStyle
+                  BooksyStyle
                 </Link>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (

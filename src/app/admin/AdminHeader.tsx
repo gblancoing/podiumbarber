@@ -8,27 +8,25 @@ import { AdminSidebar } from './AdminSidebar';
 
 export function AdminHeader() {
   return (
-    <header className="flex justify-end items-center mb-8">
-       {/* Mobile Menu */}
-       <div className="md:hidden">
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                        <Menu className="h-6 w-6" />
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-64">
-                   <AdminSidebar />
-                </SheetContent>
-            </Sheet>
-       </div>
-       <div className="hidden md:block">
-            <form action={logout}>
-                <Button type="submit" variant="outline">
-                    Cerrar Sesión
-                </Button>
-            </form>
-       </div>
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-end gap-4 border-b bg-background px-4 md:px-6">
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Abrir menú</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64">
+            <AdminSidebar />
+          </SheetContent>
+        </Sheet>
+      </div>
+      <form action={logout}>
+        <Button type="submit" variant="outline">
+          Cerrar Sesión
+        </Button>
+      </form>
     </header>
   );
 }

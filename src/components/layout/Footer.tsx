@@ -1,7 +1,17 @@
+'use client';
+
 import { Scissors, Instagram, Facebook, Twitter } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // No renderizar el footer en las rutas de admin
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="bg-card border-t">
       <div className="container mx-auto px-4 py-8">
