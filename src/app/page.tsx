@@ -14,7 +14,7 @@ export default function Home() {
         <Image
           src="https://picsum.photos/1800/1200"
           alt="Interior de un salón de belleza moderno"
-          data-ai-hint="salon interior"
+          data-ai-hint="hair salon"
           fill
           className="object-cover"
         />
