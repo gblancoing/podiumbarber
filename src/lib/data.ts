@@ -92,39 +92,36 @@ export const featuredStylists = stylists.slice(0, 4);
 
 // --- Simulación de base de datos de citas ---
 // Usamos una variable global para simular una base de datos persistente en memoria.
-// Esto asegura que los datos no se reinicien con cada recarga en caliente en desarrollo.
+// Esto asegura que los datos no se reinicien con cada recarga en caliente en desarrollo
+// y que persistan en un entorno de producción entre peticiones.
 const globalForDb = globalThis as unknown as { 
     bookings: Booking[]; 
     nextBookingId: number 
 };
 
-const bookings: Booking[] = globalForDb.bookings || [];
-let nextBookingId = globalForDb.nextBookingId || 1;
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForDb.bookings = bookings;
-  globalForDb.nextBookingId = nextBookingId;
+if (!globalForDb.bookings) {
+  globalForDb.bookings = [];
 }
+if (!globalForDb.nextBookingId) {
+  globalForDb.nextBookingId = 1;
+}
+
+const bookingsDb = globalForDb.bookings;
 
 export async function getBookings(): Promise<Booking[]> {
   // Devolvemos una copia para evitar mutaciones directas.
-  return Promise.resolve([...bookings]);
+  return Promise.resolve([...bookingsDb]);
 }
 
 export async function saveNewBooking(bookingData: Omit<Booking, 'id' | 'status'>): Promise<Booking> {
   const newBooking: Booking = {
     ...bookingData,
-    id: (nextBookingId++).toString(),
+    id: (globalForDb.nextBookingId++).toString(),
     status: 'confirmed',
   };
-  bookings.push(newBooking);
+  bookingsDb.push(newBooking);
   console.log('Cita guardada:', newBooking);
-  console.log('Todas las citas:', bookings);
-  
-  // Actualizamos el global para desarrollo
-  if (process.env.NODE_ENV !== 'production') {
-    globalForDb.nextBookingId = nextBookingId;
-  }
+  console.log('Todas las citas:', bookingsDb);
   
   return Promise.resolve(newBooking);
 }
@@ -143,7 +140,8 @@ export const getAvailableTimeSlots = (date: Date, stylistId: string) => {
   if (date.getDay() === 6) return allSlots.slice(0, 8); // Horario más corto los sábados
 
   const dateString = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-  const existingBookings = bookings.filter(b => b.stylistId === stylistId && b.date === dateString);
+  
+  const existingBookings = bookingsDb.filter(b => b.stylistId === stylistId && b.date === dateString);
   const bookedTimes = new Set(existingBookings.map(b => b.time));
   
   return allSlots.filter(time => !bookedTimes.has(time));
