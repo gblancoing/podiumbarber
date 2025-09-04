@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { services, stylists, getAvailableTimeSlots } from "@/lib/data";
 import type { Service, Stylist } from "@/lib/types";
-import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
+import { saveBooking } from "./actions";
+import { useToast } from "@/hooks/use-toast";
 
 type Step = "service" | "stylist" | "datetime" | "confirm" | "complete";
 
@@ -27,6 +29,8 @@ const stepTranslations: Record<Step, string> = {
 
 export function BookingClient() {
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
   const [step, setStep] = useState<Step>("service");
   
   const [selectedService, setSelectedService] = useState<Service | null>(() => {
@@ -82,9 +86,30 @@ export function BookingClient() {
   };
 
   const handleConfirmBooking = () => {
-    // Aquí normalmente harías una llamada a la API para guardar la reserva
-    console.log("Reserva confirmada:", { selectedService, selectedStylist, selectedDate, selectedTime });
-    setStep("complete");
+    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) return;
+    
+    startTransition(async () => {
+      const bookingData = {
+        serviceId: selectedService.id,
+        stylistId: selectedStylist.id,
+        date: format(selectedDate, "yyyy-MM-dd"),
+        time: selectedTime,
+        customerName: "Cliente de Ejemplo", // En una app real, esto vendría del usuario logueado
+        customerEmail: "cliente@ejemplo.com",
+      };
+      
+      const result = await saveBooking(bookingData);
+
+      if (result.success) {
+        setStep("complete");
+      } else {
+        toast({
+            variant: "destructive",
+            title: "Error al reservar",
+            description: result.error || "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+        })
+      }
+    });
   };
   
   const handleStartOver = () => {
@@ -198,10 +223,11 @@ export function BookingClient() {
               </div>
             </div>
             <div className="flex gap-4">
-              <Button onClick={handlePrevStep} variant="outline" className="w-full">
+              <Button onClick={handlePrevStep} variant="outline" className="w-full" disabled={isPending}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
               </Button>
-              <Button onClick={handleConfirmBooking} className="w-full">
+              <Button onClick={handleConfirmBooking} className="w-full" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Confirmar Reserva
               </Button>
             </div>
@@ -213,7 +239,7 @@ export function BookingClient() {
           <div className="text-center space-y-4 animate-in fade-in duration-500">
             <CheckCircle className="mx-auto h-16 w-16 text-green-500"/>
             <h3 className="text-2xl font-bold">¡Cita Confirmada!</h3>
-            <p className="text-muted-foreground">Te esperamos con ansias.</p>
+            <p className="text-muted-foreground">Te esperamos con ansias. Recibirás un correo de confirmación pronto.</p>
             <Card className="text-left p-4">
               <p><strong>Estilista:</strong> {selectedStylist.name}</p>
               <p><strong>Servicio:</strong> {selectedService.name}</p>

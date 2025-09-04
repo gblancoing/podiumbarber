@@ -1,4 +1,4 @@
-import type { Stylist, Service } from './types';
+import type { Stylist, Service, Booking } from './types';
 
 export const services: Service[] = [
   {
@@ -89,6 +89,30 @@ export const stylists: Stylist[] = [
 export const featuredServices = services.slice(0, 3);
 export const featuredStylists = stylists.slice(0, 4);
 
+
+// --- Simulación de base de datos de citas ---
+let bookings: Booking[] = [];
+let nextBookingId = 1;
+
+export async function getBookings(): Promise<Booking[]> {
+  // En una app real, esto consultaría una base de datos.
+  // Devolvemos una copia para evitar mutaciones directas.
+  return Promise.resolve([...bookings]);
+}
+
+export async function saveNewBooking(bookingData: Omit<Booking, 'id' | 'status'>): Promise<Booking> {
+  const newBooking: Booking = {
+    ...bookingData,
+    id: (nextBookingId++).toString(),
+    status: 'confirmed',
+  };
+  bookings.push(newBooking);
+  console.log('Cita guardada:', newBooking);
+  console.log('Todas las citas:', bookings);
+  return Promise.resolve(newBooking);
+}
+
+
 export const getAvailableTimeSlots = (date: Date, stylistId: string) => {
   // En una aplicación real, esto consultaría una base de datos según el horario del estilista.
   // Por ahora, devolveremos una lista estática de horas para cualquier día.
@@ -104,5 +128,10 @@ export const getAvailableTimeSlots = (date: Date, stylistId: string) => {
   if (date.getDay() === 0) return []; // Cerrado los domingos
   if (date.getDay() === 6) return allSlots.slice(0, 8); // Horario más corto los sábados
 
-  return allSlots.filter((_, index) => (index + seed) % 3 !== 0); // Eliminar algunos horarios aleatoriamente
+  const existingBookings = bookings.filter(b => b.stylistId === stylistId && b.date === `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`);
+  const bookedTimes = new Set(existingBookings.map(b => b.time));
+
+  const availableSlots = allSlots.filter((_, index) => (index + seed) % 3 !== 0); // Eliminar algunos horarios aleatoriamente
+  
+  return availableSlots.filter(time => !bookedTimes.has(time));
 };

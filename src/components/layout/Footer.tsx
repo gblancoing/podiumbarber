@@ -29,6 +29,7 @@ export function Footer() {
               <li><Link href="#" className="text-muted-foreground hover:text-primary">Nuestra Historia</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-primary">Trabaja con Nosotros</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-primary">Contáctanos</Link></li>
+               <li><Link href="/admin/appointments" className="text-muted-foreground hover:text-primary">Admin</Link></li>
             </ul>
           </div>
           <div>

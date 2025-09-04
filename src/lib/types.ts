@@ -15,3 +15,14 @@ export interface Stylist {
   specialties: string[];
   services: string[]; // array of service IDs
 }
+
+export interface Booking {
+  id: string;
+  serviceId: string;
+  stylistId: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+  customerName: string;
+  customerEmail: string;
+  status: 'confirmed' | 'completed' | 'canceled';
+}
