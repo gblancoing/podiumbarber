@@ -118,9 +118,9 @@ export default function Home() {
               </div>
               <div className="hidden md:block h-full">
                 <Image
-                  src="https://picsum.photos/800/600"
-                  alt="Resumen de estilo de IA"
-                  data-ai-hint="futuristic hair"
+                  src="/img/peluqueria_v3.jpg"
+                  alt="Mujer con un peinado elegante"
+                  data-ai-hint="elegant hairstyle"
                   width={800}
                   height={600}
                   className="object-cover w-full h-full"
