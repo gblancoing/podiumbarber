@@ -12,9 +12,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
         <Image
-          src="https://picsum.photos/1200/800"
+          src="https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/hero.jpg"
           alt="Interior de un salón de belleza moderno"
-          data-ai-hint="hair salon"
+          data-ai-hint="hair salon interior"
           fill
           className="object-cover"
         />
