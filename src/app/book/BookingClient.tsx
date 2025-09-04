@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect, useTransition } from "react";
@@ -9,20 +10,31 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { services, stylists, getAvailableTimeSlots } from "@/lib/data";
 import type { Service, Stylist } from "@/lib/types";
-import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import { saveBooking } from "./actions";
 import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-type Step = "service" | "stylist" | "datetime" | "confirm" | "complete";
+const bookingFormSchema = z.object({
+    customerName: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
+    customerEmail: z.string().email("Por favor, introduce un correo electrónico válido."),
+});
+
+type Step = "service" | "stylist" | "datetime" | "details" | "confirm" | "complete";
 
 const stepTranslations: Record<Step, string> = {
     service: "Servicio",
     stylist: "Estilista",
     datetime: "Fecha y Hora",
+    details: "Tus Datos",
     confirm: "Confirmar",
     complete: "Completo",
 };
@@ -45,6 +57,17 @@ export function BookingClient() {
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  
+  const [customerDetails, setCustomerDetails] = useState<{name: string, email: string} | null>(null);
+
+  const form = useForm<z.infer<typeof bookingFormSchema>>({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      customerName: "",
+      customerEmail: "",
+    },
+  });
+
 
   useEffect(() => {
     if (selectedService && selectedStylist) {
@@ -76,17 +99,24 @@ export function BookingClient() {
   const handleNextStep = () => {
     if (step === "service") setStep("stylist");
     else if (step === "stylist") setStep("datetime");
-    else if (step === "datetime") setStep("confirm");
+    else if (step === "datetime") setStep("details");
+    else if (step === "details") setStep("confirm");
   };
 
   const handlePrevStep = () => {
-    if (step === "confirm") setStep("datetime");
+    if (step === "confirm") setStep("details");
+    else if (step === "details") setStep("datetime");
     else if (step === "datetime") setStep("stylist");
     else if (step === "stylist") setStep("service");
   };
 
+  const onDetailsSubmit = (values: z.infer<typeof bookingFormSchema>) => {
+    setCustomerDetails({ name: values.customerName, email: values.customerEmail });
+    handleNextStep();
+  };
+
   const handleConfirmBooking = () => {
-    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) return;
+    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerDetails) return;
     
     startTransition(async () => {
       const bookingData = {
@@ -94,8 +124,8 @@ export function BookingClient() {
         stylistId: selectedStylist.id,
         date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedTime,
-        customerName: "Cliente de Ejemplo", // En una app real, esto vendría del usuario logueado
-        customerEmail: "cliente@ejemplo.com",
+        customerName: customerDetails.name,
+        customerEmail: customerDetails.email,
       };
       
       const result = await saveBooking(bookingData);
@@ -117,14 +147,17 @@ export function BookingClient() {
     setSelectedStylist(null);
     setSelectedDate(undefined);
     setSelectedTime(null);
+    setCustomerDetails(null);
+    form.reset();
     setStep("service");
   }
 
   const progressValue = {
     service: 0,
-    stylist: 25,
-    datetime: 50,
-    confirm: 75,
+    stylist: 20,
+    datetime: 40,
+    details: 60,
+    confirm: 80,
     complete: 100,
   }[step];
 
@@ -137,7 +170,7 @@ export function BookingClient() {
             <Select onValueChange={(id) => setSelectedService(services.find(s => s.id === id) || null)}>
               <SelectTrigger><SelectValue placeholder="Elige un servicio..." /></SelectTrigger>
               <SelectContent>
-                {availableServices.map(s => <SelectItem key={s.id} value={s.id}>{s.name} - ${s.price}</SelectItem>)}
+                {availableServices.map(s => <SelectItem key={s.id} value={s.id}>{s.name} - ${s.price.toLocaleString('es-CL')}</SelectItem>)}
               </SelectContent>
             </Select>
             <Button onClick={handleNextStep} disabled={!selectedService} className="w-full">
@@ -200,26 +233,73 @@ export function BookingClient() {
             </div>
           </div>
         );
+       case "details":
+        return (
+          <div className="space-y-4">
+             <h3 className="text-xl font-semibold">4. Ingresa tus Datos</h3>
+             <Form {...form}>
+                <form onSubmit={form.handleSubmit(onDetailsSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="customerName"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Nombre Completo</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Ej: Jane Doe" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="customerEmail"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Correo Electrónico</FormLabel>
+                                <FormControl>
+                                    <Input type="email" placeholder="tu@correo.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                     <div className="flex gap-4 pt-4">
+                        <Button onClick={handlePrevStep} variant="outline" className="w-full" type="button">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
+                        </Button>
+                        <Button type="submit" className="w-full">
+                            Siguiente <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                </form>
+             </Form>
+          </div>
+        );
       case "confirm":
-        if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) return null;
+        if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerDetails) return null;
         return (
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-center">4. Confirma tu Cita</h3>
+            <h3 className="text-xl font-semibold text-center">5. Confirma tu Cita</h3>
             <div className="border rounded-lg p-4 space-y-4">
-              <div className="flex items-start gap-4">
+               <div className="flex items-start gap-4">
                 <Image src={selectedStylist.avatarUrl} alt={selectedStylist.name} width={80} height={80} className="rounded-full" />
                 <div>
                   <p className="font-bold">{selectedStylist.name}</p>
                   <p className="text-sm text-muted-foreground">{selectedService.name}</p>
                 </div>
               </div>
+
               <div className="space-y-2 text-sm">
+                <p className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> {customerDetails.name}</p>
+                <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {customerDetails.email}</p>
                 <p className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" /> {format(selectedDate, "PPP", { locale: es })}</p>
                 <p className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {selectedTime}</p>
                 <p className="flex items-center gap-2"><Scissors className="h-4 w-4 text-primary" /> {selectedService.duration} minutos</p>
               </div>
               <div className="text-right font-bold text-lg">
-                Total: ${selectedService.price}
+                Total: ${selectedService.price.toLocaleString('es-CL')}
               </div>
             </div>
             <div className="flex gap-4">
@@ -262,7 +342,7 @@ export function BookingClient() {
         </CardTitle>
         <Progress value={progressValue} className="w-full" />
       </CardHeader>
-      <CardContent className="min-h-[300px]">
+      <CardContent className="min-h-[300px] flex items-center justify-center">
         <AnimatePresence mode="wait">
             <motion.div
                 key={step}
@@ -270,6 +350,7 @@ export function BookingClient() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
+                className="w-full"
             >
                 {renderStep()}
             </motion.div>
@@ -278,3 +359,5 @@ export function BookingClient() {
     </Card>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 import {
   Accordion,
   AccordionContent,
@@ -44,7 +45,7 @@ export default function ServicesPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-primary" />
-                        <span>${service.price}</span>
+                        <span>${service.price.toLocaleString('es-CL')}</span>
                       </div>
                     </div>
                   </div>
@@ -57,3 +58,5 @@ export default function ServicesPage() {
     </div>
   );
 }
+
+    
