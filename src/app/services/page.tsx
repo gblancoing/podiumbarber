@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Timer, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ServicesPage() {
   const categories = services.reduce((acc, service) => {
@@ -17,11 +18,21 @@ export default function ServicesPage() {
 
   return (
     <div className="container mx-auto max-w-6xl py-12 px-4">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline font-bold">Nuestros Servicios</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
-          Encuentra el tratamiento perfecto para elevar tu estilo.
-        </p>
+      <div className="relative text-center mb-12 rounded-lg overflow-hidden">
+        <Image
+          src="/img/barberia_v1.jpg"
+          alt="Herramientas de barbería"
+          data-ai-hint="barber tools"
+          fill
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="relative z-10 py-20 px-4">
+            <h1 className="text-4xl font-headline font-bold text-white">Nuestros Servicios</h1>
+            <p className="mt-2 text-lg text-slate-300">
+                Encuentra el tratamiento perfecto para elevar tu estilo.
+            </p>
+        </div>
       </div>
       
       <div className="space-y-12">
