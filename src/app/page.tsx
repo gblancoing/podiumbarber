@@ -28,28 +28,30 @@ export default function Home() {
       <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
         <Carousel
           plugins={[plugin.current]}
-          className="w-full h-full"
+          className="absolute inset-0 w-full h-full"
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
         >
           <CarouselContent className="h-full">
             {carouselImages.map((img, index) => (
-              <CarouselItem key={index} className="relative h-full pl-0">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  data-ai-hint={img.hint}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
+              <CarouselItem key={index} className="pl-0">
+                <div className="relative w-full h-full">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    data-ai-hint={img.hint}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
+        <div className="relative z-20 flex flex-col items-center justify-center text-center h-full p-8">
           <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg max-w-4xl">
             Experimenta tu Mejor Look
           </h1>
