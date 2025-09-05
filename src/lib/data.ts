@@ -99,8 +99,7 @@ export const stylists: Stylist[] = [
     id: 'stiven-vargas',
     name: 'Stiven Vargas',
     bio: 'Especialista en cortes modernos y diseños de barba. Stiven combina precisión técnica con un estilo urbano para crear looks únicos y a la vanguardia.',
-    avatarUrl:
-      'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-1.jpg',
+    avatarUrl: '/img/steven.png',
     specialties: ['Cortes Urbanos', 'Diseño de Barba', 'Color'],
     services: [
       'corte-pelo',
@@ -114,8 +113,7 @@ export const stylists: Stylist[] = [
     id: 'kamilo-fonseca',
     name: 'Kamilo Fonseca',
     bio: 'Un maestro de la barbería clásica y los cortes tradicionales. Kamilo se enfoca en la experiencia del cliente, asegurando un servicio relajante y un acabado impecable en cada visita.',
-    avatarUrl:
-      'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-3.jpg',
+    avatarUrl: '/img/camilo.png',
     specialties: ['Cortes Clásicos', 'Afeitado Tradicional', 'Barbería'],
     services: ['corte-pelo', 'corte-escolar', 'barba-toalla-caliente', 'barba-sencilla', 'perfilado-cejas'],
   },
