@@ -2,11 +2,27 @@ import type { Stylist, Service, Booking } from './types';
 
 export const services: Service[] = [
   {
-    id: 'cut-style',
-    name: 'Corte y Peinado',
-    description: 'Un corte de pelo personalizado seguido de una sesión de peinado profesional.',
-    price: 30000,
-    duration: 60,
+    id: 'corte-pelo',
+    name: 'Corte de Pelo',
+    description: 'Incluye: Mascarilla para puntos negros, lavado, peinado con producto y cortesía (café, capuchino, cerveza, bebida express o jugo en caja para niños).',
+    price: 15000,
+    duration: 40,
+    category: 'Corte y Peinado',
+  },
+  {
+    id: 'corte-diseno',
+    name: 'Corte de Pelo + Diseño Free o Lineas',
+    description: 'Incluye: Mascarilla para puntos negros, lavado, peinado con producto y cortesía (café, capuchino, cerveza o bebida express).',
+    price: 17000,
+    duration: 45,
+    category: 'Corte y Peinado',
+  },
+  {
+    id: 'corte-escolar',
+    name: 'Corte Escolar Clasico (sin degrade)',
+    description: 'Incluye: Lavado, peinado con producto y cortesía (bebida o jugo de caja).',
+    price: 13000,
+    duration: 30,
     category: 'Corte y Peinado',
   },
   {
@@ -33,22 +49,6 @@ export const services: Service[] = [
     duration: 210,
     category: 'Tratamientos',
   },
-  {
-    id: 'blowout',
-    name: 'Brushing Express',
-    description: 'Consigue un brushing voluminoso y elegante que dura días.',
-    price: 20000,
-    duration: 45,
-    category: 'Corte y Peinado',
-  },
-  {
-    id: 'updo',
-    name: 'Peinado para Ocasión Especial',
-    description: 'Un peinado elegante para matrimonios, fiestas u cualquier evento especial.',
-    price: 35000,
-    duration: 75,
-    category: 'Corte y Peinado',
-  },
 ];
 
 export const stylists: Stylist[] = [
@@ -58,7 +58,7 @@ export const stylists: Stylist[] = [
     bio: 'Con más de 10 años de experiencia, Alex se especializa en coloración creativa y técnicas de corte modernas. Alex cree en la creación de looks personalizados que realzan la belleza natural.',
     avatarUrl: 'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-1.jpg',
     specialties: ['Color Creativo', 'Balayage', 'Cortes Modernos'],
-    services: ['cut-style', 'balayage', 'full-color'],
+    services: ['corte-pelo', 'corte-diseno', 'corte-escolar', 'balayage', 'full-color'],
   },
   {
     id: 'bella',
@@ -66,7 +66,7 @@ export const stylists: Stylist[] = [
     bio: 'Bella es una maestra del corte de precisión y el peinado elegante. Su pasión es hacer que los clientes se sientan seguros y hermosos con un look que es a la vez atemporal y contemporáneo.',
     avatarUrl: 'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-2.jpg',
     specialties: ['Cortes de Precisión', 'Brushing', 'Peinados de Fiesta'],
-    services: ['cut-style', 'blowout', 'updo'],
+    services: ['corte-pelo', 'corte-diseno', 'corte-escolar'],
   },
   {
     id: 'charlie',
@@ -74,7 +74,7 @@ export const stylists: Stylist[] = [
     bio: 'A Charlie le encanta transformar el cabello a través de la textura y los tratamientos. Especializado en tratamientos de queratina y alisado, Charlie puede domar cualquier frizz y añadir un brillo lujoso.',
     avatarUrl: 'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-3.jpg',
     specialties: ['Tratamientos de Queratina', 'Reparación Capilar', 'Pelo Largo'],
-    services: ['keratin', 'cut-style'],
+    services: ['keratin', 'corte-pelo', 'corte-diseno', 'corte-escolar'],
   },
   {
     id: 'dana',
@@ -82,7 +82,7 @@ export const stylists: Stylist[] = [
     bio: 'Dana es una experta en todo lo relacionado con el color. Desde reflejos sutiles hasta tonos audaces y vibrantes, Dana trabaja con cada cliente para encontrar el tono perfecto que coincida con su personalidad y estilo.',
     avatarUrl: 'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-4.jpg',
     specialties: ['Colores Vibrantes', 'Corrección de Color', 'Reflejos'],
-    services: ['balayage', 'full-color', 'cut-style'],
+    services: ['balayage', 'full-color', 'corte-pelo', 'corte-diseno', 'corte-escolar'],
   },
 ];
 
