@@ -1,3 +1,5 @@
+
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -5,19 +7,46 @@ import { featuredServices, featuredStylists } from "@/lib/data";
 import { ArrowRight, Scissors, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import * as React from "react";
 
 export default function Home() {
+    const plugin = React.useRef(
+        Autoplay({ delay: 5000, stopOnInteraction: true })
+    );
+
+    const carouselImages = [
+        { src: "/img/peluqueria_v1.png", alt: "Interior de la barbería", hint: "barbershop interior" },
+        { src: "/img/peluqueria_v3.jpg", alt: "Barbero atendiendo a un cliente", hint: "barber client" },
+        { src: "/img/peluqueria_v5.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
+    ];
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
-        <Image
-          src="/img/peluqueria_v1.png"
-          alt="Interior de un salón de belleza moderno"
-          data-ai-hint="hair salon interior"
-          fill
-          className="object-cover"
-        />
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full h-full"
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+        >
+          <CarouselContent className="h-full">
+            {carouselImages.map((img, index) => (
+              <CarouselItem key={index} className="h-full">
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  data-ai-hint={img.hint}
+                  fill
+                  className="object-cover"
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
         <div className="relative h-full flex flex-col items-center justify-center text-center p-8">
           <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg max-w-4xl">
