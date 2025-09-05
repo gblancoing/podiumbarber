@@ -53,30 +53,44 @@ export const services: Service[] = [
     category: 'Barba',
   },
   {
-    id: 'balayage',
-    name: 'Balayage',
-    description:
-      'Técnica de coloración que crea un efecto degradado y natural, como aclarado por el sol.',
-    price: 85000,
-    duration: 180,
-    category: 'Coloración',
+    id: 'depilacion-nariz',
+    name: 'Depilación de Nariz',
+    description: 'Servicio de depilación de nariz.',
+    price: 4000,
+    duration: 5,
+    category: 'Otros Servicios',
   },
   {
-    id: 'full-color',
-    name: 'Coloración Completa',
-    description: 'Aplicación de un solo color desde la raíz hasta las puntas.',
+    id: 'perfilado-cejas',
+    name: 'Perfilado Cejas',
+    description: 'Servicio de perfilado de cejas.',
+    price: 4000,
+    duration: 5,
+    category: 'Otros Servicios',
+  },
+  {
+    id: 'depilacion-oidos',
+    name: 'Depilación de Oídos',
+    description: 'Servicio de depilación de oídos.',
+    price: 4000,
+    duration: 5,
+    category: 'Otros Servicios',
+  },
+  {
+    id: 'color-decolorado',
+    name: 'Color (Decolorado Parte Superior)',
+    description: 'Servicio de coloración con decolorado en la parte superior.',
     price: 45000,
-    duration: 120,
-    category: 'Coloración',
+    duration: 90,
+    category: 'Otros Servicios',
   },
   {
-    id: 'keratin',
-    name: 'Tratamiento de Queratina',
-    description:
-      'Un tratamiento de alisado que sella la cutícula del cabello con una capa de proteína que elimina el frizz.',
-    price: 120000,
-    duration: 210,
-    category: 'Tratamientos',
+    id: 'color-visos',
+    name: 'Color (Visos)',
+    description: 'Servicio de coloración con visos.',
+    price: 35000,
+    duration: 90,
+    category: 'Otros Servicios',
   },
 ];
 
@@ -92,8 +106,8 @@ export const stylists: Stylist[] = [
       'corte-pelo',
       'corte-diseno',
       'corte-escolar',
-      'balayage',
-      'full-color',
+      'color-decolorado',
+      'color-visos',
     ],
   },
   {
@@ -103,7 +117,7 @@ export const stylists: Stylist[] = [
     avatarUrl:
       'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-2.jpg',
     specialties: ['Cortes de Precisión', 'Brushing', 'Peinados de Fiesta'],
-    services: ['corte-pelo', 'corte-diseno', 'corte-escolar'],
+    services: ['corte-pelo', 'corte-diseno', 'corte-escolar', 'perfilado-cejas'],
   },
   {
     id: 'charlie',
@@ -112,7 +126,7 @@ export const stylists: Stylist[] = [
     avatarUrl:
       'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-3.jpg',
     specialties: ['Tratamientos de Queratina', 'Reparación Capilar', 'Pelo Largo'],
-    services: ['keratin', 'corte-pelo', 'corte-diseno', 'corte-escolar'],
+    services: ['corte-pelo', 'corte-diseno', 'corte-escolar', 'depilacion-nariz', 'depilacion-oidos'],
   },
   {
     id: 'dana',
@@ -122,11 +136,11 @@ export const stylists: Stylist[] = [
       'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-4.jpg',
     specialties: ['Colores Vibrantes', 'Corrección de Color', 'Reflejos'],
     services: [
-      'balayage',
-      'full-color',
       'corte-pelo',
       'corte-diseno',
       'corte-escolar',
+      'color-decolorado',
+      'color-visos',
     ],
   },
 ];
