@@ -45,7 +45,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold">Redes Sociales</h3>
             <div className="flex mt-4 space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
+              <Link href="https://www.instagram.com/podium.barberstudio" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
               <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>
               <Link href="#" className="text-muted-foreground hover:text-primary"><Twitter /></Link>
             </div>

@@ -7,7 +7,7 @@ export default function AIAdvisorPage() {
     <div className="container mx-auto max-w-3xl py-12 px-4">
       <div className="relative text-center mb-12 rounded-lg overflow-hidden">
         <Image
-          src="/img/barberia_v6.png"
+          src="/img/berberia_v6.png"
           alt="Asesor de Estilo con IA"
           data-ai-hint="AI style advisor"
           fill
