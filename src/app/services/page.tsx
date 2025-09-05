@@ -12,7 +12,7 @@ export default function ServicesPage() {
     return acc;
   }, {} as Record<string, Service[]>);
 
-  const categoryOrder: Service['category'][] = ['Corte y Peinado', 'Coloración', 'Tratamientos', 'Otros'];
+  const categoryOrder: Service['category'][] = ['Corte y Peinado', 'Barba', 'Otros Servicios'];
   const sortedCategories = Object.keys(categories).sort((a, b) => categoryOrder.indexOf(a as any) - categoryOrder.indexOf(b as any));
 
   return (
