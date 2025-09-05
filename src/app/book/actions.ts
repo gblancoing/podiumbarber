@@ -53,7 +53,7 @@ export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
             console.warn('----------------------------------------------------');
             console.warn('ADVERTENCIA: Credenciales de SendGrid no configuradas.');
             console.warn('El correo de confirmación no se enviará.');
-            console.warn('Añade SENDGRID_API_KEY y SENDGRID_FROM_EMAIL a tu archivo .env');
+            console.warn('Añade SENDGRID_API_KEY, SENDGRID_FROM_EMAIL y ADMIN_EMAIL a tu archivo .env');
             console.warn('----------------------------------------------------');
         }
 
