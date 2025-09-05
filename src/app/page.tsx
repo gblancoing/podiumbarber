@@ -17,9 +17,9 @@ export default function Home() {
     );
 
     const carouselImages = [
-        { src: "/img/peluqueria_v1.png", alt: "Interior de la barbería", hint: "barbershop interior" },
-        { src: "/img/peluqueria_v3.jpg", alt: "Barbero atendiendo a un cliente", hint: "barber client" },
-        { src: "/img/peluqueria_v5.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
+        { src: "/img/barberia_v1.jpg", alt: "Interior de la barbería", hint: "barbershop interior" },
+        { src: "/img/barberia_v3.jpg", alt: "Barbero atendiendo a un cliente", hint: "barber client" },
+        { src: "/img/barberia_v5.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
     ];
 
   return (
@@ -148,7 +148,7 @@ export default function Home() {
               </div>
               <div className="hidden md:block h-full">
                 <Image
-                  src="/img/peluqueria_v3.jpg"
+                  src="/img/barberia_v3.jpg"
                   alt="Mujer con un peinado elegante"
                   data-ai-hint="elegant hairstyle"
                   width={800}
