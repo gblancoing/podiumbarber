@@ -96,57 +96,33 @@ export const services: Service[] = [
 
 export const stylists: Stylist[] = [
   {
-    id: 'alex',
-    name: 'Alex Johnson',
-    bio: 'Con más de 10 años de experiencia, Alex se especializa en coloración creativa y técnicas de corte modernas. Alex cree en la creación de looks personalizados que realzan la belleza natural.',
+    id: 'stiven-vargas',
+    name: 'Stiven Vargas',
+    bio: 'Especialista en cortes modernos y diseños de barba. Stiven combina precisión técnica con un estilo urbano para crear looks únicos y a la vanguardia.',
     avatarUrl:
       'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-1.jpg',
-    specialties: ['Color Creativo', 'Balayage', 'Cortes Modernos'],
+    specialties: ['Cortes Urbanos', 'Diseño de Barba', 'Color'],
     services: [
       'corte-pelo',
       'corte-diseno',
-      'corte-escolar',
+      'barba-toalla-caliente',
+      'barba-vapor-ozono',
       'color-decolorado',
-      'color-visos',
     ],
   },
   {
-    id: 'bella',
-    name: 'Bella Chen',
-    bio: 'Bella es una maestra del corte de precisión y el peinado elegante. Su pasión es hacer que los clientes se sientan seguros y hermosos con un look que es a la vez atemporal y contemporáneo.',
-    avatarUrl:
-      'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-2.jpg',
-    specialties: ['Cortes de Precisión', 'Brushing', 'Peinados de Fiesta'],
-    services: ['corte-pelo', 'corte-diseno', 'corte-escolar', 'perfilado-cejas'],
-  },
-  {
-    id: 'charlie',
-    name: 'Charlie Davis',
-    bio: 'A Charlie le encanta transformar el cabello a través de la textura y los tratamientos. Especializado en tratamientos de queratina y alisado, Charlie puede domar cualquier frizz y añadir un brillo lujoso.',
+    id: 'kamilo-fonseca',
+    name: 'Kamilo Fonseca',
+    bio: 'Un maestro de la barbería clásica y los cortes tradicionales. Kamilo se enfoca en la experiencia del cliente, asegurando un servicio relajante y un acabado impecable en cada visita.',
     avatarUrl:
       'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-3.jpg',
-    specialties: ['Tratamientos de Queratina', 'Reparación Capilar', 'Pelo Largo'],
-    services: ['corte-pelo', 'corte-diseno', 'corte-escolar', 'depilacion-nariz', 'depilacion-oidos'],
-  },
-  {
-    id: 'dana',
-    name: 'Dana Rodriguez',
-    bio: 'Dana es una experta en todo lo relacionado con el color. Desde reflejos sutiles hasta tonos audaces y vibrantes, Dana trabaja con cada cliente para encontrar el tono perfecto que coincida con su personalidad y estilo.',
-    avatarUrl:
-      'https://storage.googleapis.com/aai-web-samples/nextjs/hair-salon/stylist-4.jpg',
-    specialties: ['Colores Vibrantes', 'Corrección de Color', 'Reflejos'],
-    services: [
-      'corte-pelo',
-      'corte-diseno',
-      'corte-escolar',
-      'color-decolorado',
-      'color-visos',
-    ],
+    specialties: ['Cortes Clásicos', 'Afeitado Tradicional', 'Barbería'],
+    services: ['corte-pelo', 'corte-escolar', 'barba-toalla-caliente', 'barba-sencilla', 'perfilado-cejas'],
   },
 ];
 
 export const featuredServices = services.slice(0, 3);
-export const featuredStylists = stylists.slice(0, 4);
+export const featuredStylists = stylists.slice(0, 2);
 
 // --- Simulación de base de datos de citas ---
 // Usamos una variable global para simular una base de datos persistente en memoria.
