@@ -8,7 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import { stylists, services } from '@/lib/data';
 
 const SendConfirmationEmailInputSchema = z.object({
@@ -52,7 +52,7 @@ const prompt = ai.definePrompt({
     }),
   },
   output: { schema: SendConfirmationEmailOutputSchema },
-  prompt: `You are an assistant for the "BooksyStyle" hair salon. Your task is to generate a friendly and professional confirmation email in Spanish for a new appointment.
+  prompt: `You are an assistant for the "PodiumBarber" hair salon. Your task is to generate a friendly and professional confirmation email in Spanish for a new appointment.
 
 Appointment Details:
 - Customer Name: {{{customerName}}}

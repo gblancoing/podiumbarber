@@ -1,8 +1,9 @@
 'use client';
 
-import { Scissors, Instagram, Facebook, Twitter } from "lucide-react";
+import { Instagram, Facebook, Twitter } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export function Footer() {
   const pathname = usePathname();
@@ -18,8 +19,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline">
-              <Scissors className="h-6 w-6 text-primary" />
-              BooksyStyle
+              <Image src="/img/logo.png" alt="PodiumBarber Logo" width={32} height={32} />
+              PodiumBarber
             </Link>
             <p className="mt-2 text-sm text-muted-foreground">
               Experimenta tu mejor look.
@@ -51,7 +52,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-4 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} BooksyStyle. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} PodiumBarber. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>

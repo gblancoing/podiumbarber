@@ -5,7 +5,7 @@ import { AdminHeader } from "./AdminHeader";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Admin - BooksyStyle',
+  title: 'Admin - PodiumBarber',
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { LayoutDashboard, List, Scissors, Bell } from "lucide-react";
 import { logout } from "../login/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -20,8 +21,8 @@ export function AdminSidebar() {
     <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-16 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-bold font-headline">
-                <Scissors className="h-6 w-6 text-primary" />
-                <span>BooksyStyle</span>
+                <Image src="/img/logo.png" alt="PodiumBarber Logo" width={32} height={32} />
+                <span>PodiumBarber</span>
             </Link>
         </div>
         <div className="flex-1">

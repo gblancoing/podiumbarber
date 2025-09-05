@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 
 export const metadata: Metadata = {
-  title: 'BooksyStyle',
+  title: 'PodiumBarber',
   description: 'Tu próximo corte de pelo, a solo un clic de distancia.',
 };
 
