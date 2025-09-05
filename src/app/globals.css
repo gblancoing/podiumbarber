@@ -4,49 +4,48 @@
 
 @layer base {
   :root {
-    --background: 285 44% 95%; /* Light Lavender */
-    --foreground: 262 52% 20%;
-    --card: 300 100% 100%;
-    --card-foreground: 262 52% 20%;
-    --popover: 300 100% 100%;
-    --popover-foreground: 262 52% 20%;
-    --primary: 262 52% 47%; /* Deep Plum */
-    --primary-foreground: 285 44% 98%;
-    --secondary: 262 30% 88%;
-    --secondary-foreground: 262 52% 30%;
-    --muted: 262 30% 92%;
-    --muted-foreground: 262 30% 40%;
-    --accent: 337 77% 48%; /* Dusty Rose */
-    --accent-foreground: 285 44% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 262 30% 80%;
-    --input: 262 30% 90%;
-    --ring: 262 52% 47%;
+    --background: 220 14% 10%; /* Very Dark Blue-Gray */
+    --foreground: 210 40% 98%;
+    --card: 220 14% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 220 14% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 45 85% 50%; /* Gold */
+    --primary-foreground: 220 14% 10%;
+    --secondary: 217 33% 25%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 45 85% 60%; /* Lighter Gold for hover */
+    --accent-foreground: 220 14% 10%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 45 85% 50%;
     --radius: 0.5rem;
   }
 
   .dark {
-    /* A sensible dark theme derived from the light theme */
-    --background: 262 30% 10%;
-    --foreground: 285 44% 95%;
-    --card: 262 30% 15%;
-    --card-foreground: 285 44% 95%;
-    --popover: 262 30% 15%;
-    --popover-foreground: 285 44% 95%;
-    --primary: 262 52% 57%; /* Lighter Plum */
-    --primary-foreground: 262 52% 15%;
-    --secondary: 262 30% 25%;
-    --secondary-foreground: 285 44% 95%;
-    --muted: 262 30% 20%;
-    --muted-foreground: 262 30% 60%;
-    --accent: 337 77% 58%; /* Lighter Rose */
-    --accent-foreground: 285 44% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 262 30% 25%;
-    --input: 262 30% 25%;
-    --ring: 262 52% 57%;
+    --background: 220 14% 10%; /* Very Dark Blue-Gray */
+    --foreground: 210 40% 98%;
+    --card: 220 14% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 220 14% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 45 85% 50%; /* Gold */
+    --primary-foreground: 220 14% 10%;
+    --secondary: 217 33% 25%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 45 85% 60%; /* Lighter Gold for hover */
+    --accent-foreground: 220 14% 10%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 45 85% 50%;
   }
 }
 
