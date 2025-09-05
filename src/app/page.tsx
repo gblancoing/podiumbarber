@@ -41,6 +41,7 @@ export default function Home() {
                   data-ai-hint={img.hint}
                   fill
                   className="object-cover"
+                  priority={index === 0}
                 />
               </CarouselItem>
             ))}
