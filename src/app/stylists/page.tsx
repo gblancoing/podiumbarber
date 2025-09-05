@@ -4,16 +4,27 @@ import { Button } from '@/components/ui/button';
 import { stylists } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function StylistsPage() {
   return (
     <div className="bg-background">
       <div className="container mx-auto py-12 px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-headline font-bold">Conoce a Nuestros Estilistas</h1>
-          <p className="mt-2 text-lg text-muted-foreground">
-            Los talentosos artistas que darán vida a tu visión.
-          </p>
+        <div className="relative text-center mb-12 rounded-lg overflow-hidden">
+            <Image
+                src="/img/barberia_v1.jpg"
+                alt="Estilista trabajando"
+                data-ai-hint="stylist working"
+                fill
+                className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/70" />
+            <div className="relative z-10 py-20 px-4">
+                <h1 className="text-4xl font-headline font-bold text-white">Conoce a Nuestros Estilistas</h1>
+                <p className="mt-2 text-lg text-slate-300">
+                    Los talentosos artistas que darán vida a tu visión.
+                </p>
+            </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {stylists.map((stylist) => (

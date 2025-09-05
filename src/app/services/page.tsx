@@ -20,7 +20,7 @@ export default function ServicesPage() {
     <div className="container mx-auto max-w-6xl py-12 px-4">
       <div className="relative text-center mb-12 rounded-lg overflow-hidden">
         <Image
-          src="/img/barberia_v1.jpg"
+          src="/img/barberia_v2.jpg"
           alt="Herramientas de barbería"
           data-ai-hint="barber tools"
           fill
