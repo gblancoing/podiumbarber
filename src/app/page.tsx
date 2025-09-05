@@ -32,7 +32,7 @@ export default function Home() {
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
         >
-          <CarouselContent>
+          <CarouselContent className="h-full">
             {carouselImages.map((img, index) => (
               <CarouselItem key={index} className="relative h-full w-full">
                 <Image
