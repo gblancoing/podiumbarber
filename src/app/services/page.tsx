@@ -14,7 +14,7 @@ export default function ServicesPage() {
   }, {} as Record<string, Service[]>);
 
   const categoryOrder: Service['category'][] = ['Corte y Peinado', 'Barba', 'Otros Servicios'];
-  const sortedCategories = Object.keys(categories).sort((a, b) => categoryOrder.indexOf(a as any) - categoryOrder.indexOf(b as any));
+  const sortedCategories = Object.keys(categories).sort((a, b) => categoryOrder.indexOf(a as Service['category']) - categoryOrder.indexOf(b as Service['category']));
 
   return (
     <div className="container mx-auto max-w-6xl py-12 px-4">

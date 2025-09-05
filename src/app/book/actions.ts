@@ -2,21 +2,33 @@
 import { saveNewBooking } from '@/lib/data';
 import type { Booking } from '@/lib/types';
 import { sendConfirmationEmail } from '@/ai/flows/send-confirmation-email';
-import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 
-// Configura SendGrid al inicio.
-// La clave API se leerá automáticamente de la variable de entorno SENDGRID_API_KEY.
-if (process.env.SENDGRID_API_KEY) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
+// 1. Configuración del "transporter" de Nodemailer para Zoho Mail
+const transporter = nodemailer.createTransport({
+    host: process.env.ZOHO_SMTP_HOST,
+    port: Number(process.env.ZOHO_SMTP_PORT),
+    secure: true, // true para el puerto 465, false para otros
+    auth: {
+        user: process.env.ZOHO_SMTP_USER,
+        pass: process.env.ZOHO_SMTP_PASS, // Contraseña de aplicación
+    },
+});
 
 export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
     try {
         const newBooking = await saveNewBooking(bookingData);
-        
-        // Después de guardar, generar y ENVIAR el correo de confirmación
-        if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL) {
+        console.log('Reserva guardada exitosamente en la base de datos.');
+
+        // 2. Verificar que la configuración de correo exista
+        if (process.env.ZOHO_SMTP_USER && process.env.ZOHO_SMTP_PASS && process.env.EMAIL_FROM) {
+            console.log('Credenciales de correo encontradas. Iniciando proceso de envío.');
             try {
+                // VERIFICAR CONEXIÓN SMTP
+                await transporter.verify();
+                console.log('Conexión con el servidor SMTP verificada exitosamente.');
+
+                // Generar el contenido del correo usando la IA
                 const emailContent = await sendConfirmationEmail({
                     customerName: newBooking.customerName,
                     customerEmail: newBooking.customerEmail,
@@ -25,35 +37,45 @@ export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
                     stylistId: newBooking.stylistId,
                     serviceId: newBooking.serviceId,
                 });
+                console.log('Contenido del email generado por la IA.');
 
+                // Añadir al administrador a la lista de destinatarios
                 const recipients = [newBooking.customerEmail];
                 if (process.env.ADMIN_EMAIL) {
                     recipients.push(process.env.ADMIN_EMAIL);
                 }
+                console.log('Destinatarios del correo:', recipients.join(', '));
 
-                const msg = {
-                    to: recipients,
-                    from: process.env.SENDGRID_FROM_EMAIL,
+                // 3. Definir las opciones del correo
+                const mailOptions = {
+                    from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
+                    to: recipients.join(', '),
                     subject: emailContent.subject,
                     html: emailContent.body,
                 };
+                console.log('Opciones del correo preparadas.');
 
-                await sgMail.send(msg);
+                // 4. Enviar el correo
+                console.log('Intentando enviar correo...');
+                await transporter.sendMail(mailOptions);
                 console.log('Correo de confirmación enviado exitosamente a:', recipients.join(', '));
 
-            } catch (emailError: any) {
-                console.error('Error al ENVIAR el correo de confirmación con SendGrid:', emailError);
-                if (emailError.response) {
-                    console.error(emailError.response.body)
+            } catch (emailError: unknown) {
+                console.error('>>> FALLO EN EL ENVÍO DE CORREO <<<');
+                if (emailError instanceof Error) {
+                     console.error('Error Name:', emailError.name);
+                     console.error('Error Message:', emailError.message);
+                     console.error('Error Stack:', emailError.stack);
+                } else {
+                    console.error('Error detallado (desconocido):', emailError);
                 }
-                // No devolvemos un error al cliente por esto, ya que la reserva fue exitosa.
-                // Esto se podría registrar en un servicio de seguimiento de errores.
+                console.error('>>> FIN DEL REPORTE DE ERROR DE CORREO <<<');
             }
         } else {
             console.warn('----------------------------------------------------');
-            console.warn('ADVERTENCIA: Credenciales de SendGrid no configuradas.');
+            console.warn('ADVERTENCIA: Credenciales de Zoho Mail no configuradas.');
             console.warn('El correo de confirmación no se enviará.');
-            console.warn('Añade SENDGRID_API_KEY, SENDGRID_FROM_EMAIL y ADMIN_EMAIL a tu archivo .env');
+            console.warn('Añade ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, ZOHO_SMTP_USER, ZOHO_SMTP_PASS, EMAIL_FROM y ADMIN_EMAIL a tu archivo .env');
             console.warn('----------------------------------------------------');
         }
 
