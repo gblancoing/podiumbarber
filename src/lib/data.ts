@@ -94,6 +94,8 @@ export const services: Service[] = [
   },
 ];
 
+const allServiceIds = services.map(s => s.id);
+
 export const stylists: Stylist[] = [
   {
     id: 'stiven-vargas',
@@ -101,13 +103,7 @@ export const stylists: Stylist[] = [
     bio: 'Especialista en cortes modernos y diseños de barba. Stiven combina precisión técnica con un estilo urbano para crear looks únicos y a la vanguardia.',
     avatarUrl: '/img/steven.png',
     specialties: ['Cortes Urbanos', 'Diseño de Barba', 'Color'],
-    services: [
-      'corte-pelo',
-      'corte-diseno',
-      'barba-toalla-caliente',
-      'barba-vapor-ozono',
-      'color-decolorado',
-    ],
+    services: allServiceIds,
   },
   {
     id: 'kamilo-fonseca',
@@ -115,7 +111,7 @@ export const stylists: Stylist[] = [
     bio: 'Un maestro de la barbería clásica y los cortes tradicionales. Kamilo se enfoca en la experiencia del cliente, asegurando un servicio relajante y un acabado impecable en cada visita.',
     avatarUrl: '/img/camilo.png',
     specialties: ['Cortes Clásicos', 'Afeitado Tradicional', 'Barbería'],
-    services: ['corte-pelo', 'corte-escolar', 'barba-toalla-caliente', 'barba-sencilla', 'perfilado-cejas'],
+    services: allServiceIds,
   },
 ];
 
