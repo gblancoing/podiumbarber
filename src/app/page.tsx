@@ -7,46 +7,44 @@ import { featuredServices, featuredStylists } from "@/lib/data";
 import { ArrowRight, Scissors, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import * as React from "react";
 
 export default function Home() {
-    const plugin = React.useRef(
-        Autoplay({ delay: 5000, stopOnInteraction: true })
-    );
-
-    const carouselImages = [
-        { src: "/img/barberia_v5.jpg", alt: "Interior de la barbería", hint: "barbershop interior" },
-        { src: "/img/barberia_v3.jpg", alt: "Barbero atendiendo a un cliente", hint: "barber client" },
-        { src: "/img/barberia_v1.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
-    ];
-
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
-        <Carousel
-          plugins={[plugin.current]}
-          className="absolute inset-0 w-full h-full z-0"
-          onMouseEnter={plugin.current.stop}
-          onMouseLeave={plugin.current.reset}
-        >
-          <CarouselContent className="h-full">
-            {carouselImages.map((img, index) => (
-              <CarouselItem key={index} className="pl-0 relative">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  data-ai-hint={img.hint}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+      <section className="relative w-full h-[60vh] md:h-[80vh] text-white overflow-hidden">
+        {/* Image Mosaic Background */}
+        <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-1">
+          <div className="col-span-2 row-span-2 relative">
+            <Image
+              src="/img/barberia_v5.jpg"
+              alt="Interior de la barbería"
+              data-ai-hint="barbershop interior"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="col-span-1 row-span-1 relative">
+            <Image
+              src="/img/barberia_v3.jpg"
+              alt="Barbero atendiendo a un cliente"
+              data-ai-hint="barber client"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="col-span-1 row-span-1 relative">
+            <Image
+              src="/img/barberia_v1.jpg"
+              alt="Cliente con un corte de pelo fresco"
+              data-ai-hint="men haircut"
+              fill
+              className="object-cover"
+            />
+          </div>
+        </div>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10" />
         <div className="relative z-20 flex flex-col items-center justify-center text-center h-full p-8">
