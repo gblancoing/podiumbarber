@@ -17,9 +17,9 @@ export default function Home() {
     );
 
     const carouselImages = [
-        { src: "/img/barberia_v1.jpg", alt: "Interior de la barbería", hint: "barbershop interior" },
+        { src: "/img/barberia_v5.jpg", alt: "Interior de la barbería", hint: "barbershop interior" },
         { src: "/img/barberia_v3.jpg", alt: "Barbero atendiendo a un cliente", hint: "barber client" },
-        { src: "/img/barberia_v5.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
+        { src: "/img/barberia_v1.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
     ];
 
   return (
@@ -35,14 +35,16 @@ export default function Home() {
           <CarouselContent className="h-full">
             {carouselImages.map((img, index) => (
               <CarouselItem key={index} className="h-full">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  data-ai-hint={img.hint}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
+                <div className="w-full h-full relative">
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    data-ai-hint={img.hint}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
