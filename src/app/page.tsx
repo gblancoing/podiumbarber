@@ -28,23 +28,21 @@ export default function Home() {
       <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
         <Carousel
           plugins={[plugin.current]}
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full z-0"
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
         >
           <CarouselContent className="h-full">
             {carouselImages.map((img, index) => (
-              <CarouselItem key={index} className="pl-0">
-                <div className="relative w-full h-full">
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    data-ai-hint={img.hint}
-                    fill
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                </div>
+              <CarouselItem key={index} className="pl-0 relative">
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  data-ai-hint={img.hint}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>
