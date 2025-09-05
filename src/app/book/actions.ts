@@ -26,15 +26,20 @@ export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
                     serviceId: newBooking.serviceId,
                 });
 
+                const recipients = [newBooking.customerEmail];
+                if (process.env.ADMIN_EMAIL) {
+                    recipients.push(process.env.ADMIN_EMAIL);
+                }
+
                 const msg = {
-                    to: newBooking.customerEmail,
+                    to: recipients,
                     from: process.env.SENDGRID_FROM_EMAIL,
                     subject: emailContent.subject,
                     html: emailContent.body,
                 };
 
                 await sgMail.send(msg);
-                console.log('Correo de confirmación enviado exitosamente a:', newBooking.customerEmail);
+                console.log('Correo de confirmación enviado exitosamente a:', recipients.join(', '));
 
             } catch (emailError: any) {
                 console.error('Error al ENVIAR el correo de confirmación con SendGrid:', emailError);
