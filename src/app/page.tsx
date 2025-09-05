@@ -7,47 +7,21 @@ import { featuredServices, featuredStylists } from "@/lib/data";
 import { ArrowRight, Scissors, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import * as React from "react";
 
 export default function Home() {
-    const plugin = React.useRef(
-        Autoplay({ delay: 5000, stopOnInteraction: true })
-    );
-
-    const carouselImages = [
-        { src: "/img/barberia_v5.jpg", alt: "Interior de la barbería", hint: "barbershop interior" },
-        { src: "/img/barberia_v3.jpg", alt: "Barbero atendiendo a un cliente", hint: "barber client" },
-        { src: "/img/barberia_v1.jpg", alt: "Cliente con un corte de pelo fresco", hint: "men haircut" },
-    ];
-
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] md:h-[80vh] text-white">
-        <Carousel
-          plugins={[plugin.current]}
-          className="w-full h-full"
-          onMouseEnter={plugin.current.stop}
-          onMouseLeave={plugin.current.reset}
-        >
-          <CarouselContent className="h-full -ml-0">
-            {carouselImages.map((img, index) => (
-              <CarouselItem key={index} className="relative h-full w-full pl-0">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  data-ai-hint={img.hint}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-
+        <Image
+            src="/img/barberia_v5.jpg"
+            alt="Interior de la barbería"
+            data-ai-hint="barbershop interior"
+            fill
+            className="object-cover"
+            priority
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
           <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg max-w-4xl">
