@@ -2,30 +2,54 @@
 import { saveNewBooking } from '@/lib/data';
 import type { Booking } from '@/lib/types';
 import { sendConfirmationEmail } from '@/ai/flows/send-confirmation-email';
+import sgMail from '@sendgrid/mail';
+
+// Configura SendGrid al inicio.
+// La clave API se leerá automáticamente de la variable de entorno SENDGRID_API_KEY.
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
     try {
         const newBooking = await saveNewBooking(bookingData);
         
-        // After saving, generate and "send" the confirmation email
-        try {
-            const emailContent = await sendConfirmationEmail({
-                customerName: newBooking.customerName,
-                customerEmail: newBooking.customerEmail,
-                date: newBooking.date,
-                time: newBooking.time,
-                stylistId: newBooking.stylistId,
-                serviceId: newBooking.serviceId,
-            });
-            console.log('Correo de confirmación generado:');
-            console.log('Para:', newBooking.customerEmail);
-            console.log('Asunto:', emailContent.subject);
-            // In a real application, this is where you would use a service like SendGrid, Resend, or Nodemailer to send the actual email.
-            console.log('Cuerpo (simulando envío):', emailContent.body);
-        } catch (emailError) {
-             console.error('Error al generar el correo de confirmación:', emailError);
-             // We don't return an error to the client for this, as the booking was successful.
-             // This could be logged to an error tracking service.
+        // Después de guardar, generar y ENVIAR el correo de confirmación
+        if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL) {
+            try {
+                const emailContent = await sendConfirmationEmail({
+                    customerName: newBooking.customerName,
+                    customerEmail: newBooking.customerEmail,
+                    date: newBooking.date,
+                    time: newBooking.time,
+                    stylistId: newBooking.stylistId,
+                    serviceId: newBooking.serviceId,
+                });
+
+                const msg = {
+                    to: newBooking.customerEmail,
+                    from: process.env.SENDGRID_FROM_EMAIL,
+                    subject: emailContent.subject,
+                    html: emailContent.body,
+                };
+
+                await sgMail.send(msg);
+                console.log('Correo de confirmación enviado exitosamente a:', newBooking.customerEmail);
+
+            } catch (emailError: any) {
+                console.error('Error al ENVIAR el correo de confirmación con SendGrid:', emailError);
+                if (emailError.response) {
+                    console.error(emailError.response.body)
+                }
+                // No devolvemos un error al cliente por esto, ya que la reserva fue exitosa.
+                // Esto se podría registrar en un servicio de seguimiento de errores.
+            }
+        } else {
+            console.warn('----------------------------------------------------');
+            console.warn('ADVERTENCIA: Credenciales de SendGrid no configuradas.');
+            console.warn('El correo de confirmación no se enviará.');
+            console.warn('Añade SENDGRID_API_KEY y SENDGRID_FROM_EMAIL a tu archivo .env');
+            console.warn('----------------------------------------------------');
         }
 
         return { success: true, data: newBooking };
