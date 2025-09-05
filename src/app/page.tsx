@@ -34,8 +34,7 @@ export default function Home() {
         >
           <CarouselContent className="h-full">
             {carouselImages.map((img, index) => (
-              <CarouselItem key={index} className="h-full">
-                <div className="w-full h-full relative">
+              <CarouselItem key={index} className="relative w-full h-full">
                   <Image
                     src={img.src}
                     alt={img.alt}
@@ -44,14 +43,13 @@ export default function Home() {
                     className="object-cover"
                     priority={index === 0}
                   />
-                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-        <div className="relative h-full flex flex-col items-center justify-center text-center p-8">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
           <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg max-w-4xl">
             Experimenta tu Mejor Look
           </h1>
