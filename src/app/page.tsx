@@ -34,15 +34,15 @@ export default function Home() {
         >
           <CarouselContent className="h-full">
             {carouselImages.map((img, index) => (
-              <CarouselItem key={index} className="relative w-full h-full">
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    data-ai-hint={img.hint}
-                    fill
-                    className="object-cover"
-                    priority={index === 0}
-                  />
+              <CarouselItem key={index} className="relative">
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  data-ai-hint={img.hint}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>
