@@ -40,7 +40,24 @@ export async function sendConfirmationEmail(
   const serviceName =
     services.find(s => s.id === input.serviceId)?.name || 'Servicio';
 
-  return sendConfirmationEmailFlow({ ...input, stylistName, serviceName });
+  // MODIFICACIÓN: Formatear la fecha a un formato más amigable para el correo
+  // La fecha viene como 'YYYY-MM-DD'. la convertimos a un objeto Date.
+  // Es importante añadir 'timeZone: 'UTC'' para evitar que la fecha cambie por el huso horario del servidor.
+  const dateObject = new Date(`${input.date}T00:00:00Z`);
+  const friendlyDate = dateObject.toLocaleDateString('es-CL', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+
+  return sendConfirmationEmailFlow({
+    ...input,
+    date: friendlyDate, // Usamos la fecha formateada
+    stylistName,
+    serviceName,
+  });
 }
 
 const prompt = ai.definePrompt({
@@ -52,6 +69,7 @@ const prompt = ai.definePrompt({
     }),
   },
   output: { schema: SendConfirmationEmailOutputSchema },
+  // MODIFICACIÓN: Se clarifica al prompt que la fecha ya viene formateada.
   prompt: `You are an assistant for the "PodiumBarber" hair salon. Your task is to generate a friendly and professional confirmation email in Spanish for a new appointment.
 
 Appointment Details:
@@ -61,7 +79,7 @@ Appointment Details:
 - Stylist: {{{stylistName}}}
 - Service: {{{serviceName}}}
 
-Generate a subject and an HTML body for the email. The email should confirm the details, mention the salon's name, and have a warm and welcoming tone. Do not include any placeholder for address or phone number.`,
+Generate a subject and an HTML body for the email. The email should confirm the details, mention the salon\'s name, and have a warm and welcoming tone. The \'Date\' field is already formatted in a user-friendly way, so you must include it exactly as it is provided. Do not include any placeholder for address or phone number.`,
 });
 
 const sendConfirmationEmailFlow = ai.defineFlow(
