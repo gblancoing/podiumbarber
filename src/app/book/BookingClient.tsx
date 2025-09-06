@@ -8,7 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { services, stylists, getAvailableTimeSlots } from "@/lib/data";
+// MODIFICACIÓN: Se elimina la importación de `getAvailableTimeSlots` de data.ts
+import { services, stylists } from "@/lib/data"; 
+// MODIFICACIÓN: Se importa `getAvailableTimeSlots` desde el nuevo archivo de cliente
+import { getAvailableTimeSlots } from "@/lib/client-data"; 
 import type { Service, Stylist } from "@/lib/types";
 import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2, Mail } from "lucide-react";
 import { format } from "date-fns";
@@ -58,6 +61,9 @@ export function BookingClient() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
+  const [isLoadingTimes, setIsLoadingTimes] = useState(false);
+
   const [customerDetails, setCustomerDetails] = useState<{name: string, email: string} | null>(null);
 
   const form = useForm<z.infer<typeof bookingFormSchema>>({
@@ -91,10 +97,32 @@ export function BookingClient() {
     return services.filter((service) => selectedStylist.services.includes(service.id));
   }, [selectedStylist]);
 
-  const availableTimeSlots = useMemo(() => {
-    if (!selectedDate || !selectedStylist) return [];
-    return getAvailableTimeSlots(selectedDate, selectedStylist.id);
-  }, [selectedDate, selectedStylist]);
+  useEffect(() => {
+    if (selectedDate && selectedStylist) {
+        setIsLoadingTimes(true);
+        setAvailableTimeSlots([]);
+        setSelectedTime(null);
+
+        const fetchTimes = async () => {
+            try {
+                // La función se llama desde el archivo correcto
+                const slots = await getAvailableTimeSlots(selectedDate, selectedStylist!.id);
+                setAvailableTimeSlots(slots);
+            } catch (error) {
+                console.error("Fallo al cargar los horarios:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error de Disponibilidad",
+                    description: "No se pudieron cargar los horarios. Por favor, intenta de nuevo.",
+                });
+            } finally {
+                setIsLoadingTimes(false);
+            }
+        };
+
+        fetchTimes();
+    }
+  }, [selectedDate, selectedStylist, toast]);
 
   const handleNextStep = () => {
     if (step === "service") setStep("stylist");
@@ -206,20 +234,28 @@ export function BookingClient() {
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={(date) => {
+                  setSelectedDate(date);
+                }}
                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1)) || date.getDay() === 0}
                 className="rounded-md border justify-center"
                 locale={es}
               />
-              <div className="max-h-64 overflow-y-auto grid grid-cols-3 gap-2">
-                {selectedDate && availableTimeSlots.length > 0 ? (
+              <div className="max-h-64 overflow-y-auto grid grid-cols-3 gap-2 content-start">
+                {!selectedDate ? (
+                  <p className="col-span-3 text-center text-muted-foreground p-4">Por favor, selecciona una fecha.</p>
+                ) : isLoadingTimes ? (
+                  <div className="col-span-3 flex justify-center items-center p-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : availableTimeSlots.length > 0 ? (
                   availableTimeSlots.map(time => (
                     <Button key={time} variant={selectedTime === time ? "default" : "outline"} onClick={() => setSelectedTime(time)}>
                       {time}
                     </Button>
                   ))
                 ) : (
-                  <p className="col-span-3 text-center text-muted-foreground p-4">{selectedDate ? "No hay horas disponibles." : "Por favor, selecciona una fecha."}</p>
+                  <p className="col-span-3 text-center text-muted-foreground p-4">No hay horas disponibles.</p>
                 )}
               </div>
             </div>
@@ -359,5 +395,3 @@ export function BookingClient() {
     </Card>
   );
 }
-
-    

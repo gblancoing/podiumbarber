@@ -1,103 +1,100 @@
 'use server';
-// Imports de Firebase
+
 import { db } from '@/lib/firebase';
 import { collection, addDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
-
-// Imports de Tipos y Otros
 import type { Booking, Service, Stylist } from '@/lib/types';
 import { sendConfirmationEmail } from '@/ai/flows/send-confirmation-email';
 import nodemailer from 'nodemailer';
 
-// --- FUNCIONES PARA OBTENER DATOS ESPECÍFICOS DE FIREBASE ---
-
-async function getService(id: string): Promise<Service | null> {
-    const docRef = doc(db, "services", id);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } as Service : null;
-}
-
-async function getStylist(id: string): Promise<Stylist | null> {
-    const docRef = doc(db, "stylists", id);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } as Stylist : null;
-}
-
-// Configuración del "transporter" de Nodemailer para Zoho Mail
+// Configuración del transporter de Nodemailer
 const transporter = nodemailer.createTransport({
     host: process.env.ZOHO_SMTP_HOST,
     port: Number(process.env.ZOHO_SMTP_PORT),
-    secure: true, // true para el puerto 465, false para otros
+    secure: true,
     auth: {
         user: process.env.ZOHO_SMTP_USER,
-        pass: process.env.ZOHO_SMTP_PASS, // Contraseña de aplicación
+        pass: process.env.ZOHO_SMTP_PASS,
     },
 });
 
-export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
+// --- Función para Enviar el Correo ---
+async function sendBookingConfirmationEmail(bookingId: string, bookingData: Omit<Booking, 'id' | 'status'>) {
+    // Si las credenciales de correo no están, no hacemos nada.
+    if (!process.env.ZOHO_SMTP_USER || !process.env.ZOHO_SMTP_PASS) {
+        console.warn(`Correo para reserva ${bookingId} no enviado: Faltan credenciales de Zoho.`);
+        return; // Salimos de la función silenciosamente
+    }
+
     try {
-        // 1. Guardar la reserva en Firestore
+        // 1. Obtener nombres de Servicio y Estilista
+        const serviceDoc = await getDoc(doc(db, "services", bookingData.serviceId));
+        const stylistDoc = await getDoc(doc(db, "stylists", bookingData.stylistId));
+
+        const serviceName = serviceDoc.exists() ? (serviceDoc.data() as Service).name : "Servicio no encontrado";
+        const stylistName = stylistDoc.exists() ? (stylistDoc.data() as Stylist).name : "Estilista no encontrado";
+
+        // 2. Generar contenido del correo
+        const emailContent = await sendConfirmationEmail({
+            customerName: bookingData.customerName,
+            customerEmail: bookingData.customerEmail,
+            date: bookingData.date,
+            time: bookingData.time,
+            serviceName: serviceName,
+            stylistName: stylistName,
+        });
+
+        // 3. Definir destinatarios (cliente y admin)
+        const recipients = [bookingData.customerEmail];
+        if (process.env.ADMIN_EMAIL) {
+            recipients.push(process.env.ADMIN_EMAIL);
+        }
+
+        // 4. Enviar el correo
+        await transporter.sendMail({
+            from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
+            to: recipients.join(', '),
+            subject: emailContent.subject,
+            html: emailContent.body,
+        });
+
+        console.log(`Correo de confirmación para reserva ${bookingId} enviado con éxito.`);
+
+    } catch (error) {
+        // Si algo falla aquí, solo lo registramos. La reserva ya está creada.
+        console.error(`Error CRÍTICO al enviar el correo para la reserva ${bookingId}:`, error);
+    }
+}
+
+// --- Función Principal para Guardar la Reserva ---
+export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
+    // Paso 1: Intentar guardar la reserva en Firestore.
+    // Este es el paso crítico. Si falla, toda la operación debe fallar.
+    try {
         const bookingWithTimestamp = {
             ...bookingData,
             createdAt: serverTimestamp(),
             status: 'confirmed',
         };
         const docRef = await addDoc(collection(db, "reservations"), bookingWithTimestamp);
-        console.log('Reserva guardada en Firestore con ID:', docRef.id);
+        console.log(`Reserva ${docRef.id} creada con éxito en Firestore.`);
 
-        const newBooking: Booking = {
-            id: docRef.id,
-            ...bookingData
-        } as Booking;
+        // Paso 2: Disparar el envío del correo (sin esperar a que termine).
+        // Lo hacemos de forma asíncrona. Si el correo falla, no afecta al resultado de la reserva.
+        sendBookingConfirmationEmail(docRef.id, bookingData);
 
-        // 2. Verificar que la configuración de correo exista
-        if (process.env.ZOHO_SMTP_USER && process.env.ZOHO_SMTP_PASS && process.env.EMAIL_FROM) {
-            console.log('Credenciales de correo encontradas. Iniciando proceso de envío.');
-            try {
-                // 3. OBTENER DATOS DE SERVICIO Y ESTILISTA DE FIREBASE
-                const service = await getService(newBooking.serviceId);
-                const stylist = await getStylist(newBooking.stylistId);
+        // Si llegamos aquí, la reserva se guardó. Devolvemos éxito.
+        return {
+            success: true,
+            data: { id: docRef.id, ...bookingData } as Booking,
+        };
 
-                if (!service || !stylist) {
-                    throw new Error('No se pudo encontrar el servicio o el estilista en Firebase.');
-                }
-
-                // 4. Generar el contenido del correo usando la IA (con datos reales)
-                const emailContent = await sendConfirmationEmail({
-                    customerName: newBooking.customerName,
-                    customerEmail: newBooking.customerEmail,
-                    date: newBooking.date,
-                    time: newBooking.time,
-                    serviceName: service.name, // Usar nombre real
-                    stylistName: stylist.name, // Usar nombre real
-                });
-                console.log('Contenido del email generado por la IA.');
-
-                const recipients = [newBooking.customerEmail];
-                if (process.env.ADMIN_EMAIL) {
-                    recipients.push(process.env.ADMIN_EMAIL);
-                }
-
-                // 5. Definir y enviar el correo
-                const mailOptions = {
-                    from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
-                    to: recipients.join(', '),
-                    subject: emailContent.subject,
-                    html: emailContent.body,
-                };
-                
-                await transporter.sendMail(mailOptions);
-                console.log('Correo de confirmación enviado exitosamente a:', recipients.join(', '));
-
-            } catch (emailError: unknown) {
-                console.error('>>> FALLO EN EL ENVÍO DE CORREO <<<', emailError);
-            }
-        } else {
-            console.warn('ADVERTENCIA: Credenciales de Zoho Mail no configuradas.');
-        }
-
-        return { success: true, data: newBooking };
     } catch (error) {
-        console.error('Error en la reserva:', error);
-        return { success: false, error: 'No se pudo guardar la reserva. Por favor, inténtalo de nuevo más tarde.' };
+        // Si el `addDoc` de Firestore falla, el error se captura aquí.
+        console.error("Error FATAL al guardar la reserva en Firestore:", error);
+        // Devolvemos un error claro y conciso al cliente.
+        return {
+            success: false,
+            error: "No se pudo conectar con la base de datos para guardar la reserva. Por favor, inténtalo de nuevo.",
+        };
     }
 }

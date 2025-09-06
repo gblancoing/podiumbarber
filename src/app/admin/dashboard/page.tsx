@@ -1,90 +1,74 @@
-// Imports de Firebase
-import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+'use client';
 
-// Imports de Componentes y Tipos
-import { DashboardClient } from "./DashboardClient";
-import type { Booking, Service, Stylist } from "@/lib/types";
+import { useEffect, useState } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import type { Booking, Service, Stylist } from '@/lib/types';
+import { DashboardStats } from './DashboardStats';
+import { RecentBookings } from './RecentBookings';
 
-// --- NUEVAS FUNCIONES PARA LEER DATOS DESDE FIREBASE ---
+// Forzar a la página a que no use caché y sea dinámica
+export const dynamic = 'force-dynamic';
 
-// Obtiene todas las reservas de la colección 'reservations'
-async function getBookingsFromFirestore(): Promise<Booking[]> {
-    const bookingsCol = collection(db, 'reservations');
-    const bookingSnapshot = await getDocs(bookingsCol);
-    return bookingSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-    } as Booking));
-}
+export default function DashboardPage() {
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [services, setServices] = useState<Service[]>([]);
+    const [stylists, setStylists] = useState<Stylist[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-// Obtiene todos los servicios de la colección 'services'
-async function getServicesFromFirestore(): Promise<Service[]> {
-    const servicesCol = collection(db, 'services');
-    const serviceSnapshot = await getDocs(servicesCol);
-    return serviceSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-    } as Service));
-}
+    useEffect(() => {
+        setLoading(true);
+        const bookingsQuery = query(collection(db, 'reservations'), orderBy('createdAt', 'desc'));
+        const servicesQuery = query(collection(db, 'services'));
+        const stylistsQuery = query(collection(db, 'stylists'));
 
-// Obtiene todos los estilistas de la colección 'stylists'
-async function getStylistsFromFirestore(): Promise<Stylist[]> {
-    const stylistsCol = collection(db, 'stylists');
-    const stylistSnapshot = await getDocs(stylistsCol);
-    return stylistSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-    } as Stylist));
-}
-
-
-export default async function DashboardPage() {
-    // 1. Obtener TODOS los datos desde Firebase
-    const bookings = await getBookingsFromFirestore();
-    const services = await getServicesFromFirestore();
-    const stylists = await getStylistsFromFirestore();
-    
-    // 2. Calcular las métricas usando los datos de Firebase
-    const totalBookings = bookings.length;
-    const totalRevenue = bookings.reduce((sum, booking) => {
-        // Busca el servicio correspondiente en los datos de Firebase
-        const service = services.find(s => s.id === booking.serviceId);
-        return sum + (service?.price || 0);
-    }, 0);
-
-    const bookingsByStylist = stylists.map(stylist => ({
-        name: stylist.name.split(' ')[0],
-        // Filtra las reservas por el ID del estilista de Firebase
-        citas: bookings.filter(b => b.stylistId === stylist.id).length
-    }));
-
-    // 3. Filtrar y ordenar las próximas citas (lógica existente)
-    const upcomingBookings = bookings
-        .filter(b => {
-            const bookingDateTime = new Date(`${b.date}T${b.time}`);
-            return bookingDateTime >= new Date();
-        })
-        .sort((a, b) => new Date(`${a.date}T${a.time}`).getTime() - new Date(`${b.date}T${b.time}`).getTime())
-        .slice(0, 5)
-        .map(booking => {
-            // Enriquecer la reserva con los nombres para mostrar en el UI
-            const serviceName = services.find(s => s.id === booking.serviceId)?.name || 'Servicio Desconocido';
-            const stylistName = stylists.find(s => s.id === booking.stylistId)?.name || 'Estilista Desconocido';
-            return {
-                ...booking,
-                serviceName,
-                stylistName,
-            };
+        const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
+            const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
+            setBookings(bookingsData);
+        }, (err) => {
+            console.error("Error al cargar reservas:", err);
+            setError("No se pudieron cargar las reservas.");
         });
-    
+
+        const unsubscribeServices = onSnapshot(servicesQuery, (snapshot) => {
+            const servicesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
+            setServices(servicesData);
+        }, (err) => {
+            console.error("Error al cargar servicios:", err);
+            setError("No se pudieron cargar los datos de servicios.");
+        });
+
+        const unsubscribeStylists = onSnapshot(stylistsQuery, (snapshot) => {
+            const stylistsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Stylist[];
+            setStylists(stylistsData);
+             setLoading(false); // Marcar como cargado solo después de la última consulta
+        }, (err) => {
+            console.error("Error al cargar estilistas:", err);
+            setError("No se pudieron cargar los datos de estilistas.");
+            setLoading(false);
+        });
+
+        // Limpiar la suscripción al desmontar el componente
+        return () => {
+            unsubscribeBookings();
+            unsubscribeServices();
+            unsubscribeStylists();
+        };
+    }, []);
+
+    if (loading) {
+        return <div className="flex items-center justify-center h-full">Cargando datos del dashboard...</div>;
+    }
+
+    if (error) {
+        return <div className="flex items-center justify-center h-full text-red-500">{error}</div>;
+    }
+
     return (
-        <DashboardClient 
-            totalRevenue={totalRevenue}
-            totalBookings={totalBookings}
-            activeStylists={stylists.length}
-            bookingsByStylist={bookingsByStylist}
-            upcomingBookings={upcomingBookings}
-        />
+        <div className="flex flex-col gap-8">
+            <DashboardStats bookings={bookings} services={services} />
+            <RecentBookings bookings={bookings} services={services} stylists={stylists} />
+        </div>
     );
 }

@@ -11,7 +11,6 @@ import Image from "next/image";
 
 const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/appointments", label: "Citas", icon: List },
 ];
 
 export function AdminSidebar() {

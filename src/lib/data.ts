@@ -1,4 +1,7 @@
-import type { Booking, Service, Stylist } from './types';
+
+import type { Service, Stylist } from './types';
+import { db } from './firebase';
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const services: Service[] = [
   {
@@ -118,75 +121,45 @@ export const stylists: Stylist[] = [
 export const featuredServices = services.slice(0, 3);
 export const featuredStylists = stylists.slice(0, 2);
 
-// --- Simulación de base de datos de citas ---
-// Usamos una variable global para simular una base de datos persistente en memoria.
-// Esto asegura que los datos no se reinicien con cada recarga en caliente en desarrollo
-// y que persistan en un entorno de producción entre peticiones.
-const globalForDb = globalThis as unknown as {
-  bookings: Booking[];
-  nextBookingId: number;
-};
 
-if (!globalForDb.bookings) {
-  globalForDb.bookings = [];
-}
-if (!globalForDb.nextBookingId) {
-  globalForDb.nextBookingId = 1;
-}
-
-const bookingsDb = globalForDb.bookings;
-
-export async function getBookings(): Promise<Booking[]> {
-  // Devolvemos una copia para evitar mutaciones directas.
-  return Promise.resolve([...bookingsDb]);
-}
-
-export async function saveNewBooking(
-  bookingData: Omit<Booking, 'id' | 'status'>
-): Promise<Booking> {
-  const newBooking: Booking = {
-    ...bookingData,
-    id: (globalForDb.nextBookingId++).toString(),
-    status: 'confirmed',
-  };
-  bookingsDb.push(newBooking);
-  console.log('Cita guardada:', newBooking);
-  console.log('Todas las citas:', bookingsDb);
-
-  return Promise.resolve(newBooking);
-}
-
-export const getAvailableTimeSlots = (date: Date, stylistId: string) => {
-  // En una aplicación real, esto consultaría una base de datos según el horario del estilista.
-  // Por ahora, devolveremos una lista estática de horas para cualquier día.
+// --- NUEVA FUNCIÓN DE DISPONIBILIDAD CON FIREBASE ---
+export const getAvailableTimeSlots = async (date: Date, stylistId: string) => {
+  // Horarios de atención estándar
   const allSlots = [
-    '09:00',
-    '09:30',
-    '10:00',
-    '10:30',
-    '11:00',
-    '11:30',
-    '13:00',
-    '13:30',
-    '14:00',
-    '14:30',
-    '15:00',
-    '15:30',
-    '16:00',
-    '16:30',
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+    '16:00', '16:30',
   ];
 
-  if (date.getDay() === 0) return []; // Cerrado los domingos
-  if (date.getDay() === 6) return allSlots.slice(0, 8); // Horario más corto los sábados
+  // Reglas de negocio (Domingos cerrados, Sábados horario corto)
+  if (date.getDay() === 0) return []; // Domingo
+  if (date.getDay() === 6) return allSlots.slice(0, 8); // Sábado
 
+  // Formatear la fecha a YYYY-MM-DD para la consulta en Firestore
   const dateString = `${date.getFullYear()}-${(date.getMonth() + 1)
     .toString()
     .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
-  const existingBookings = bookingsDb.filter(
-    b => b.stylistId === stylistId && b.date === dateString
-  );
-  const bookedTimes = new Set(existingBookings.map(b => b.time));
+  try {
+    // Consultar las reservas existentes en Firebase para ese estilista y día
+    const q = query(
+      collection(db, "reservations"), 
+      where("stylistId", "==", stylistId), 
+      where("date", "==", dateString)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const bookedTimes = new Set(querySnapshot.docs.map(doc => doc.data().time));
 
-  return allSlots.filter(time => !bookedTimes.has(time));
+    // Filtrar los horarios disponibles, eliminando los ya reservados
+    const availableSlots = allSlots.filter(time => !bookedTimes.has(time));
+    
+    console.log('Horarios disponibles para', dateString, stylistId, ':', availableSlots);
+    return availableSlots;
+
+  } catch (error) {
+    console.error("Error al obtener la disponibilidad de Firebase:", error);
+    // En caso de error, devolver todos los horarios para no bloquear al usuario
+    return allSlots; 
+  }
 };
