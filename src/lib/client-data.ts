@@ -1,3 +1,4 @@
+'use client';
 import { db } from './firebase';
 import { collection, getDocs, query, where } from "firebase/firestore";
 
