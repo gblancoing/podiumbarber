@@ -1,9 +1,9 @@
 
 'use client';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { featuredServices, featuredStylists } from "@/lib/data";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { featuredServices, featuredStylists } from "../lib/data";
 import { ArrowRight, Scissors, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

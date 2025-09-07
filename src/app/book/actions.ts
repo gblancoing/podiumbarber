@@ -1,9 +1,9 @@
 'use server';
 
-import { db } from '@/lib/firebase';
+import { db } from '../../lib/firebase';
 import { collection, addDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
-import type { Booking, Service, Stylist } from '@/lib/types';
-import { sendConfirmationEmail } from '@/ai/flows/send-confirmation-email';
+import type { Booking, Service, Stylist } from '../../lib/types';
+import { sendConfirmationEmail } from '../../ai/flows/send-confirmation-email';
 import nodemailer from 'nodemailer';
 
 // Configuración del transporter de Nodemailer
@@ -23,6 +23,12 @@ async function sendBookingConfirmationEmail(bookingId: string, bookingData: Omit
     if (!process.env.ZOHO_SMTP_USER || !process.env.ZOHO_SMTP_PASS) {
         console.warn(`Correo para reserva ${bookingId} no enviado: Faltan credenciales de Zoho.`);
         return; // Salimos de la función silenciosamente
+    }
+    
+    // La conexión a la BD es CRÍTICA. Si no existe, no podemos continuar.
+    if (!db) {
+        console.error(`Error FATAL en sendBookingConfirmationEmail: La conexión a la base de datos (db) es nula. No se puede procesar la reserva ${bookingId}.`);
+        return;
     }
 
     try {
@@ -67,6 +73,15 @@ async function sendBookingConfirmationEmail(bookingId: string, bookingData: Omit
 
 // --- Función Principal para Guardar la Reserva ---
 export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
+    // La conexión a la BD es CRÍTICA. Si no existe, no podemos continuar.
+    if (!db) {
+        console.error("Error FATAL en saveBooking: La conexión a la base de datos (db) es nula. La reserva no puede ser guardada.");
+        return {
+            success: false,
+            error: "No se pudo conectar con la base de datos. La configuración de Firebase es incorrecta o las variables de entorno no están disponibles.",
+        };
+    }
+
     // Paso 1: Intentar guardar la reserva en Firestore.
     // Este es el paso crítico. Si falla, toda la operación debe fallar.
     try {

@@ -1,6 +1,6 @@
 
 import type { Service, Stylist } from './types';
-import { db } from './firebase';
+import { db } from '../lib/firebase';
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 export const services: Service[] = [
@@ -124,6 +124,13 @@ export const featuredStylists = stylists.slice(0, 2);
 
 // --- NUEVA FUNCIÓN DE DISPONIBILIDAD CON FIREBASE ---
 export const getAvailableTimeSlots = async (date: Date, stylistId: string) => {
+  // La conexión a la BD es CRÍTICA. Si no existe, no podemos continuar.
+  if (!db) {
+    console.error("Error FATAL en getAvailableTimeSlots: La conexión a la base de datos (db) es nula.");
+    // Devolvemos un array vacío para no mostrar horarios falsos.
+    return [];
+  }
+
   // Horarios de atención estándar
   const allSlots = [
     '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',

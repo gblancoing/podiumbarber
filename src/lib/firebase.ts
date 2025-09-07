@@ -1,4 +1,3 @@
-'''
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, FirebaseOptions } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -60,4 +59,3 @@ if (!db) {
 }
 
 export { app, db, auth };
-'''

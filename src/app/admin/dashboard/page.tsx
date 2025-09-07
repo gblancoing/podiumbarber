@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase';
+import { db } from '../../../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import type { Booking, Service, Stylist } from '@/lib/types';
+import type { Booking, Service, Stylist } from '../../../lib/types';
 import { DashboardStats } from './DashboardStats';
 import { RecentBookings } from './RecentBookings';
 
@@ -18,6 +18,13 @@ export default function DashboardPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        // Si la conexión a la base de datos no está disponible, detenemos todo.
+        if (!db) {
+            setError("Error crítico: No se pudo establecer la conexión con la base de datos.");
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         const bookingsQuery = query(collection(db, 'reservations'), orderBy('createdAt', 'desc'));
         const servicesQuery = query(collection(db, 'services'));
