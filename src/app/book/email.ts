@@ -1,6 +1,7 @@
 'use server';
 
 import nodemailer from 'nodemailer';
+import { services, stylists } from '@/lib/data'; // Importamos los datos necesarios
 
 // Tipo de datos para la función
 type BookingDataForEmail = {
@@ -12,18 +13,15 @@ type BookingDataForEmail = {
     serviceId: string;
 };
 
-// --- Función Principal de Envío de Correo (Ahora 100% Robusta) ---
 export async function sendBookingConfirmationEmail(bookingId: string, bookingData: BookingDataForEmail) {
-    // Primero, verificamos las credenciales más básicas. Si no están, no continuamos.
-    if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM) {
-        console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP básicas.`);
-        return;
+    // Verificamos las credenciales más básicas.
+    if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM || !process.env.ZOHO_SMTP_HOST || !process.env.ZOHO_SMTP_PASS) {
+        console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP. Revisa las variables de entorno.`);
+        // Lanzamos un error para que la acción que llama lo sepa.
+        throw new Error('La configuración del servidor de correo está incompleta.');
     }
 
     try {
-        // **CORRECCIÓN DE ROBUSTEZ FINAL:**
-        // 1. El transporter de Nodemailer se crea aquí, dentro del try/catch.
-        // Si las variables de entorno de ZOHO faltan, el error se captura y no bloquea el servidor.
         const transporter = nodemailer.createTransport({
             host: process.env.ZOHO_SMTP_HOST,
             port: Number(process.env.ZOHO_SMTP_PORT),
@@ -34,20 +32,39 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
             },
         });
 
-        // 2. El módulo de IA se importa dinámicamente aquí.
-        // Si falla (p. ej., por falta de API Key de Google), el error también se captura.
-        const { sendConfirmationEmail: sendEmailWithAI } = await import('@/ai/flows/send-confirmation-email');
-        
-        // Generamos el contenido del correo.
-        const emailContent = await sendEmailWithAI(bookingData);
+        // --- Lógica de correo genérico ---
+        const stylist = stylists.find(s => s.id === bookingData.stylistId);
+        const service = services.find(s => s.id === bookingData.serviceId);
 
-        // Creamos la lista de destinatarios.
+        if (!stylist || !service) {
+            throw new Error('Estilista o servicio no encontrado para generar el correo.');
+        }
+
+        const subject = `¡Tu cita en PodiumBarber está confirmada!`;
+        const body = `
+            <h1>¡Hola, ${bookingData.customerName}!</h1>
+            <p>Tu cita en PodiumBarber ha sido confirmada con éxito.</p>
+            <h2>Detalles de tu Cita:</h2>
+            <ul>
+                <li><strong>Servicio:</strong> ${service.name}</li>
+                <li><strong>Estilista:</strong> ${stylist.name}</li>
+                <li><strong>Fecha:</strong> ${bookingData.date}</li>
+                <li><strong>Hora:</strong> ${bookingData.time}</li>
+                <li><strong>Precio:</strong> $${service.price.toLocaleString('es-CL')}</li>
+            </ul>
+            <p>Te esperamos en Av. Siempre Viva 123, Springfield.</p>
+            <p><em>Por favor, avísanos con 24 horas de antelación si necesitas cancelar o reprogramar.</em></p>
+            <p>¡Nos vemos pronto!</p>
+            <p><strong>El equipo de PodiumBarber</strong></p>
+        `;
+        const emailContent = { subject, body };
+        // --- Fin de la lógica de correo genérico ---
+
         const recipients = [bookingData.customerEmail];
         if (process.env.ADMIN_EMAIL) {
             recipients.push(process.env.ADMIN_EMAIL);
         }
 
-        // Enviamos el correo.
         await transporter.sendMail({
             from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
             to: recipients.join(', '),
@@ -55,10 +72,12 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
             html: emailContent.body,
         });
 
-        console.log(`Correo de confirmación para reserva ${bookingId} enviado.`);
+        console.log(`Correo de confirmación para reserva ${bookingId} enviado con éxito.`);
 
     } catch (error) {
-        console.error(`Error NO FATAL al generar o enviar correo para ${bookingId}:`, error);
-        // La reserva ya se guardó. Este error de correo se registra en el servidor pero no afecta al usuario.
+        console.error(`Error al intentar enviar correo para ${bookingId}:`, error);
+        // Relanzamos el error para que la función que nos llamó (saveBooking) pueda capturarlo
+        // y manejarlo, en lugar de dejar que el servidor se caiga o falle silenciosamente.
+        throw new Error(`La reserva ${bookingId} se guardó, pero falló el envío del correo de confirmación.`);
     }
 }

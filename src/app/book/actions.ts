@@ -1,8 +1,6 @@
 'use server';
 
 import { getDbAdmin } from '@/lib/firebase-admin';
-// Se elimina la importación de FieldValue de la cabecera.
-// import { FieldValue } from 'firebase-admin/firestore';
 import { services, stylists } from '@/lib/data';
 import { sendBookingConfirmationEmail } from './email';
 
@@ -16,20 +14,18 @@ type BookingInput = {
 };
 
 export async function saveBooking(bookingInput: BookingInput) {
-    try {
-        // Obtenemos la instancia de la base de datos de forma segura.
-        const db = getDbAdmin();
+    let docRefId: string;
 
-        // **LA CORRECCIÓN FINAL Y ABSOLUTA:**
-        // Importamos FieldValue de forma dinámica y segura DENTRO del bloque try/catch.
-        // Esto evita que el servidor se caiga al cargar si la configuración de Firebase es incorrecta.
+    // --- PASO 1: Guardar la reserva en la Base de Datos ---
+    try {
+        const db = getDbAdmin();
         const { FieldValue } = await import('firebase-admin/firestore');
 
         const service = services.find(s => s.id === bookingInput.serviceId);
         const stylist = stylists.find(s => s.id === bookingInput.stylistId);
 
         if (!service || !stylist) {
-            return { success: false, error: "Servicio o estilista no válido." };
+            throw new Error("Servicio o estilista no válido.");
         }
 
         const bookingToSave = {
@@ -37,25 +33,39 @@ export async function saveBooking(bookingInput: BookingInput) {
             serviceName: service.name,
             stylistName: stylist.name,
             price: service.price,
-            createdAt: FieldValue.serverTimestamp(), // Ahora esto es 100% seguro
+            createdAt: FieldValue.serverTimestamp(),
             status: 'confirmed' as const,
         };
 
         const docRef = await db.collection("reservations").add(bookingToSave);
-        console.log(`Reserva ${docRef.id} creada con éxito.`);
+        docRefId = docRef.id;
+        console.log(`Reserva ${docRefId} creada con éxito en la base de datos.`);
 
-        await sendBookingConfirmationEmail(docRef.id, bookingInput);
-
-        return {
-            success: true,
-            bookingId: docRef.id,
-        };
-
-    } catch (error) {
-        console.error("Error FATAL al guardar la reserva:", error);
+    } catch (dbError) {
+        console.error("Error FATAL al guardar la reserva en la BD:", dbError);
+        // Si la base de datos falla, es un error total y no podemos continuar.
         return {
             success: false,
-            error: "No se pudo confirmar la reserva en el servidor. Por favor, contacta a soporte.",
+            error: "No se pudo guardar la reserva en la base de datos. Por favor, intenta de nuevo.",
+        };
+    }
+
+    // --- PASO 2: Intentar enviar el correo de confirmación ---
+    try {
+        await sendBookingConfirmationEmail(docRefId, bookingInput);
+        // Si el correo tiene éxito, la operación es un éxito total.
+        return {
+            success: true,
+            bookingId: docRefId,
+        };
+    } catch (emailError) {
+        console.error(`La reserva ${docRefId} se guardó, pero el correo falló:`, emailError);
+        // Si el correo falla, la reserva ya está guardada. 
+        // Devolvemos éxito, pero con una advertencia para el cliente.
+        return {
+            success: true,
+            bookingId: docRefId,
+            warning: "¡Tu cita está confirmada! Sin embargo, no pudimos enviar el correo de confirmación. Por favor, anota los detalles de tu cita.",
         };
     }
 }

@@ -3,6 +3,7 @@
 
 import { useState, useMemo, useEffect, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from 'next/navigation'; // Importar useRouter
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { services, stylists } from "@/lib/data"; 
 import { getAvailableTimeSlots } from "@/lib/client-data"; 
 import type { Service, Stylist } from "@/lib/types";
-import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2, Mail } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2, Mail, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
@@ -24,16 +25,13 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-// Esquema de validación para el formulario de detalles del cliente.
 const bookingFormSchema = z.object({
     customerName: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
     customerEmail: z.string().email("Por favor, introduce un correo electrónico válido."),
 });
 
-// Definición de los pasos del proceso de reserva.
 type Step = "service" | "stylist" | "datetime" | "details" | "confirm" | "complete";
 
-// Traducciones para mostrar el paso actual al usuario.
 const stepTranslations: Record<Step, string> = {
     service: "Servicio",
     stylist: "Estilista",
@@ -45,11 +43,11 @@ const stepTranslations: Record<Step, string> = {
 
 export function BookingClient() {
   const searchParams = useSearchParams();
+  const router = useRouter(); // Inicializar useRouter
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [step, setStep] = useState<Step>("service");
   
-  // --- Estados para la Selección del Usuario ---
   const [selectedService, setSelectedService] = useState<Service | null>(() => {
     const serviceId = searchParams.get("service");
     return services.find(s => s.id === serviceId) || null;
@@ -57,7 +55,6 @@ export function BookingClient() {
 
   const [selectedStylist, setSelectedStylist] = useState<Stylist | null>(() => {
     const stylistId = searchParams.get("stylist");
-    // FIX: Se realiza una búsqueda segura en el array de estilistas.
     return stylists.find(s => s.id === stylistId) || null;
   });
 
@@ -67,35 +64,26 @@ export function BookingClient() {
   const [isLoadingTimes, setIsLoadingTimes] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
 
-  // --- Formulario para los detalles del cliente ---
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: { customerName: "", customerEmail: "" },
   });
 
-  // --- Lógica de Navegación y Efectos ---
-
   useEffect(() => {
-    // Navega automáticamente al paso correcto si hay preselecciones en la URL.
     if (selectedService && selectedStylist) setStep("datetime");
     else if (selectedService) setStep("stylist");
   }, [selectedService, selectedStylist]);
 
-  // Filtra los estilistas disponibles basándose en el servicio seleccionado.
   const availableStylists = useMemo(() => {
       if (!selectedService) return stylists;
-      // FIX: Se asegura de que la propiedad `services` exista en `stylist` antes de filtrar.
       return stylists.filter(stylist => stylist.services?.includes(selectedService.id));
   }, [selectedService]);
 
-  // Filtra los servicios disponibles basándose en el estilista seleccionado.
   const availableServices = useMemo(() => {
       if (!selectedStylist) return services;
-      // FIX: Se asegura de que la propiedad `services` exista en `selectedStylist`.
       return services.filter(service => selectedStylist.services?.includes(service.id));
   }, [selectedStylist]);
 
-  // Carga los horarios disponibles cuando se selecciona un estilista y una fecha.
   useEffect(() => {
     if (selectedDate && selectedStylist) {
         setIsLoadingTimes(true);
@@ -116,8 +104,6 @@ export function BookingClient() {
         fetchTimes();
     }
   }, [selectedDate, selectedStylist, toast]);
-
-  // --- Handlers de Acciones del Usuario ---
 
   const handleNextStep = () => {
     const steps: Step[] = ["service", "stylist", "datetime", "details", "confirm"];
@@ -156,32 +142,41 @@ export function BookingClient() {
       if (result.success && result.bookingId) {
         setBookingId(result.bookingId);
         setStep("complete");
+
+        // **MANEJO DE LA ADVERTENCIA**
+        // Si el servidor nos envía una advertencia (porque el correo falló),
+        // la mostramos como un "toast" específico.
+        if (result.warning) {
+            toast({
+                variant: "default",
+                title: "Cita Confirmada con una Advertencia",
+                description: result.warning,
+                duration: 10000, // Duración más larga para que el usuario pueda leerlo
+                className: "bg-yellow-100 border-yellow-400 text-yellow-800",
+                action: <AlertTriangle className="text-yellow-800" />
+            });
+        }
+
       } else {
+        // Si la acción del servidor falla por completo (ej: la BD está caída),
+        // mostramos un toast de error genérico.
         toast({
             variant: "destructive",
-            title: "Error al Reservar",
-            description: result.error || "Ocurrió un error inesperado.",
+            title: "Error al Confirmar la Reserva",
+            description: result.error || "Ocurrió un error inesperado en el servidor.",
         });
       }
     });
   };
   
   const handleStartOver = () => {
-    setSelectedService(null);
-    setSelectedStylist(null);
-    setSelectedDate(undefined);
-    setSelectedTime(null);
-    setBookingId(null);
-    form.reset();
-    setStep("service");
+    // Redirige a la página de inicio para empezar de nuevo
+    router.push('/');
   };
 
   const progressValue = { service: 0, stylist: 20, datetime: 40, details: 60, confirm: 80, complete: 100 }[step];
 
-  // --- Renderizado de Componentes ---
-
   const renderStep = () => {
-    // ... (El resto del código de renderizado de pasos permanece igual)
       switch (step) {
       case "service":
         return (
