@@ -8,9 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-// MODIFICACIÓN: Se elimina la importación de `getAvailableTimeSlots` de data.ts
 import { services, stylists } from "@/lib/data"; 
-// MODIFICACIÓN: Se importa `getAvailableTimeSlots` desde el nuevo archivo de cliente
 import { getAvailableTimeSlots } from "@/lib/client-data"; 
 import type { Service, Stylist } from "@/lib/types";
 import { ArrowLeft, ArrowRight, CheckCircle, Calendar as CalendarIcon, User, Scissors, Clock, Loader2, Mail } from "lucide-react";
@@ -26,13 +24,16 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+// Esquema de validación para el formulario de detalles del cliente.
 const bookingFormSchema = z.object({
     customerName: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
     customerEmail: z.string().email("Por favor, introduce un correo electrónico válido."),
 });
 
+// Definición de los pasos del proceso de reserva.
 type Step = "service" | "stylist" | "datetime" | "details" | "confirm" | "complete";
 
+// Traducciones para mostrar el paso actual al usuario.
 const stepTranslations: Record<Step, string> = {
     service: "Servicio",
     stylist: "Estilista",
@@ -48,6 +49,7 @@ export function BookingClient() {
   const { toast } = useToast();
   const [step, setStep] = useState<Step>("service");
   
+  // --- Estados para la Selección del Usuario ---
   const [selectedService, setSelectedService] = useState<Service | null>(() => {
     const serviceId = searchParams.get("service");
     return services.find(s => s.id === serviceId) || null;
@@ -55,48 +57,45 @@ export function BookingClient() {
 
   const [selectedStylist, setSelectedStylist] = useState<Stylist | null>(() => {
     const stylistId = searchParams.get("stylist");
+    // FIX: Se realiza una búsqueda segura en el array de estilistas.
     return stylists.find(s => s.id === stylistId) || null;
   });
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [isLoadingTimes, setIsLoadingTimes] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
 
-  const [customerDetails, setCustomerDetails] = useState<{name: string, email: string} | null>(null);
-
+  // --- Formulario para los detalles del cliente ---
   const form = useForm<z.infer<typeof bookingFormSchema>>({
     resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      customerName: "",
-      customerEmail: "",
-    },
+    defaultValues: { customerName: "", customerEmail: "" },
   });
 
+  // --- Lógica de Navegación y Efectos ---
 
   useEffect(() => {
-    if (selectedService && selectedStylist) {
-        setStep("datetime");
-    } else if (selectedService) {
-        setStep("stylist");
-    } else if (selectedStylist) {
-        setStep("service");
-    } else {
-        setStep("service");
-    }
+    // Navega automáticamente al paso correcto si hay preselecciones en la URL.
+    if (selectedService && selectedStylist) setStep("datetime");
+    else if (selectedService) setStep("stylist");
   }, [selectedService, selectedStylist]);
 
+  // Filtra los estilistas disponibles basándose en el servicio seleccionado.
   const availableStylists = useMemo(() => {
-    if (!selectedService) return stylists;
-    return stylists.filter((stylist) => stylist.services.includes(selectedService.id));
+      if (!selectedService) return stylists;
+      // FIX: Se asegura de que la propiedad `services` exista en `stylist` antes de filtrar.
+      return stylists.filter(stylist => stylist.services?.includes(selectedService.id));
   }, [selectedService]);
-  
+
+  // Filtra los servicios disponibles basándose en el estilista seleccionado.
   const availableServices = useMemo(() => {
-    if (!selectedStylist) return services;
-    return services.filter((service) => selectedStylist.services.includes(service.id));
+      if (!selectedStylist) return services;
+      // FIX: Se asegura de que la propiedad `services` exista en `selectedStylist`.
+      return services.filter(service => selectedStylist.services?.includes(service.id));
   }, [selectedStylist]);
 
+  // Carga los horarios disponibles cuando se selecciona un estilista y una fecha.
   useEffect(() => {
     if (selectedDate && selectedStylist) {
         setIsLoadingTimes(true);
@@ -105,67 +104,64 @@ export function BookingClient() {
 
         const fetchTimes = async () => {
             try {
-                // La función se llama desde el archivo correcto
                 const slots = await getAvailableTimeSlots(selectedDate, selectedStylist!.id);
                 setAvailableTimeSlots(slots);
             } catch (error) {
                 console.error("Fallo al cargar los horarios:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Error de Disponibilidad",
-                    description: "No se pudieron cargar los horarios. Por favor, intenta de nuevo.",
-                });
+                toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los horarios." });
             } finally {
                 setIsLoadingTimes(false);
             }
         };
-
         fetchTimes();
     }
   }, [selectedDate, selectedStylist, toast]);
 
+  // --- Handlers de Acciones del Usuario ---
+
   const handleNextStep = () => {
-    if (step === "service") setStep("stylist");
-    else if (step === "stylist") setStep("datetime");
-    else if (step === "datetime") setStep("details");
-    else if (step === "details") setStep("confirm");
+    const steps: Step[] = ["service", "stylist", "datetime", "details", "confirm"];
+    const currentIndex = steps.indexOf(step);
+    if (currentIndex < steps.length - 1) {
+        setStep(steps[currentIndex + 1]);
+    }
   };
 
   const handlePrevStep = () => {
-    if (step === "confirm") setStep("details");
-    else if (step === "details") setStep("datetime");
-    else if (step === "datetime") setStep("stylist");
-    else if (step === "stylist") setStep("service");
+    const steps: Step[] = ["complete", "confirm", "details", "datetime", "stylist", "service"];
+    const currentIndex = steps.indexOf(step);
+    if (currentIndex < steps.length - 1) {
+        setStep(steps[currentIndex + 1]);
+    }
   };
 
-  const onDetailsSubmit = (values: z.infer<typeof bookingFormSchema>) => {
-    setCustomerDetails({ name: values.customerName, email: values.customerEmail });
-    handleNextStep();
-  };
+  const onDetailsSubmit = () => handleNextStep();
 
   const handleConfirmBooking = () => {
-    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerDetails) return;
+    const { customerName, customerEmail } = form.getValues();
+    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerName || !customerEmail) return;
     
     startTransition(async () => {
-      const bookingData = {
+      const bookingInput = {
         serviceId: selectedService.id,
         stylistId: selectedStylist.id,
         date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedTime,
-        customerName: customerDetails.name,
-        customerEmail: customerDetails.email,
+        customerName,
+        customerEmail,
       };
       
-      const result = await saveBooking(bookingData);
+      const result = await saveBooking(bookingInput);
 
-      if (result.success) {
+      if (result.success && result.bookingId) {
+        setBookingId(result.bookingId);
         setStep("complete");
       } else {
         toast({
             variant: "destructive",
-            title: "Error al reservar",
-            description: result.error || "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
-        })
+            title: "Error al Reservar",
+            description: result.error || "Ocurrió un error inesperado.",
+        });
       }
     });
   };
@@ -175,22 +171,18 @@ export function BookingClient() {
     setSelectedStylist(null);
     setSelectedDate(undefined);
     setSelectedTime(null);
-    setCustomerDetails(null);
+    setBookingId(null);
     form.reset();
     setStep("service");
-  }
+  };
 
-  const progressValue = {
-    service: 0,
-    stylist: 20,
-    datetime: 40,
-    details: 60,
-    confirm: 80,
-    complete: 100,
-  }[step];
+  const progressValue = { service: 0, stylist: 20, datetime: 40, details: 60, confirm: 80, complete: 100 }[step];
+
+  // --- Renderizado de Componentes ---
 
   const renderStep = () => {
-    switch (step) {
+    // ... (El resto del código de renderizado de pasos permanece igual)
+      switch (step) {
       case "service":
         return (
           <div className="space-y-4">
@@ -234,9 +226,7 @@ export function BookingClient() {
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={(date) => {
-                  setSelectedDate(date);
-                }}
+                onSelect={setSelectedDate}
                 disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1)) || date.getDay() === 0}
                 className="rounded-md border justify-center"
                 locale={es}
@@ -275,61 +265,45 @@ export function BookingClient() {
              <h3 className="text-xl font-semibold">4. Ingresa tus Datos</h3>
              <Form {...form}>
                 <form onSubmit={form.handleSubmit(onDetailsSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="customerName"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nombre Completo</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Ej: Jane Doe" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="customerEmail"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Correo Electrónico</FormLabel>
-                                <FormControl>
-                                    <Input type="email" placeholder="tu@correo.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <FormField control={form.control} name="customerName" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Nombre Completo</FormLabel>
+                            <FormControl><Input placeholder="Ej: Jane Doe" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={form.control} name="customerEmail" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Correo Electrónico</FormLabel>
+                            <FormControl><Input type="email" placeholder="tu@correo.com" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
                      <div className="flex gap-4 pt-4">
-                        <Button onClick={handlePrevStep} variant="outline" className="w-full" type="button">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
-                        </Button>
-                        <Button type="submit" className="w-full">
-                            Siguiente <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
+                        <Button onClick={handlePrevStep} variant="outline" className="w-full" type="button"><ArrowLeft className="mr-2 h-4 w-4" /> Atrás</Button>
+                        <Button type="submit" className="w-full">Siguiente <ArrowRight className="ml-2 h-4 w-4" /></Button>
                     </div>
                 </form>
              </Form>
           </div>
         );
       case "confirm":
-        if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerDetails) return null;
+        const { customerName, customerEmail } = form.getValues();
+        if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerName) return null;
         return (
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-center">5. Confirma tu Cita</h3>
             <div className="border rounded-lg p-4 space-y-4">
                <div className="flex items-start gap-4">
-                <Image src={selectedStylist.avatarUrl} alt={selectedStylist.name} width={80} height={80} className="rounded-full" />
+                <Image src={selectedStylist.avatarUrl || ''} alt={selectedStylist.name} width={80} height={80} className="rounded-full bg-muted" />
                 <div>
                   <p className="font-bold">{selectedStylist.name}</p>
                   <p className="text-sm text-muted-foreground">{selectedService.name}</p>
                 </div>
               </div>
-
               <div className="space-y-2 text-sm">
-                <p className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> {customerDetails.name}</p>
-                <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {customerDetails.email}</p>
+                <p className="flex items-center gap-2"><User className="h-4 w-4 text-primary" /> {customerName}</p>
+                <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {customerEmail}</p>
                 <p className="flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-primary" /> {format(selectedDate, "PPP", { locale: es })}</p>
                 <p className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" /> {selectedTime}</p>
                 <p className="flex items-center gap-2"><Scissors className="h-4 w-4 text-primary" /> {selectedService.duration} minutos</p>
@@ -339,9 +313,7 @@ export function BookingClient() {
               </div>
             </div>
             <div className="flex gap-4">
-              <Button onClick={handlePrevStep} variant="outline" className="w-full" disabled={isPending}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
-              </Button>
+              <Button onClick={handlePrevStep} variant="outline" className="w-full" disabled={isPending}><ArrowLeft className="mr-2 h-4 w-4" /> Atrás</Button>
               <Button onClick={handleConfirmBooking} className="w-full" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Confirmar Reserva
@@ -355,7 +327,7 @@ export function BookingClient() {
           <div className="text-center space-y-4 animate-in fade-in duration-500">
             <CheckCircle className="mx-auto h-16 w-16 text-green-500"/>
             <h3 className="text-2xl font-bold">¡Cita Confirmada!</h3>
-            <p className="text-muted-foreground">Te esperamos con ansias. Recibirás un correo de confirmación pronto.</p>
+            <p className="text-muted-foreground">ID de Reserva: {bookingId}</p>
             <Card className="text-left p-4">
               <p><strong>Estilista:</strong> {selectedStylist.name}</p>
               <p><strong>Servicio:</strong> {selectedService.name}</p>

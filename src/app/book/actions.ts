@@ -1,70 +1,23 @@
 'use server';
 
-import { db } from '../../lib/firebase';
-import { collection, addDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
-import type { Booking, Service, Stylist } from '../../lib/types';
-import { sendConfirmationEmail } from '../../ai/flows/send-confirmation-email';
-import nodemailer from 'nodemailer';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { services, stylists } from '@/lib/data';
+import type { Booking } from '@/lib/types';
+import { sendBookingConfirmationEmail } from './email';
 
-// Configuración del transporter de Nodemailer
-const transporter = nodemailer.createTransport({
-    host: process.env.ZOHO_SMTP_HOST,
-    port: Number(process.env.ZOHO_SMTP_PORT),
-    secure: true,
-    auth: {
-        user: process.env.ZOHO_SMTP_USER,
-        pass: process.env.ZOHO_SMTP_PASS,
-    },
-});
+// Definimos un tipo para los datos que llegan desde el cliente.
+// Esto hace que el código sea más seguro y fácil de entender.
+type BookingInput = {
+    serviceId: string;
+    stylistId: string;
+    date: string;      // Formato YYYY-MM-DD
+    time: string;
+    customerName: string;
+    customerEmail: string;
+};
 
-// --- Función para Enviar el Correo ---
-async function sendBookingConfirmationEmail(bookingId: string, bookingData: Omit<Booking, 'id' | 'status'>) {
-    if (!process.env.ZOHO_SMTP_USER || !process.env.ZOHO_SMTP_PASS) {
-        console.warn(`Correo para reserva ${bookingId} no enviado: Faltan credenciales de Zoho.`);
-        return;
-    }
-    
-    if (!db) {
-        console.error(`Error FATAL en sendBookingConfirmationEmail: La conexión a la base de datos (db) es nula.`);
-        return;
-    }
-
-    try {
-        // Usa los datos desnormalizados si están disponibles, si no, búscalos.
-        const serviceName = bookingData.serviceName ?? services.find(s => s.id === bookingData.serviceId)?.name ?? "Servicio no encontrado";
-        const stylistName = bookingData.stylistName ?? stylists.find(s => s.id === bookingData.stylistId)?.name ?? "Estilista no encontrado";
-
-        const emailContent = await sendConfirmationEmail({
-            customerName: bookingData.customerName,
-            customerEmail: bookingData.customerEmail,
-            date: bookingData.date,
-            time: bookingData.time,
-            serviceName: serviceName, // FIX: Simplificado y corregido
-            stylistName: stylistName,
-        });
-
-        const recipients = [bookingData.customerEmail];
-        if (process.env.ADMIN_EMAIL) {
-            recipients.push(process.env.ADMIN_EMAIL);
-        }
-
-        await transporter.sendMail({
-            from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
-            to: recipients.join(', '),
-            subject: emailContent.subject,
-            html: emailContent.body,
-        });
-
-        console.log(`Correo de confirmación para reserva ${bookingId} enviado con éxito.`);
-
-    } catch (error) {
-        console.error(`Error CRÍTICO al enviar el correo para la reserva ${bookingId}:`, error);
-    }
-}
-
-// --- Función Principal para Guardar la Reserva ---
-export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
+export async function saveBooking(bookingInput: BookingInput) {
     if (!db) {
         console.error("Error FATAL: Conexión con la base de datos no disponible.");
         return {
@@ -74,9 +27,11 @@ export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
     }
 
     try {
-        const service = services.find(s => s.id === bookingData.serviceId);
-        const stylist = stylists.find(s => s.id === bookingData.stylistId);
+        // Buscamos la información completa del servicio y el estilista usando los IDs.
+        const service = services.find(s => s.id === bookingInput.serviceId);
+        const stylist = stylists.find(s => s.id === bookingInput.stylistId);
 
+        // Si no encontramos el servicio o el estilista, devolvemos un error claro.
         if (!service || !stylist) {
             return {
                 success: false,
@@ -84,31 +39,35 @@ export async function saveBooking(bookingData: Omit<Booking, 'id' | 'status'>) {
             };
         }
 
+        // Construimos el objeto de la reserva completo para guardarlo en la base de datos.
         const bookingToSave = {
-            ...bookingData,
-            serviceName: service.name,
-            stylistName: stylist.name,
-            price: service.price,
+            ...bookingInput,
+            serviceName: service.name, // Añadimos el nombre del servicio
+            stylistName: stylist.name, // Añadimos el nombre del estilista
+            price: service.price,      // Añadimos el precio
             createdAt: serverTimestamp(),
             status: 'confirmed' as const,
         };
 
+        // Guardamos la reserva en Firestore.
         const docRef = await addDoc(collection(db, "reservations"), bookingToSave);
-        console.log(`Reserva ${docRef.id} creada con datos desnormalizados.`);
+        console.log(`Reserva ${docRef.id} creada con éxito.`);
 
-        // Llamamos a la función de envío de correo con los datos completos
-        sendBookingConfirmationEmail(docRef.id, bookingToSave);
+        // Ahora, enviamos el correo de confirmación con los datos completos.
+        // La lógica de envío de correo se ha movido a su propio archivo para mayor claridad.
+        await sendBookingConfirmationEmail(docRef.id, bookingToSave);
 
         return {
             success: true,
-            data: { id: docRef.id, ...bookingToSave } as Booking,
+            bookingId: docRef.id,
         };
 
     } catch (error) {
         console.error("Error FATAL al guardar la reserva en Firestore:", error);
+        // Si algo falla, devolvemos un error genérico para no exponer detalles al usuario.
         return {
             success: false,
-            error: "No se pudo guardar la reserva en la base de datos. Inténtalo de nuevo.",
+            error: "No se pudo guardar la reserva en la base de datos. Por favor, inténtalo de nuevo.",
         };
     }
 }
