@@ -1,60 +1,45 @@
 'use server';
 
-import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { dbAdmin } from '@/lib/firebase-admin'; // Usamos la nueva conexión de admin
+import { FieldValue } from 'firebase-admin/firestore';
 import { services, stylists } from '@/lib/data';
-import type { Booking } from '@/lib/types';
 import { sendBookingConfirmationEmail } from './email';
 
-// Definimos un tipo para los datos que llegan desde el cliente.
-// Esto hace que el código sea más seguro y fácil de entender.
+// El tipo de entrada no cambia.
 type BookingInput = {
     serviceId: string;
     stylistId: string;
-    date: string;      // Formato YYYY-MM-DD
+    date: string;
     time: string;
     customerName: string;
     customerEmail: string;
 };
 
 export async function saveBooking(bookingInput: BookingInput) {
-    if (!db) {
-        console.error("Error FATAL: Conexión con la base de datos no disponible.");
-        return {
-            success: false,
-            error: "No se pudo conectar con la base de datos.",
-        };
-    }
-
     try {
-        // Buscamos la información completa del servicio y el estilista usando los IDs.
+        // Buscamos los datos completos del servicio y estilista.
         const service = services.find(s => s.id === bookingInput.serviceId);
         const stylist = stylists.find(s => s.id === bookingInput.stylistId);
 
-        // Si no encontramos el servicio o el estilista, devolvemos un error claro.
         if (!service || !stylist) {
-            return {
-                success: false,
-                error: "El servicio o estilista seleccionado ya no es válido.",
-            };
+            return { success: false, error: "Servicio o estilista no válido." };
         }
 
-        // Construimos el objeto de la reserva completo para guardarlo en la base de datos.
+        // Construimos el objeto a guardar, usando FieldValue.serverTimestamp() de admin.
         const bookingToSave = {
             ...bookingInput,
-            serviceName: service.name, // Añadimos el nombre del servicio
-            stylistName: stylist.name, // Añadimos el nombre del estilista
-            price: service.price,      // Añadimos el precio
-            createdAt: serverTimestamp(),
+            serviceName: service.name,
+            stylistName: stylist.name,
+            price: service.price,
+            createdAt: FieldValue.serverTimestamp(), // Correcto para el SDK de Admin
             status: 'confirmed' as const,
         };
 
-        // Guardamos la reserva en Firestore.
-        const docRef = await addDoc(collection(db, "reservations"), bookingToSave);
-        console.log(`Reserva ${docRef.id} creada con éxito.`);
+        // Guardamos en la colección "reservations" usando la instancia de admin.
+        const docRef = await dbAdmin.collection("reservations").add(bookingToSave);
+        console.log(`Reserva ${docRef.id} creada con éxito usando Admin SDK.`);
 
-        // Ahora, enviamos el correo de confirmación con los datos completos.
-        // La lógica de envío de correo se ha movido a su propio archivo para mayor claridad.
+        // Enviamos el correo de confirmación.
         await sendBookingConfirmationEmail(docRef.id, bookingToSave);
 
         return {
@@ -63,11 +48,10 @@ export async function saveBooking(bookingInput: BookingInput) {
         };
 
     } catch (error) {
-        console.error("Error FATAL al guardar la reserva en Firestore:", error);
-        // Si algo falla, devolvemos un error genérico para no exponer detalles al usuario.
+        console.error("Error FATAL al guardar la reserva con Admin SDK:", error);
         return {
             success: false,
-            error: "No se pudo guardar la reserva en la base de datos. Por favor, inténtalo de nuevo.",
+            error: "No se pudo confirmar la reserva en el servidor. Por favor, contacta a soporte.",
         };
     }
 }
