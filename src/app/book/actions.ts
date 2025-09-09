@@ -1,9 +1,10 @@
 'use server';
 
 import { z } from "zod";
-import { firestore } from "../lib/firebase";
+// CORREGIDO: Importar 'db' y renombrarlo a 'firestore'
+import { db as firestore } from "@/lib/firebase"; 
 import { doc, setDoc, collection } from "firebase/firestore";
-import { stylists, services } from "../lib/data";
+import { stylists, services } from "@/lib/data";
 
 // --- Esquema de Validación --- 
 const BookingSchema = z.object({
@@ -24,7 +25,7 @@ export type CreateBookingResult = {
     success: boolean;
     bookingId?: string;
     error?: string;
-    warning?: string; // Para casos donde la reserva se crea pero algo más falla (ej. correo)
+    warning?: string; 
 };
 
 
@@ -41,7 +42,7 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
     }
 
     try {
-        // --- PASO 1: Guardar la reserva en Firestore ---
+        // Ahora 'firestore' se refiere a 'db' y es válido
         const docRef = doc(collection(firestore, "bookings"));
         const docRefId = docRef.id;
         
@@ -53,8 +54,6 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
 
         console.log("Reserva guardada con éxito en Firestore con ID:", docRefId);
 
-        // --- Éxito --- 
-        // El envío de correo se ha eliminado temporalmente.
         return {
             success: true,
             bookingId: docRefId,

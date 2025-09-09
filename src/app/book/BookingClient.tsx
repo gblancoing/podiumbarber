@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from 'next/navigation'; // Importar useRouter
+import { useRouter } from 'next/navigation'; 
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,7 +17,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
-import { saveBooking } from "./actions";
+import { createBooking } from "./actions"; // CORREGIDO: Importar createBooking
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +43,7 @@ const stepTranslations: Record<Step, string> = {
 
 export function BookingClient() {
   const searchParams = useSearchParams();
-  const router = useRouter(); // Inicializar useRouter
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [step, setStep] = useState<Step>("service");
@@ -128,38 +128,36 @@ export function BookingClient() {
     if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerName || !customerEmail) return;
     
     startTransition(async () => {
+      // CORREGIDO: Objeto de reserva completo y con nombres correctos
       const bookingInput = {
         serviceId: selectedService.id,
         stylistId: selectedStylist.id,
         date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedTime,
-        customerName,
-        customerEmail,
+        userName: customerName,
+        userEmail: customerEmail,
+        duration: selectedService.duration,
+        price: selectedService.price,
       };
       
-      const result = await saveBooking(bookingInput);
+      // CORREGIDO: Llamar a createBooking
+      const result = await createBooking(bookingInput);
 
       if (result.success && result.bookingId) {
         setBookingId(result.bookingId);
         setStep("complete");
-
-        // **MANEJO DE LA ADVERTENCIA**
-        // Si el servidor nos envía una advertencia (porque el correo falló),
-        // la mostramos como un "toast" específico.
         if (result.warning) {
             toast({
                 variant: "default",
-                title: "Cita Confirmada con una Advertencia",
+                title: "Cita Confirmada con Advertencia",
                 description: result.warning,
-                duration: 10000, // Duración más larga para que el usuario pueda leerlo
+                duration: 10000,
                 className: "bg-yellow-100 border-yellow-400 text-yellow-800",
                 action: <AlertTriangle className="text-yellow-800" />
             });
         }
 
       } else {
-        // Si la acción del servidor falla por completo (ej: la BD está caída),
-        // mostramos un toast de error genérico.
         toast({
             variant: "destructive",
             title: "Error al Confirmar la Reserva",
@@ -170,7 +168,6 @@ export function BookingClient() {
   };
   
   const handleStartOver = () => {
-    // Redirige a la página de inicio para empezar de nuevo
     router.push('/');
   };
 
