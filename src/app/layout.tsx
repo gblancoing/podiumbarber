@@ -1,13 +1,28 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Toaster } from '@/components/ui/toaster';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+
+import type { Metadata } from "next";
+import { Inter, Playfair_Display } from "next/font/google";
+import "./globals.css";
+import { cn } from "@/lib/utils";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+// Se elimina la importación directa del Toaster
+// import { Toaster } from "@/components/ui/toaster"; 
+// Se importa el nuevo ToasterProvider
+import { ToasterProvider } from "@/components/providers/toaster-provider";
+
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: "--font-sans",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-headline",
+});
 
 export const metadata: Metadata = {
-  title: 'PodiumBarber',
-  description: 'Tu próximo corte de pelo, a solo un clic de distancia.',
+  title: "Podium Barber - Tu Barbería de Confianza",
+  description: "Servicios de barbería premium en un ambiente relajado. Reserva tu cita online.",
 };
 
 export default function RootLayout({
@@ -16,21 +31,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es-CL" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
-        <AppRouterCacheProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
-        </AppRouterCacheProvider>
+    <html lang="es" className="scroll-smooth">
+      <body 
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased", 
+          inter.variable, 
+          playfair.variable
+        )}
+      >
+        <Header />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
+        {/* Se utiliza el ToasterProvider en lugar del Toaster directo */}
+        <ToasterProvider />
       </body>
     </html>
   );

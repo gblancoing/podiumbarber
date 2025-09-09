@@ -1,40 +1,44 @@
 'use server';
 
-import { sendConfirmationEmail as sendEmailWithAI } from '@/ai/flows/send-confirmation-email';
 import nodemailer from 'nodemailer';
 
-// El tipo de datos que esta función recibe (ahora con IDs)
+// Tipo de datos para la función
 type BookingDataForEmail = {
     customerName: string;
     customerEmail: string;
     date: string;
     time: string;
-    stylistId: string; // ID del estilista
-    serviceId: string; // ID del servicio
+    stylistId: string;
+    serviceId: string;
 };
 
-// --- Configuración del Transporter de Nodemailer ---
-const transporter = nodemailer.createTransport({
-    host: process.env.ZOHO_SMTP_HOST,
-    port: Number(process.env.ZOHO_SMTP_PORT),
-    secure: true,
-    auth: {
-        user: process.env.ZOHO_SMTP_USER,
-        pass: process.env.ZOHO_SMTP_PASS,
-    },
-});
-
-// --- Función Principal de Envío de Correo ---
+// --- Función Principal de Envío de Correo (Ahora 100% Robusta) ---
 export async function sendBookingConfirmationEmail(bookingId: string, bookingData: BookingDataForEmail) {
+    // Primero, verificamos las credenciales más básicas. Si no están, no continuamos.
     if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM) {
-        console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP.`);
+        console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP básicas.`);
         return;
     }
 
     try {
-        // **CORRECCIÓN DEFINITIVA:**
-        // Pasamos los datos directamente a la función de IA, incluyendo los IDs.
-        // La función de IA se encargará de buscar los nombres.
+        // **CORRECCIÓN DE ROBUSTEZ FINAL:**
+        // 1. El transporter de Nodemailer se crea aquí, dentro del try/catch.
+        // Si las variables de entorno de ZOHO faltan, el error se captura y no bloquea el servidor.
+        const transporter = nodemailer.createTransport({
+            host: process.env.ZOHO_SMTP_HOST,
+            port: Number(process.env.ZOHO_SMTP_PORT),
+            secure: true,
+            auth: {
+                user: process.env.ZOHO_SMTP_USER,
+                pass: process.env.ZOHO_SMTP_PASS,
+            },
+        });
+
+        // 2. El módulo de IA se importa dinámicamente aquí.
+        // Si falla (p. ej., por falta de API Key de Google), el error también se captura.
+        const { sendConfirmationEmail: sendEmailWithAI } = await import('@/ai/flows/send-confirmation-email');
+        
+        // Generamos el contenido del correo.
         const emailContent = await sendEmailWithAI(bookingData);
 
         // Creamos la lista de destinatarios.
@@ -54,8 +58,7 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
         console.log(`Correo de confirmación para reserva ${bookingId} enviado.`);
 
     } catch (error) {
-        console.error(`Error CRÍTICO al enviar correo para reserva ${bookingId}:`, error);
-        // Lanzamos el error para que la acción principal lo capture si es necesario.
-        throw new Error('Failed to send confirmation email.');
+        console.error(`Error NO FATAL al generar o enviar correo para ${bookingId}:`, error);
+        // La reserva ya se guardó. Este error de correo se registra en el servidor pero no afecta al usuario.
     }
 }
