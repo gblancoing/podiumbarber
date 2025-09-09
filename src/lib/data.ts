@@ -44,13 +44,21 @@ export const stylists: Stylist[] = [
     specialties: ['Cortes Clásicos', 'Afeitado Tradicional', 'Barbería'],
     services: allServiceIds,
   },
+  {
+    id: 'andres-leyton',
+    name: 'Andres Leyton',
+    bio: 'Andres es un estilista versátil con pasión por las últimas tendencias. Se destaca en la creación de looks personalizados que reflejan la personalidad de cada cliente.',
+    avatarUrl: '/img/camilo.png', // Asignación temporal
+    specialties: ['Corte y Estilo', 'Coloración Creativa', 'Tratamientos Capilares'],
+    services: allServiceIds,
+  },
 ];
 
 // --- DATOS DESTACADOS PARA LA PÁGINA DE INICIO ---
 
 export const featuredData: FeaturedData = {
     services: services.slice(0, 3),
-    stylists: stylists.slice(0, 2),
+    stylists: stylists.slice(0, 3), // Actualizado para mostrar a los 3 estilistas
 };
 
 // --- DATOS DE DISPONIBILIDAD (EJEMPLO) ---
@@ -66,6 +74,10 @@ export const availability: Availability[] = [
   { stylistId: 'kamilo-fonseca', dayOfWeek: 4, startTime: '10:00', endTime: '19:00' },
   { stylistId: 'kamilo-fonseca', dayOfWeek: 5, startTime: '11:00', endTime: '20:00' },
   { stylistId: 'kamilo-fonseca', dayOfWeek: 6, startTime: '10:00', endTime: '16:00' },
+  { stylistId: 'andres-leyton', dayOfWeek: 1, startTime: '10:00', endTime: '19:00' }, // Disponibilidad de ejemplo
+  { stylistId: 'andres-leyton', dayOfWeek: 2, startTime: '10:00', endTime: '19:00' },
+  { stylistId: 'andres-leyton', dayOfWeek: 4, startTime: '10:00', endTime: '19:00' },
+  { stylistId: 'andres-leyton', dayOfWeek: 5, startTime: '10:00', endTime: '20:00' },
 ];
 
 // --- DATOS DE RESEÑAS (EJEMPLO) ---
