@@ -1,61 +1,80 @@
 'use client';
 
-import type { Booking, Service } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Booking, Service } from '../../../lib/types';
+import { BarChart, Users, Calendar, Scissors, DollarSign } from 'lucide-react';
 
-// --- Props del Componente ---
 interface DashboardStatsProps {
-    bookings: Booking[];
-    services: Service[];
+  bookings: Booking[];
+  services: Service[];
 }
 
-// --- Componente para las Estadísticas ---
-
 export function DashboardStats({ bookings, services }: DashboardStatsProps) {
-    // Calcular ingresos totales
-    const totalRevenue = bookings.reduce((acc, booking) => {
-        const service = services.find(s => s.id === booking.serviceId);
-        return acc + (service ? service.price : 0);
-    }, 0);
+  const totalRevenue = bookings.reduce((acc, booking) => {
+    const service = services.find(s => s.id === booking.serviceId);
+    return acc + (service?.price || 0);
+  }, 0);
 
-    // Contar el número total de reservas
-    const totalBookings = bookings.length;
+  const totalBookings = bookings.length;
 
-    // Formatear los ingresos a un formato de moneda local (ej. CLP)
-    const formattedRevenue = new Intl.NumberFormat('es-CL', {
-        style: 'currency',
-        currency: 'CLP',
-    }).format(totalRevenue);
+  const serviceCounts = bookings.reduce((acc, booking) => {
+    const service = services.find(s => s.id === booking.serviceId);
+    if (service) {
+      acc[service.name] = (acc[service.name] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
 
-    return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {/* Tarjeta de Ingresos Totales */}
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
-                    <span className="text-2xl">💰</span>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{formattedRevenue}</div>
-                    <p className="text-xs text-muted-foreground">
-                        Suma de todas las reservas completadas
-                    </p>
-                </CardContent>
-            </Card>
+  const mostPopularService = Object.entries(serviceCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
-            {/* Tarjeta de Reservas Totales */}
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Reservas Totales</CardTitle>
-                    <span className="text-2xl">📅</span>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">+{totalBookings}</div>
-                    <p className="text-xs text-muted-foreground">
-                        Cantidad total de citas registradas
-                    </p>
-                </CardContent>
-            </Card>
+  const formattedRevenue = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+  }).format(totalRevenue);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <StatCard 
+        title="Ingresos Totales" 
+        value={formattedRevenue} 
+        icon={<DollarSign className="text-green-400" />} 
+        description="Ingresos generados por todas las reservas"
+      />
+      <StatCard 
+        title="Total de Reservas" 
+        value={totalBookings.toString()} 
+        icon={<Calendar className="text-blue-400" />} 
+        description="Número total de citas registradas"
+      />
+      <StatCard 
+        title="Servicio Más Popular" 
+        value={mostPopularService} 
+        icon={<Scissors className="text-yellow-400" />} 
+        description="El servicio más solicitado por los clientes"
+      />
+    </div>
+  );
+}
+
+interface StatCardProps {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  description: string;
+}
+
+function StatCard({ title, value, icon, description }: StatCardProps) {
+  return (
+    <div className="bg-gray-800/50 p-6 rounded-lg flex flex-col justify-between">
+      <div>
+        <div className="flex items-start justify-between">
+          <p className="text-sm font-medium text-gray-400">{title}</p>
+          <div className="bg-gray-900 p-2 rounded-full">
+            {icon}
+          </div>
         </div>
-    );
+        <p className="text-3xl font-bold text-white mt-2">{value}</p>
+      </div>
+      <p className="text-xs text-gray-500 mt-4">{description}</p>
+    </div>
+  );
 }

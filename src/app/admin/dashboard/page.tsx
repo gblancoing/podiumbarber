@@ -2,13 +2,43 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, getDocs, writeBatch, doc } from 'firebase/firestore';
 import type { Booking, Service, Stylist } from '../../../lib/types';
+import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 import { DashboardStats } from './DashboardStats';
 import { RecentBookings } from './RecentBookings';
 
-// Forzar a la página a que no use caché y sea dinámica
 export const dynamic = 'force-dynamic';
+
+// Esta función asegura que la base de datos tenga los servicios y estilistas base si está vacía.
+async function seedDatabase() {
+  if (!db) return;
+
+  const servicesCollection = collection(db, 'services');
+  const stylistsCollection = collection(db, 'stylists');
+
+  // Pre-carga los servicios si no existen
+  const servicesSnapshot = await getDocs(servicesCollection);
+  if (servicesSnapshot.empty) {
+    const batch = writeBatch(db);
+    staticServices.forEach(service => {
+      const docRef = doc(db, 'services', service.id);
+      batch.set(docRef, service);
+    });
+    await batch.commit();
+  }
+
+  // Pre-carga los estilistas si no existen
+  const stylistsSnapshot = await getDocs(stylistsCollection);
+  if (stylistsSnapshot.empty) {
+    const batch = writeBatch(db);
+    staticStylists.forEach(stylist => {
+      const docRef = doc(db, 'stylists', stylist.id);
+      batch.set(docRef, stylist);
+    });
+    await batch.commit();
+  }
+}
 
 export default function DashboardPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -18,54 +48,61 @@ export default function DashboardPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Si la conexión a la base de datos no está disponible, detenemos todo.
         if (!db) {
-            setError("Error crítico: No se pudo establecer la conexión con la base de datos.");
+            setError("Error crítico: Conexión con la base de datos no disponible.");
             setLoading(false);
             return;
         }
 
-        setLoading(true);
-        const bookingsQuery = query(collection(db, 'reservations'), orderBy('createdAt', 'desc'));
-        const servicesQuery = query(collection(db, 'services'));
-        const stylistsQuery = query(collection(db, 'stylists'));
+        // Primero, asegura que la BD esté poblada, y luego escucha los cambios.
+        seedDatabase().then(() => {
+            const bookingsQuery = query(collection(db, 'reservations'), orderBy('createdAt', 'desc'));
+            const servicesQuery = query(collection(db, 'services'));
+            const stylistsQuery = query(collection(db, 'stylists'));
 
-        const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
-            const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
-            setBookings(bookingsData);
-        }, (err) => {
-            console.error("Error al cargar reservas:", err);
-            setError("No se pudieron cargar las reservas.");
-        });
+            // Escucha las reservas en tiempo real
+            const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
+                const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
+                setBookings(bookingsData);
+            }, (err) => {
+                setError("No se pudieron cargar las reservas.");
+                setLoading(false); // FIX: Asegura que el loading termine en caso de error
+            });
 
-        const unsubscribeServices = onSnapshot(servicesQuery, (snapshot) => {
-            const servicesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
-            setServices(servicesData);
-        }, (err) => {
-            console.error("Error al cargar servicios:", err);
-            setError("No se pudieron cargar los datos de servicios.");
-        });
+            // Escucha los servicios en tiempo real
+            const unsubscribeServices = onSnapshot(servicesQuery, (snapshot) => {
+                const servicesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
+                setServices(servicesData);
+            }, (err) => {
+                setError("No se pudieron cargar los datos de servicios.");
+                setLoading(false); // FIX: Asegura que el loading termine en caso de error
+            });
 
-        const unsubscribeStylists = onSnapshot(stylistsQuery, (snapshot) => {
-            const stylistsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Stylist[];
-            setStylists(stylistsData);
-             setLoading(false); // Marcar como cargado solo después de la última consulta
-        }, (err) => {
-            console.error("Error al cargar estilistas:", err);
-            setError("No se pudieron cargar los datos de estilistas.");
+            // Escucha los estilistas en tiempo real
+            const unsubscribeStylists = onSnapshot(stylistsQuery, (snapshot) => {
+                const stylistsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Stylist[];
+                setStylists(stylistsData);
+                setLoading(false); // El loading termina cuando los últimos datos necesarios llegan
+            }, (err) => {
+                setError("No se pudieron cargar los datos de estilistas.");
+                setLoading(false);
+            });
+
+            // Limpieza: se desuscribe de los listeners cuando el componente se desmonta
+            return () => {
+                unsubscribeBookings();
+                unsubscribeServices();
+                unsubscribeStylists();
+            };
+        }).catch(err => {
+            setError("Ocurrió un error al configurar los datos iniciales.");
             setLoading(false);
         });
 
-        // Limpiar la suscripción al desmontar el componente
-        return () => {
-            unsubscribeBookings();
-            unsubscribeServices();
-            unsubscribeStylists();
-        };
-    }, []);
+    }, []); // El array vacío asegura que esto se ejecute solo una vez
 
     if (loading) {
-        return <div className="flex items-center justify-center h-full">Cargando datos del dashboard...</div>;
+        return <div className="flex items-center justify-center h-full">Cargando y verificando datos...</div>;
     }
 
     if (error) {

@@ -9,15 +9,16 @@ export const getAvailableTimeSlots = async (date: Date, stylistId: string): Prom
     '16:00', '16:30',
   ];
 
-  // Reglas de negocio (Domingos cerrados, Sábados horario corto)
-  if (date.getDay() === 0) return []; // Domingo
+  // Domingo
+  if (date.getDay() === 0) return []; 
+  
+  // Sábado
   if (date.getDay() === 6) {
     const sabadoSlots = [
       '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30'
     ];
     return sabadoSlots;
   }
-
 
   const dateString = `${date.getFullYear()}-${(date.getMonth() + 1)
     .toString()

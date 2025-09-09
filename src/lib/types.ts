@@ -4,7 +4,7 @@ export interface Service {
   description: string;
   price: number;
   duration: number; // in minutes
-  category: 'Corte y Peinado' | 'Barba' | 'Otros Servicios';
+  category: 'Corte y Peinado' | 'Barba' | 'Facial';
 }
 
 export interface Stylist {
@@ -25,4 +25,10 @@ export interface Booking {
   customerName: string;
   customerEmail: string;
   status: 'confirmed' | 'completed' | 'canceled';
+
+  // Denormalized data for easier querying and display
+  serviceName?: string;
+  stylistName?: string;
+  price?: number;
+  createdAt?: any; // To support serverTimestamp
 }

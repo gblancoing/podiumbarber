@@ -1,97 +1,102 @@
 'use client';
 
-import type { Booking, Service, Stylist } from '@/lib/types';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import type { Booking, Service, Stylist } from '../../../lib/types';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-// --- Props del Componente ---
 interface RecentBookingsProps {
-    bookings: Booking[];
-    services: Service[];
-    stylists: Stylist[];
+  bookings: Booking[];
+  services: Service[];
+  stylists: Stylist[];
 }
 
-// --- Componente para las Reservas Recientes ---
+// Tipo auxiliar para las reservas que han sido validadas y enriquecidas.
+// Esto mejora la seguridad de tipos en el resto del componente.
+type ValidBooking = Booking & {
+    serviceName: string;
+    stylistName: string;
+    formattedPrice: string;
+    safeDate: Date;
+};
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function RecentBookings({ bookings, services, stylists }: RecentBookingsProps) {
-    // Función para obtener el nombre del servicio a partir de su ID
-    const getServiceName = (serviceId: string) => {
-        const service = services.find(s => s.id === serviceId);
-        return service ? service.name : 'Servicio Desconocido';
-    };
 
-    // Función para obtener el nombre del estilista a partir de su ID
-    const getStylistName = (stylistId: string) => {
-        const stylist = stylists.find(s => s.id === stylistId);
-        return stylist ? stylist.name : 'Estilista Desconocido';
-    };
+  // FIX: Se utiliza `reduce` para filtrar y mapear en un solo paso.
+  // Este enfoque es más robusto y seguro en tipos que la combinación de `map` y `filter`.
+  const validBookings = bookings.reduce<ValidBooking[]>((acc, booking) => {
+    const service = services.find(s => s.id === booking.serviceId);
+    const stylist = stylists.find(s => s.id === booking.stylistId);
 
-    // Función para formatear la fecha
-    const formatDate = (date: any) => {
-        if (!date) return 'Fecha no disponible';
-        // Asumimos que `date` es un string de fecha como "YYYY-MM-DD"
-        const dateObj = new Date(date);
-         if (isNaN(dateObj.getTime())) return 'Fecha inválida';
-        // Ajustamos la zona horaria para que no se desfase un día
-        dateObj.setUTCHours(0, 0, 0, 0);
-        return dateObj.toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' });
-    };
+    // Solo si se encuentran el servicio y el estilista, la reserva es válida.
+    if (service && stylist) {
+      const serviceName = booking.serviceName ?? service.name;
+      const stylistName = booking.stylistName ?? stylist.name;
+      const price = booking.price ?? service.price;
 
+      const formattedPrice = new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+      }).format(price);
+
+      const safeDate = new Date(booking.date.replace(/-/g, '/'));
+      
+      // Añade la reserva válida y enriquecida al acumulador.
+      acc.push({
+          ...booking,
+          serviceName,
+          stylistName,
+          formattedPrice,
+          safeDate,
+      });
+    }
+
+    return acc;
+  }, []);
+
+  if (validBookings.length === 0) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Reservas Recientes</CardTitle>
-                <CardDescription>
-                    Aquí están las últimas reservas registradas en el sistema.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Cliente</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Servicio</TableHead>
-                            <TableHead>Estilista</TableHead>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead>Hora</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {bookings.length > 0 ? (
-                            bookings.slice(0, 10).map((booking) => ( // Mostramos solo las 10 más recientes
-                                <TableRow key={booking.id}>
-                                    <TableCell>{booking.customerName}</TableCell>
-                                    <TableCell>{booking.customerEmail}</TableCell>
-                                    <TableCell>{getServiceName(booking.serviceId)}</TableCell>
-                                    <TableCell>{getStylistName(booking.stylistId)}</TableCell>
-                                    <TableCell>{formatDate(booking.date)}</TableCell>
-                                    <TableCell>{booking.time}</TableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={6} className="text-center">
-                                    Todavía no hay reservas registradas.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
+      <div className="bg-gray-800/50 rounded-lg p-6 text-center">
+        <p className="text-gray-400">No hay reservas válidas para mostrar todavía.</p>
+      </div>
     );
+  }
+
+  return (
+    <div className="bg-gray-800/50 rounded-lg p-4 md:p-6">
+      <h2 className="text-xl font-bold mb-4 text-white">Reservas Recientes</h2>
+      <p className="text-sm text-gray-400 mb-6">Aquí están las últimas reservas registradas en el sistema.</p>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-left text-sm text-gray-300">
+          <thead className="border-b border-gray-700">
+            <tr>
+              <th scope="col" className="px-4 py-3 font-medium">Cliente</th>
+              <th scope="col" className="px-4 py-3 font-medium">Email</th>
+              <th scope="col" className="px-4 py-3 font-medium">Servicio</th>
+              <th scope="col" className="px-4 py-3 font-medium">Estilista</th>
+              <th scope="col" className="px-4 py-3 font-medium">Fecha</th>
+              <th scope="col" className="px-4 py-3 font-medium">Hora</th>
+              <th scope="col" className="px-4 py-3 font-medium text-right">Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {validBookings.map((booking) => (
+                <tr key={booking.id} className="border-b border-gray-800 hover:bg-gray-700/50 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerName}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerEmail}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.serviceName}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.stylistName}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {capitalize(format(booking.safeDate, "dd 'de' MMMM 'de' yyyy", { locale: es }))}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.time}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-right">{booking.formattedPrice}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
