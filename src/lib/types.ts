@@ -1,10 +1,16 @@
+
+export interface ServiceCategory {
+  id: string;
+  name: string;
+}
+
 export interface Service {
   id: string;
   name: string;
   description: string;
   price: number;
   duration: number; // in minutes
-  category: 'Corte y Peinado' | 'Barba' | 'Facial';
+  category: string; // Lo cambio a string para dar flexibilidad a las categorías
 }
 
 export interface Stylist {
@@ -25,10 +31,27 @@ export interface Booking {
   customerName: string;
   customerEmail: string;
   status: 'confirmed' | 'completed' | 'canceled';
-
-  // Denormalized data for easier querying and display
   serviceName?: string;
   stylistName?: string;
   price?: number;
-  createdAt?: any; // To support serverTimestamp
+  createdAt?: any;
+}
+
+export interface Availability {
+  stylistId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  rating: number;
+  text: string;
+}
+
+export interface FeaturedData {
+  services: Service[];
+  stylists: Stylist[];
 }

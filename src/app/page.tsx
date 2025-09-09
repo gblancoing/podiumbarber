@@ -3,8 +3,8 @@
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { featuredServices, featuredStylists } from "../lib/data";
-import { ArrowRight, Scissors, Sparkles } from "lucide-react";
+import { featuredData } from "../lib/data";
+import { ArrowRight, Scissors } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
@@ -74,7 +74,7 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredServices.map((service) => (
+            {featuredData.services.map((service) => (
               <Card key={service.id} className="transform hover:scale-105 transition-transform duration-300 shadow-lg rounded-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
@@ -108,7 +108,7 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredStylists.map((stylist) => (
+            {featuredData.stylists.map((stylist) => (
               <div key={stylist.id} className="text-center flex flex-col items-center">
                 <Avatar className="w-32 h-32 border-4 border-primary shadow-lg">
                   <AvatarImage src={stylist.avatarUrl} alt={stylist.name} />
@@ -126,39 +126,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* AI Advisor Section */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <Card className="bg-primary text-primary-foreground overflow-hidden rounded-2xl shadow-xl">
-            <div className="grid md:grid-cols-2 items-center">
-              <div className="p-8 md:p-12">
-                <Sparkles className="h-10 w-10 text-accent mb-4"/>
-                <h2 className="text-3xl md:text-4xl font-headline font-bold">¿Necesitas inspiración para tu estilo?</h2>
-                <p className="mt-4 text-lg opacity-90">
-                  Nuestro Asesor de Estilo con IA puede ayudarte a encontrar tu look ideal. Responde unas pocas preguntas y recibe recomendaciones personalizadas al instante.
-                </p>
-                <Button asChild variant="secondary" className="mt-8 rounded-full px-8 py-6 text-lg">
-                  <Link href="/ai-advisor">
-                    Consultar ahora <ArrowRight className="ml-2" />
-                  </Link>
-                </Button>
-              </div>
-              <div className="hidden md:block h-full">
-                <Image
-                  src="/img/barberia_v3.jpg"
-                  alt="Mujer con un peinado elegante"
-                  data-ai-hint="elegant hairstyle"
-                  width={800}
-                  height={600}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            </div>
-          </Card>
-        </div>
-      </section>
-
     </div>
   );
 }

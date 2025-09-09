@@ -1,112 +1,78 @@
-import type { Service, Stylist } from './types';
+import { Service, Stylist, ServiceCategory, Availability, Review, FeaturedData } from './types';
 
-// Lista de todos los servicios ofrecidos
-export const services: Service[] = [
-  {
-    id: 'corte-pelo',
-    name: 'Corte de Pelo',
-    description:
-      'Incluye: Mascarilla para puntos negros, lavado, peinado con producto y cortesía (café, capuchino, cerveza, bebida express o jugo en caja para niños).',
-    price: 15000,
-    duration: 40,
-    category: 'Corte y Peinado',
-  },
-  {
-    id: 'corte-diseno',
-    name: 'Corte de Pelo + Diseño Free o Lineas',
-    description:
-      'Incluye: Mascarilla para puntos negros, lavado, peinado con producto y cortesía (café, capuchino, cerveza o bebida express).',
-    price: 17000,
-    duration: 45,
-    category: 'Corte y Peinado',
-  },
-  {
-    id: 'corte-escolar',
-    name: 'Corte Escolar Clasico (sin degrade)',
-    description:
-      'Incluye: Lavado, peinado con producto y cortesía (bebida o jugo de caja).',
-    price: 13000,
-    duration: 30,
-    category: 'Corte y Peinado',
-  },
-  {
-    id: 'barba-toalla-caliente',
-    name: 'Barba con Toalla Caliente',
-    description: 'Un arreglo de barba premium con el clásico tratamiento de toalla caliente para relajar y abrir los poros.',
-    price: 10000,
-    duration: 20,
-    category: 'Barba',
-  },
-  {
-    id: 'barba-vapor-ozono',
-    name: 'Barba con Vapor Ozono',
-    description: 'Tratamiento facial y de barba con vapor de ozono para una limpieza profunda y perfilado perfecto.',
-    price: 12000,
-    duration: 20,
-    category: 'Barba',
-  },
-  {
-    id: 'barba-sencilla',
-    name: 'Barba Sencilla',
-    description: 'Un perfilado y arreglo rápido para mantener tu barba impecable en el día a día.',
-    price: 7000,
-    duration: 15,
-    category: 'Barba',
-  },
-  {
-    id: 'depilacion-nariz',
-    name: 'Depilación de Nariz',
-    description: 'Servicio de depilación de nariz.',
-    price: 4000,
-    duration: 5,
-    category: 'Facial',
-  },
-  {
-    id: 'perfilado-cejas',
-    name: 'Perfilado Cejas',
-    description: 'Define y da forma a tus cejas para una mirada más limpia y definida.',
-    price: 5000,
-    duration: 10,
-    category: 'Facial',
-  },
-  {
-    id: 'limpieza-facial',
-    name: 'Limpieza Facial',
-    description: 'Tratamiento completo para purificar y revitalizar la piel del rostro.',
-    price: 18000,
-    duration: 30,
-    category: 'Facial',
-  },
+// --- DATOS DE SERVICIOS ---
+
+export const serviceCategories: ServiceCategory[] = [
+  { id: 'cortes', name: 'Cortes' },
+  { id: 'barberia', name: 'Barbería' },
+  { id: 'color', name: 'Color' },
+  { id: 'tratamientos', name: 'Tratamientos' },
 ];
 
-// Lista de todos los estilistas disponibles
+export const services: Service[] = [
+  { id: 'corte-pelo', name: 'Corte de Pelo', category: 'Cortes', duration: 45, price: 15000, description: 'Un corte de pelo clásico o moderno, adaptado a tu estilo y fisionomía. Incluye lavado y peinado.' },
+  { id: 'corte-escolar', name: 'Corte Escolar', category: 'Cortes', duration: 30, price: 8000, description: 'Un corte sencillo y prolijo para estudiantes. Válido hasta los 14 años.' },
+  { id: 'corte-diseno', name: 'Corte con Diseño', category: 'Cortes', duration: 60, price: 20000, description: 'Un corte que incorpora diseños, líneas o patrones creativos. Ideal para un look audaz y personalizado.' },
+  { id: 'perfilado-cejas', name: 'Perfilado de Cejas', category: 'Cortes', duration: 15, price: 5000, description: 'Define y da forma a tus cejas para enmarcar tu mirada. Realizado con navaja o pinzas.' },
+  { id: 'barba-sencilla', name: 'Barba Sencilla', category: 'Barbería', duration: 20, price: 7000, description: 'Arreglo y perfilado de barba con máquina y/o tijera para mantener la forma y longitud deseadas.' },
+  { id: 'barba-toalla-caliente', name: 'Barba con Toalla Caliente', category: 'Barbería', duration: 40, price: 18000, description: 'Experiencia completa de afeitado o arreglo de barba con toallas calientes, aceites esenciales y masaje facial.' },
+  { id: 'barba-vapor-ozono', name: 'Barba con Vapor de Ozono', category: 'Barbería', duration: 45, price: 22000, description: 'Un tratamiento premium que utiliza vapor de ozono para abrir los poros, ablandar el vello y purificar la piel.' },
+  { id: 'color-global', name: 'Color Global', category: 'Color', duration: 90, price: 30000, description: 'Aplicación de un solo tono en todo el cabello para un cambio de look completo o para cubrir canas.' },
+  { id: 'visos', name: 'Visos', category: 'Color', duration: 120, price: 45000, description: 'Iluminaciones sutiles en el cabello para dar luz y dimensión, creando un efecto natural y luminoso.' },
+  { id: 'limpieza-facial', name: 'Limpieza Facial', category: 'Tratamientos', duration: 50, price: 25000, description: 'Tratamiento de limpieza profunda para eliminar impurezas, puntos negros y células muertas. Incluye exfoliación y mascarilla.' },
+  { id: 'masaje-capilar', name: 'Masaje Capilar', category: 'Tratamientos', duration: 20, price: 10000, description: 'Masaje relajante en el cuero cabelludo para estimular la circulación y promover un cabello saludable.' },
+];
+
+// --- DATOS DE ESTILISTAS ---
+
+const allServiceIds = services.map(s => s.id);
+
 export const stylists: Stylist[] = [
   {
-    id: 'andres-leyton',
-    name: 'Andres Leyton',
-    bio: 'Especialista en cortes urbanos, diseños y color. Con más de 5 años de experiencia, transforma tu look.',
-    avatarUrl: '/avatars/andres-leyton.jpg',
-    specialties: ['Cortes Urbanos', 'Diseño', 'Color'],
-    services: ['corte-pelo', 'corte-diseno', 'barba-vapor-ozono', 'perfilado-cejas'],
+    id: 'stiven-vargas',
+    name: 'Stiven Vargas',
+    bio: 'Especialista en cortes modernos y diseños de barba. Stiven combina precisión técnica con un estilo urbano para crear looks únicos y a la vanguardia.',
+    avatarUrl: '/img/steven.png',
+    specialties: ['Cortes Urbanos', 'Diseño de Barba', 'Color'],
+    services: allServiceIds,
   },
   {
-    id: 'brandon-muñoz',
-    name: 'Brandon Muñoz',
-    bio: 'Experto en cortes clásicos y barbería tradicional. La precisión y el detalle son mi firma.',
-    avatarUrl: '/avatars/brandon-munoz.jpg',
-    specialties: ['Cortes Clásicos', 'Barbería Tradicional', 'Afeitado'],
-    services: ['corte-pelo', 'corte-escolar', 'barba-toalla-caliente', 'barba-sencilla', 'limpieza-facial'],
+    id: 'kamilo-fonseca',
+    name: 'Kamilo Fonseca',
+    bio: 'Un maestro de la barbería clásica y los cortes tradicionales. Kamilo se enfoca en la experiencia del cliente, asegurando un servicio relajante y un acabado impecable en cada visita.',
+    avatarUrl: '/img/camilo.png',
+    specialties: ['Cortes Clásicos', 'Afeitado Tradicional', 'Barbería'],
+    services: allServiceIds,
   },
 ];
 
 // --- DATOS DESTACADOS PARA LA PÁGINA DE INICIO ---
 
-// Exportamos una selección de servicios para mostrar en la página principal.
-export const featuredServices: Service[] = [
-  services.find(s => s.id === 'corte-diseno')!,
-  services.find(s => s.id === 'barba-vapor-ozono')!,
-  services.find(s => s.id === 'limpieza-facial')!,
+export const featuredData: FeaturedData = {
+    services: services.slice(0, 3),
+    stylists: stylists.slice(0, 2),
+};
+
+// --- DATOS DE DISPONIBILIDAD (EJEMPLO) ---
+
+export const availability: Availability[] = [
+  { stylistId: 'stiven-vargas', dayOfWeek: 1, startTime: '09:00', endTime: '18:00' },
+  { stylistId: 'stiven-vargas', dayOfWeek: 2, startTime: '09:00', endTime: '18:00' },
+  { stylistId: 'stiven-vargas', dayOfWeek: 3, startTime: '09:00', endTime: '12:00' },
+  { stylistId: 'stiven-vargas', dayOfWeek: 4, startTime: '14:00', endTime: '20:00' },
+  { stylistId: 'stiven-vargas', dayOfWeek: 5, startTime: '09:00', endTime: '19:00' },
+  { stylistId: 'kamilo-fonseca', dayOfWeek: 2, startTime: '10:00', endTime: '19:00' },
+  { stylistId: 'kamilo-fonseca', dayOfWeek: 3, startTime: '10:00', endTime: '19:00' },
+  { stylistId: 'kamilo-fonseca', dayOfWeek: 4, startTime: '10:00', endTime: '19:00' },
+  { stylistId: 'kamilo-fonseca', dayOfWeek: 5, startTime: '11:00', endTime: '20:00' },
+  { stylistId: 'kamilo-fonseca', dayOfWeek: 6, startTime: '10:00', endTime: '16:00' },
 ];
 
-// Exportamos los estilistas para mostrarlos en la página principal.
-export const featuredStylists: Stylist[] = stylists;
+// --- DATOS DE RESEÑAS (EJEMPLO) ---
+
+export const reviews: Review[] = [
+    { id: '1', author: 'Carlos M.', rating: 5, text: '¡El mejor corte que he tenido! Stiven es un artista.' },
+    { id: '2', author: 'Javier R.', rating: 5, text: 'Kamilo es un profesional increíble. La experiencia de la toalla caliente fue espectacular.' },
+    { id: '3', author: 'Ana G.', rating: 4, text: 'Buen servicio y ambiente agradable. Volveré.' },
+    { id: '4', author: 'Luis F.', rating: 5, text: 'Siempre salgo satisfecho. Recomiendo 100% los diseños de barba.' },
+];
