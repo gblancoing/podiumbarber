@@ -1,11 +1,10 @@
 'use server';
 
-import { dbAdmin } from '@/lib/firebase-admin'; // Usamos la nueva conexión de admin
+import { dbAdmin } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { services, stylists } from '@/lib/data';
 import { sendBookingConfirmationEmail } from './email';
 
-// El tipo de entrada no cambia.
 type BookingInput = {
     serviceId: string;
     stylistId: string;
@@ -17,7 +16,6 @@ type BookingInput = {
 
 export async function saveBooking(bookingInput: BookingInput) {
     try {
-        // Buscamos los datos completos del servicio y estilista.
         const service = services.find(s => s.id === bookingInput.serviceId);
         const stylist = stylists.find(s => s.id === bookingInput.stylistId);
 
@@ -25,22 +23,30 @@ export async function saveBooking(bookingInput: BookingInput) {
             return { success: false, error: "Servicio o estilista no válido." };
         }
 
-        // Construimos el objeto a guardar, usando FieldValue.serverTimestamp() de admin.
         const bookingToSave = {
             ...bookingInput,
             serviceName: service.name,
             stylistName: stylist.name,
             price: service.price,
-            createdAt: FieldValue.serverTimestamp(), // Correcto para el SDK de Admin
+            createdAt: FieldValue.serverTimestamp(),
             status: 'confirmed' as const,
         };
 
-        // Guardamos en la colección "reservations" usando la instancia de admin.
         const docRef = await dbAdmin.collection("reservations").add(bookingToSave);
         console.log(`Reserva ${docRef.id} creada con éxito usando Admin SDK.`);
 
-        // Enviamos el correo de confirmación.
-        await sendBookingConfirmationEmail(docRef.id, bookingToSave);
+        // **CORRECCIÓN:**
+        // Creamos un objeto específico para el correo con los campos que la función espera.
+        const emailData = {
+            customerName: bookingInput.customerName,
+            customerEmail: bookingInput.customerEmail,
+            date: bookingInput.date,
+            time: bookingInput.time,
+            serviceName: service.name, // Pasamos el nombre del servicio directamente
+            stylistName: stylist.name, // Pasamos el nombre del estilista directamente
+        };
+
+        await sendBookingConfirmationEmail(docRef.id, emailData);
 
         return {
             success: true,
