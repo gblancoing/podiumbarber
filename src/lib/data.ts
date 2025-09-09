@@ -59,7 +59,7 @@ export const services: Service[] = [
     description: 'Servicio de depilación de nariz.',
     price: 4000,
     duration: 5,
-    category: 'Otros Servicios',
+    category: 'Facial',
   },
   {
     id: 'perfilado-cejas',
@@ -67,7 +67,7 @@ export const services: Service[] = [
     description: 'Define y da forma a tus cejas para una mirada más limpia y definida.',
     price: 5000,
     duration: 10,
-    category: 'Otros Servicios',
+    category: 'Facial',
   },
   {
     id: 'limpieza-facial',
@@ -75,7 +75,7 @@ export const services: Service[] = [
     description: 'Tratamiento completo para purificar y revitalizar la piel del rostro.',
     price: 18000,
     duration: 30,
-    category: 'Otros Servicios',
+    category: 'Facial',
   },
 ];
 
@@ -84,27 +84,29 @@ export const stylists: Stylist[] = [
   {
     id: 'andres-leyton',
     name: 'Andres Leyton',
-    description: 'Especialista en cortes urbanos y diseños.',
-    availability: {
-      lunes: ['10:00', '11:00', '12:00', '13:00', '15:00', '16:00', '17:00', '18:00'],
-      martes: ['10:00', '11:00', '12:00', '13:00', '15:00', '16:00', '17:00', '18:00'],
-      miércoles: ['10:00', '11:00', '12:00', '13:00'],
-      jueves: [],
-      viernes: ['10:00', '11:00', '12:00', '13:00', '15:00', '16:00', '17:00', '18:00'],
-      sábado: ['10:00', '11:00', '12:00', '13:00'],
-    },
+    bio: 'Especialista en cortes urbanos, diseños y color. Con más de 5 años de experiencia, transforma tu look.',
+    avatarUrl: '/avatars/andres-leyton.jpg',
+    specialties: ['Cortes Urbanos', 'Diseño', 'Color'],
+    services: ['corte-pelo', 'corte-diseno', 'barba-vapor-ozono', 'perfilado-cejas'],
   },
   {
     id: 'brandon-muñoz',
     name: 'Brandon Muñoz',
-    description: 'Experto en cortes clásicos y barbería tradicional.',
-    availability: {
-      lunes: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
-      martes: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
-      miércoles: [],
-      jueves: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
-      viernes: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
-      sábado: ['10:30', '11:30', '12:30', '13:30'],
-    },
+    bio: 'Experto en cortes clásicos y barbería tradicional. La precisión y el detalle son mi firma.',
+    avatarUrl: '/avatars/brandon-munoz.jpg',
+    specialties: ['Cortes Clásicos', 'Barbería Tradicional', 'Afeitado'],
+    services: ['corte-pelo', 'corte-escolar', 'barba-toalla-caliente', 'barba-sencilla', 'limpieza-facial'],
   },
 ];
+
+// --- DATOS DESTACADOS PARA LA PÁGINA DE INICIO ---
+
+// Exportamos una selección de servicios para mostrar en la página principal.
+export const featuredServices: Service[] = [
+  services.find(s => s.id === 'corte-diseno')!,
+  services.find(s => s.id === 'barba-vapor-ozono')!,
+  services.find(s => s.id === 'limpieza-facial')!,
+];
+
+// Exportamos los estilistas para mostrarlos en la página principal.
+export const featuredStylists: Stylist[] = stylists;
