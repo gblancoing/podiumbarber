@@ -1,5 +1,3 @@
-'use client';
-
 import type { Service, Stylist } from './types';
 
 // Lista de todos los servicios ofrecidos
@@ -14,7 +12,7 @@ export const services: Service[] = [
     category: 'Corte y Peinado',
   },
   {
-    id: 'corte-diseno', // FIX: Corregido el typo de 'disemo' a 'diseno' para consistencia.
+    id: 'corte-diseno',
     name: 'Corte de Pelo + Diseño Free o Lineas',
     description:
       'Incluye: Mascarilla para puntos negros, lavado, peinado con producto y cortesía (café, capuchino, cerveza o bebida express).',
