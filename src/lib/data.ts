@@ -1,5 +1,6 @@
+'use client';
 
-import { Service, Stylist } from './types';
+import type { Service, Stylist } from './types';
 
 // Lista de todos los servicios ofrecidos
 export const services: Service[] = [
@@ -13,7 +14,7 @@ export const services: Service[] = [
     category: 'Corte y Peinado',
   },
   {
-    id: 'corte-disemo', // FIX: Corregido para coincidir con la base de datos
+    id: 'corte-diseno', // FIX: Corregido el typo de 'disemo' a 'diseno' para consistencia.
     name: 'Corte de Pelo + Diseño Free o Lineas',
     description:
       'Incluye: Mascarilla para puntos negros, lavado, peinado con producto y cortesía (café, capuchino, cerveza o bebida express).',
@@ -33,53 +34,79 @@ export const services: Service[] = [
   {
     id: 'barba-toalla-caliente',
     name: 'Barba con Toalla Caliente',
-    description:
-      'Incluye: Diseño o perfilado, aplicación de vapor de ozono y exfoliación.',
+    description: 'Un arreglo de barba premium con el clásico tratamiento de toalla caliente para relajar y abrir los poros.',
     price: 10000,
-    duration: 30,
+    duration: 20,
     category: 'Barba',
   },
   {
-    id: 'perfilado-cejas',
-    name: 'Perfilado de Cejas',
-    description: 'Definición y limpieza de cejas para una mirada impecable.',
-    price: 5000,
-    duration: 15,
-    category: 'Facial',
+    id: 'barba-vapor-ozono',
+    name: 'Barba con Vapor Ozono',
+    description: 'Tratamiento facial y de barba con vapor de ozono para una limpieza profunda y perfilado perfecto.',
+    price: 12000,
+    duration: 20,
+    category: 'Barba',
   },
   {
-    id: 'mascarilla-negra',
-    name: 'Mascarilla Negra',
-    description: 'Elimina puntos negros y purifica la piel.',
+    id: 'barba-sencilla',
+    name: 'Barba Sencilla',
+    description: 'Un perfilado y arreglo rápido para mantener tu barba impecable en el día a día.',
+    price: 7000,
+    duration: 15,
+    category: 'Barba',
+  },
+  {
+    id: 'depilacion-nariz',
+    name: 'Depilación de Nariz',
+    description: 'Servicio de depilación de nariz.',
+    price: 4000,
+    duration: 5,
+    category: 'Otros Servicios',
+  },
+  {
+    id: 'perfilado-cejas',
+    name: 'Perfilado Cejas',
+    description: 'Define y da forma a tus cejas para una mirada más limpia y definida.',
     price: 5000,
-    duration: 20,
-    category: 'Facial',
+    duration: 10,
+    category: 'Otros Servicios',
+  },
+  {
+    id: 'limpieza-facial',
+    name: 'Limpieza Facial',
+    description: 'Tratamiento completo para purificar y revitalizar la piel del rostro.',
+    price: 18000,
+    duration: 30,
+    category: 'Otros Servicios',
   },
 ];
 
-// Mapeo de IDs de servicios para fácil acceso
-const allServiceIds = services.map(s => s.id);
-
-// Lista de estilistas
+// Lista de todos los estilistas disponibles
 export const stylists: Stylist[] = [
   {
-    id: 'stiven-vargas',
-    name: 'Stiven Vargas',
-    bio: 'Especialista en cortes modernos y diseños de barba. Stiven combina precisión técnica con un estilo urbano para crear looks únicos y a la vanguardia.',
-    avatarUrl: '/img/steven.png',
-    specialties: ['Cortes Urbanos', 'Diseño de Barba', 'Color'],
-    services: allServiceIds, 
+    id: 'andres-leyton',
+    name: 'Andres Leyton',
+    description: 'Especialista en cortes urbanos y diseños.',
+    availability: {
+      lunes: ['10:00', '11:00', '12:00', '13:00', '15:00', '16:00', '17:00', '18:00'],
+      martes: ['10:00', '11:00', '12:00', '13:00', '15:00', '16:00', '17:00', '18:00'],
+      miércoles: ['10:00', '11:00', '12:00', '13:00'],
+      jueves: [],
+      viernes: ['10:00', '11:00', '12:00', '13:00', '15:00', '16:00', '17:00', '18:00'],
+      sábado: ['10:00', '11:00', '12:00', '13:00'],
+    },
   },
   {
-    id: 'kamilo-fonseca',
-    name: 'Kamilo Fonseca',
-    bio: 'Un maestro de la barbería clásica y los cortes tradicionales. Kamilo se enfoca en la experiencia del cliente, asegurando un servicio relajante y un acabado impecable en cada visita.',
-    avatarUrl: '/img/camilo.png',
-    specialties: ['Cortes Clásicos', 'Afeitado Tradicional', 'Barbería'],
-    services: allServiceIds,
+    id: 'brandon-muñoz',
+    name: 'Brandon Muñoz',
+    description: 'Experto en cortes clásicos y barbería tradicional.',
+    availability: {
+      lunes: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
+      martes: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
+      miércoles: [],
+      jueves: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
+      viernes: ['10:30', '11:30', '12:30', '13:30', '15:30', '16:30', '17:30', '18:30'],
+      sábado: ['10:30', '11:30', '12:30', '13:30'],
+    },
   },
 ];
-
-// Servicios y estilistas destacados para la página de inicio
-export const featuredServices = services.slice(0, 3);
-export const featuredStylists = stylists.slice(0, 2);
