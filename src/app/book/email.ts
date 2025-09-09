@@ -1,18 +1,16 @@
 'use server';
 
-import { services, stylists } from '@/lib/data';
-import type { Booking } from '@/lib/types';
 import { sendConfirmationEmail as sendEmailWithAI } from '@/ai/flows/send-confirmation-email';
 import nodemailer from 'nodemailer';
 
-// El tipo de datos de la reserva completa
-type FullBookingData = {
-    serviceName: string;
-    stylistName: string;
+// El tipo de datos que esta función recibe (ahora con IDs)
+type BookingDataForEmail = {
     customerName: string;
     customerEmail: string;
     date: string;
     time: string;
+    stylistId: string; // ID del estilista
+    serviceId: string; // ID del servicio
 };
 
 // --- Configuración del Transporter de Nodemailer ---
@@ -27,22 +25,17 @@ const transporter = nodemailer.createTransport({
 });
 
 // --- Función Principal de Envío de Correo ---
-export async function sendBookingConfirmationEmail(bookingId: string, bookingData: FullBookingData) {
+export async function sendBookingConfirmationEmail(bookingId: string, bookingData: BookingDataForEmail) {
     if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM) {
         console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP.`);
         return;
     }
 
     try {
-        // Generamos el contenido del correo con IA.
-        const emailContent = await sendEmailWithAI({
-            customerName: bookingData.customerName,
-            customerEmail: bookingData.customerEmail,
-            date: bookingData.date,
-            time: bookingData.time,
-            serviceName: bookingData.serviceName,
-            stylistName: bookingData.stylistName,
-        });
+        // **CORRECCIÓN DEFINITIVA:**
+        // Pasamos los datos directamente a la función de IA, incluyendo los IDs.
+        // La función de IA se encargará de buscar los nombres.
+        const emailContent = await sendEmailWithAI(bookingData);
 
         // Creamos la lista de destinatarios.
         const recipients = [bookingData.customerEmail];
@@ -62,5 +55,7 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
 
     } catch (error) {
         console.error(`Error CRÍTICO al enviar correo para reserva ${bookingId}:`, error);
+        // Lanzamos el error para que la acción principal lo capture si es necesario.
+        throw new Error('Failed to send confirmation email.');
     }
 }

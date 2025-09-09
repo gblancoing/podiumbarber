@@ -35,18 +35,10 @@ export async function saveBooking(bookingInput: BookingInput) {
         const docRef = await dbAdmin.collection("reservations").add(bookingToSave);
         console.log(`Reserva ${docRef.id} creada con éxito usando Admin SDK.`);
 
-        // **CORRECCIÓN:**
-        // Creamos un objeto específico para el correo con los campos que la función espera.
-        const emailData = {
-            customerName: bookingInput.customerName,
-            customerEmail: bookingInput.customerEmail,
-            date: bookingInput.date,
-            time: bookingInput.time,
-            serviceName: service.name, // Pasamos el nombre del servicio directamente
-            stylistName: stylist.name, // Pasamos el nombre del estilista directamente
-        };
-
-        await sendBookingConfirmationEmail(docRef.id, emailData);
+        // **CORRECCIÓN DEFINITIVA:**
+        // Enviamos el objeto `bookingInput` original, que contiene los IDs.
+        // La función de email y la IA se encargarán del resto.
+        await sendBookingConfirmationEmail(docRef.id, bookingInput);
 
         return {
             success: true,
