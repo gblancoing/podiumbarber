@@ -168,10 +168,10 @@ export async function sendBookingConfirmationEmailImproved(bookingId: string, bo
     }
 
     try {
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             host: process.env.ZOHO_SMTP_HOST,
             port: Number(process.env.ZOHO_SMTP_PORT),
-            secure: true,
+            secure: true, // true para puerto 465, false para puerto 587
             auth: {
                 user: process.env.ZOHO_SMTP_USER,
                 pass: process.env.ZOHO_SMTP_PASS,
