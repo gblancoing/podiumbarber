@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
-import { collection, onSnapshot, query, orderBy, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, writeBatch, doc } from 'firebase/firestore';
 import type { Booking, Service, Stylist } from '../../../lib/types';
 import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 import { DashboardStats } from './DashboardStats';
@@ -10,33 +10,34 @@ import { RecentBookings } from './RecentBookings';
 
 export const dynamic = 'force-dynamic';
 
-// Esta función asegura que la base de datos tenga los servicios y estilistas base si está vacía.
-async function seedDatabase() {
-  if (!db) return;
-
-  const servicesCollection = collection(db, 'services');
-  const stylistsCollection = collection(db, 'stylists');
-
-  // Pre-carga los servicios si no existen
-  const servicesSnapshot = await getDocs(servicesCollection);
-  if (servicesSnapshot.empty) {
-    const batch = writeBatch(db);
-    staticServices.forEach(service => {
-      const docRef = doc(db, 'services', service.id);
-      batch.set(docRef, service);
-    });
-    await batch.commit();
+// Esta función fuerza la sincronización de los datos estáticos con Firestore.
+// Esto asegura que la información de servicios y estilistas sea consistente en toda la aplicación.
+async function syncFirestoreData() {
+  if (!db) {
+    console.error("Firestore no está inicializado.");
+    return;
   }
 
-  // Pre-carga los estilistas si no existen
-  const stylistsSnapshot = await getDocs(stylistsCollection);
-  if (stylistsSnapshot.empty) {
-    const batch = writeBatch(db);
-    staticStylists.forEach(stylist => {
-      const docRef = doc(db, 'stylists', stylist.id);
-      batch.set(docRef, stylist);
-    });
+  const batch = writeBatch(db);
+
+  // Sobrescribe la colección de 'services' con los datos de /lib/data.ts
+  staticServices.forEach(service => {
+    const docRef = doc(db, 'services', service.id);
+    batch.set(docRef, service);
+  });
+
+  // Sobrescribe la colección de 'stylists' con los datos de /lib/data.ts
+  staticStylists.forEach(stylist => {
+    const docRef = doc(db, 'stylists', stylist.id);
+    batch.set(docRef, stylist);
+  });
+
+  try {
     await batch.commit();
+    console.log("Datos de Firestore sincronizados con éxito.");
+  } catch (error) {
+    console.error("Error al sincronizar datos con Firestore:", error);
+    throw new Error("No se pudieron sincronizar los datos base.");
   }
 }
 
@@ -54,55 +55,49 @@ export default function DashboardPage() {
             return;
         }
 
-        // Primero, asegura que la BD esté poblada, y luego escucha los cambios.
-        seedDatabase().then(() => {
+        // Primero, se fuerza la sincronización de los datos, y luego se cargan las reservas.
+        syncFirestoreData().then(() => {
             const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
             const servicesQuery = query(collection(db, 'services'));
             const stylistsQuery = query(collection(db, 'stylists'));
 
-            // Escucha las reservas en tiempo real
+            // Escucha las reservas
             const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
                 const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
                 setBookings(bookingsData);
-            }, (err) => {
-                setError("No se pudieron cargar las reservas.");
-                setLoading(false); // FIX: Asegura que el loading termine en caso de error
-            });
+            }, (err) => setError("No se pudieron cargar las reservas."));
 
-            // Escucha los servicios en tiempo real
+            // Escucha los servicios
             const unsubscribeServices = onSnapshot(servicesQuery, (snapshot) => {
                 const servicesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
                 setServices(servicesData);
-            }, (err) => {
-                setError("No se pudieron cargar los datos de servicios.");
-                setLoading(false); // FIX: Asegura que el loading termine en caso de error
-            });
+            }, (err) => setError("No se pudieron cargar los servicios."));
 
-            // Escucha los estilistas en tiempo real
+            // Escucha los estilistas
             const unsubscribeStylists = onSnapshot(stylistsQuery, (snapshot) => {
                 const stylistsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Stylist[];
                 setStylists(stylistsData);
-                setLoading(false); // El loading termina cuando los últimos datos necesarios llegan
+                setLoading(false); // La carga finaliza cuando todos los datos están listos
             }, (err) => {
-                setError("No se pudieron cargar los datos de estilistas.");
+                setError("No se pudieron cargar los estilistas.");
                 setLoading(false);
             });
 
-            // Limpieza: se desuscribe de los listeners cuando el componente se desmonta
+            // Limpieza al desmontar el componente
             return () => {
                 unsubscribeBookings();
                 unsubscribeServices();
                 unsubscribeStylists();
             };
         }).catch(err => {
-            setError("Ocurrió un error al configurar los datos iniciales.");
+            setError(err.message);
             setLoading(false);
         });
 
-    }, []); // El array vacío asegura que esto se ejecute solo una vez
+    }, []);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-full">Cargando y verificando datos...</div>;
+        return <div className="flex items-center justify-center h-full">Sincronizando y cargando datos...</div>;
     }
 
     if (error) {
