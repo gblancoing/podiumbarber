@@ -1,6 +1,8 @@
 import { CalendarCheck } from "lucide-react";
 import { BookingPageClient } from "./BookingPageClient";
 
+export const dynamic = 'force-dynamic';
+
 export default function BookAppointmentPage() {
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4">

@@ -7,6 +7,8 @@ import { DollarSign, Timer, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
+export const dynamic = 'force-dynamic';
+
 export default function ServicesPage() {
   const categories = services.reduce((acc, service) => {
     (acc[service.category] = acc[service.category] || []).push(service);
