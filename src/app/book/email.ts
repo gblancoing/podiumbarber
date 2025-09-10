@@ -42,6 +42,13 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
             },
         });
 
+        console.log("Transporter configurado:", {
+            host: process.env.ZOHO_SMTP_HOST,
+            port: process.env.ZOHO_SMTP_PORT,
+            user: process.env.ZOHO_SMTP_USER,
+            from: process.env.EMAIL_FROM
+        });
+
         // --- Lógica de correo genérico ---
         const stylist = stylists.find(s => s.id === bookingData.stylistId);
         const service = services.find(s => s.id === bookingData.serviceId);
@@ -74,14 +81,19 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
         // Agregar correo del administrador
         recipients.push('contacto@podiumbarber.cl');
 
-        await transporter.sendMail({
+        const mailOptions = {
             from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
             to: recipients.join(', '),
             subject: emailContent.subject,
             html: emailContent.body,
-        });
+        };
+
+        console.log("Enviando correo con opciones:", mailOptions);
+
+        const result = await transporter.sendMail(mailOptions);
 
         console.log(`Correo de confirmación para reserva ${bookingId} enviado con éxito.`);
+        console.log("Resultado del envío:", result);
 
     } catch (error) {
         console.error(`Error al intentar enviar correo para ${bookingId}:`, error);
