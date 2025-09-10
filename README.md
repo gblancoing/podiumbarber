@@ -1,5 +1,11 @@
-# Firebase Studio
+# PodiumBarber
 
-This is a NextJS starter in Firebase Studio.
+Portal web para barbería con sistema de reservas online.
 
-To get started, take a look at src/app/page.tsx.
+## Características
+- Sistema de reservas en línea
+- Gestión de estilistas
+- Catálogo de servicios
+- Panel de administración
+
+<!-- Force deployment - color scheme update to black/gold/white -->

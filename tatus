@@ -1,0 +1,5 @@
+[33m9992a24[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: Cambiar paleta de colores de morado a negro/dorado/blanco
+[33m5d0ccf6[m Fix: Forzar colores negro, blanco y dorado con !important
+[33m934d3ba[m URGENT: Force deployment - color scheme not updating
+[33m753bfa7[m Force redeploy - color scheme changes
+[33m4f79bb6[m Style: Cambiar esquema de colores a negro, blanco y dorado
