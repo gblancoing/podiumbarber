@@ -2,49 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
-import { collection, onSnapshot, query, orderBy, writeBatch, doc } from 'firebase/firestore';
-import type { Booking, Service, Stylist } from '../../../lib/types';
-import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import type { Booking } from '../../../lib/types';
 import { DashboardStats } from './DashboardStats';
 import { RecentBookings } from './RecentBookings';
+import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 
 export const dynamic = 'force-dynamic';
 
-// Esta función fuerza la sincronización de los datos estáticos con Firestore.
-// Esto asegura que la información de servicios y estilistas sea consistente en toda la aplicación.
-async function syncFirestoreData() {
-  if (!db) {
-    console.error("Firestore no está inicializado.");
-    return;
-  }
-
-  const batch = writeBatch(db);
-
-  // Sobrescribe la colección de 'services' con los datos de /lib/data.ts
-  staticServices.forEach(service => {
-    const docRef = doc(db, 'services', service.id);
-    batch.set(docRef, service);
-  });
-
-  // Sobrescribe la colección de 'stylists' con los datos de /lib/data.ts
-  staticStylists.forEach(stylist => {
-    const docRef = doc(db, 'stylists', stylist.id);
-    batch.set(docRef, stylist);
-  });
-
-  try {
-    await batch.commit();
-    console.log("Datos de Firestore sincronizados con éxito.");
-  } catch (error) {
-    console.error("Error al sincronizar datos con Firestore:", error);
-    throw new Error("No se pudieron sincronizar los datos base.");
-  }
-}
-
 export default function DashboardPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [services, setServices] = useState<Service[]>([]);
-    const [stylists, setStylists] = useState<Stylist[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -55,49 +22,28 @@ export default function DashboardPage() {
             return;
         }
 
-        // Primero, se fuerza la sincronización de los datos, y luego se cargan las reservas.
-        syncFirestoreData().then(() => {
-            const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
-            const servicesQuery = query(collection(db, 'services'));
-            const stylistsQuery = query(collection(db, 'stylists'));
+        // Se establece un listener en tiempo real solo para la colección de reservas.
+        const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
 
-            // Escucha las reservas
-            const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
-                const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
-                setBookings(bookingsData);
-            }, (err) => setError("No se pudieron cargar las reservas."));
-
-            // Escucha los servicios
-            const unsubscribeServices = onSnapshot(servicesQuery, (snapshot) => {
-                const servicesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
-                setServices(servicesData);
-            }, (err) => setError("No se pudieron cargar los servicios."));
-
-            // Escucha los estilistas
-            const unsubscribeStylists = onSnapshot(stylistsQuery, (snapshot) => {
-                const stylistsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Stylist[];
-                setStylists(stylistsData);
-                setLoading(false); // La carga finaliza cuando todos los datos están listos
-            }, (err) => {
-                setError("No se pudieron cargar los estilistas.");
-                setLoading(false);
-            });
-
-            // Limpieza al desmontar el componente
-            return () => {
-                unsubscribeBookings();
-                unsubscribeServices();
-                unsubscribeStylists();
-            };
-        }).catch(err => {
-            setError(err.message);
+        const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
+            const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
+            setBookings(bookingsData);
+            setLoading(false); // La carga finaliza una vez que se tienen las reservas.
+        }, (err) => {
+            console.error("Error al cargar las reservas:", err);
+            setError("No se pudieron cargar las reservas. Por favor, revisa la consola para más detalles.");
             setLoading(false);
         });
 
-    }, []);
+        // Limpieza: se desuscribe del listener cuando el componente se desmonta.
+        return () => {
+            unsubscribeBookings();
+        };
+
+    }, []); // El array vacío asegura que esto se ejecute solo una vez.
 
     if (loading) {
-        return <div className="flex items-center justify-center h-full">Sincronizando y cargando datos...</div>;
+        return <div className="flex items-center justify-center h-full">Cargando reservas...</div>;
     }
 
     if (error) {
@@ -106,8 +52,11 @@ export default function DashboardPage() {
 
     return (
         <div className="flex flex-col gap-8">
-            <DashboardStats bookings={bookings} services={services} />
-            <RecentBookings bookings={bookings} services={services} stylists={stylists} />
+            {/* El componente de estadísticas ahora también usará los datos estáticos */}
+            <DashboardStats bookings={bookings} services={staticServices} />
+            
+            {/* El componente de reservas recientes ya no necesita los props de servicios y estilistas */}
+            <RecentBookings bookings={bookings} />
         </div>
     );
 }

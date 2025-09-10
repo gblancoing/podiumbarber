@@ -1,17 +1,16 @@
 'use client';
 
-import type { Booking, Service, Stylist } from '../../../lib/types';
+// Se importa la información estática de servicios y estilistas como única fuente de verdad.
+import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
+import type { Booking } from '../../../lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
+// Las props de servicios y estilistas ya no son necesarias.
 interface RecentBookingsProps {
   bookings: Booking[];
-  services: Service[];
-  stylists: Stylist[];
 }
 
-// Tipo auxiliar para las reservas que han sido validadas y enriquecidas.
-// Esto mejora la seguridad de tipos en el resto del componente.
 type ValidBooking = Booking & {
     serviceName: string;
     stylistName: string;
@@ -21,15 +20,15 @@ type ValidBooking = Booking & {
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export function RecentBookings({ bookings, services, stylists }: RecentBookingsProps) {
+// El componente ahora solo necesita la lista de reservas.
+export function RecentBookings({ bookings }: RecentBookingsProps) {
 
-  // FIX: Se utiliza `reduce` para filtrar y mapear en un solo paso.
-  // Este enfoque es más robusto y seguro en tipos que la combinación de `map` y `filter`.
   const validBookings = bookings.reduce<ValidBooking[]>((acc, booking) => {
-    const service = services.find(s => s.id === booking.serviceId);
-    const stylist = stylists.find(s => s.id === booking.stylistId);
+    // Se busca el servicio y el estilista en los datos estáticos importados.
+    const service = staticServices.find(s => s.id === booking.serviceId);
+    const stylist = staticStylists.find(s => s.id === booking.stylistId);
 
-    // Solo si se encuentran el servicio y el estilista, la reserva es válida.
+    // La reserva solo es válida si ambos (servicio y estilista) se encuentran.
     if (service && stylist) {
       const serviceName = booking.serviceName ?? service.name;
       const stylistName = booking.stylistName ?? stylist.name;
@@ -42,7 +41,6 @@ export function RecentBookings({ bookings, services, stylists }: RecentBookingsP
 
       const safeDate = new Date(booking.date.replace(/-/g, '/'));
       
-      // Añade la reserva válida y enriquecida al acumulador.
       acc.push({
           ...booking,
           serviceName,
@@ -59,6 +57,8 @@ export function RecentBookings({ bookings, services, stylists }: RecentBookingsP
     return (
       <div className="bg-gray-800/50 rounded-lg p-6 text-center">
         <p className="text-gray-400">No hay reservas válidas para mostrar todavía.</p>
+        {/* Mensaje de ayuda para depuración en caso de que haya reservas pero no sean válidas */}
+        {bookings.length > 0 && <p className="text-xs text-gray-500 mt-2">Se encontraron {bookings.length} reservas, pero no se pudieron validar con los datos de servicios/estilistas actuales.</p>}
       </div>
     );
   }
