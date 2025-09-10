@@ -56,7 +56,7 @@ export default function DashboardPage() {
 
         // Primero, asegura que la BD esté poblada, y luego escucha los cambios.
         seedDatabase().then(() => {
-            const bookingsQuery = query(collection(db, 'reservations'), orderBy('createdAt', 'desc'));
+            const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
             const servicesQuery = query(collection(db, 'services'));
             const stylistsQuery = query(collection(db, 'stylists'));
 
