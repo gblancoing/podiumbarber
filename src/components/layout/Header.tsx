@@ -25,9 +25,9 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm shadow-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline text-foreground hover:text-primary transition-colors">
           <Image src="/img/logo.png" alt="PodiumBarber Logo" width={32} height={32} />
           PodiumBarber
         </Link>
@@ -49,7 +49,7 @@ export function Header() {
           <Button variant="ghost" asChild>
             <Link href="/login">Ingresar</Link>
           </Button>
-          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300">
             <Link href="/book">Reservar Ahora</Link>
           </Button>
         </div>

@@ -55,7 +55,7 @@ export default function Home() {
             Agenda tu cita online, rápido y sencillo.
           </p>
           <div className="mt-8">
-            <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-lg">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/book">
                 Reservar ahora <ArrowRight className="ml-2" />
               </Link>
@@ -75,13 +75,13 @@ export default function Home() {
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredData.services.map((service) => (
-              <Card key={service.id} className="transform hover:scale-105 transition-transform duration-300 shadow-lg rounded-xl overflow-hidden">
+              <Card key={service.id} className="transform hover:scale-105 transition-all duration-300 shadow-lg rounded-xl overflow-hidden bg-card border-border hover:border-primary/50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <div className="p-3 bg-primary/10 rounded-full">
+                    <div className="p-3 bg-primary/20 rounded-full border border-primary/30">
                       <Scissors className="text-primary h-6 w-6"/>
                     </div>
-                    <span className="text-xl">{service.name}</span>
+                    <span className="text-xl text-foreground">{service.name}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -110,9 +110,9 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredData.stylists.map((stylist) => (
               <div key={stylist.id} className="text-center flex flex-col items-center">
-                <Avatar className="w-32 h-32 border-4 border-primary shadow-lg">
+                <Avatar className="w-32 h-32 border-4 border-primary shadow-lg hover:shadow-primary/25 transition-shadow duration-300">
                   <AvatarImage src={stylist.avatarUrl} alt={stylist.name} />
-                  <AvatarFallback>{stylist.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">{stylist.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <h3 className="mt-4 font-bold text-xl">{stylist.name}</h3>
                 <p className="text-primary">{stylist.specialties[0]}</p>

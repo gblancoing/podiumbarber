@@ -6,23 +6,23 @@
   :root {
     --background: 0 0% 0%; /* Negro puro */
     --foreground: 0 0% 100%; /* Blanco puro */
-    --card: 0 0% 0%; /* Negro puro */
+    --card: 0 0% 5%; /* Negro muy oscuro para cards */
     --card-foreground: 0 0% 100%; /* Blanco puro */
-    --popover: 0 0% 0%; /* Negro puro */
+    --popover: 0 0% 5%; /* Negro muy oscuro para popovers */
     --popover-foreground: 0 0% 100%; /* Blanco puro */
-    --primary: 45 100% 50%; /* Dorado */
+    --primary: 43 96% 56%; /* Dorado más vibrante */
     --primary-foreground: 0 0% 0%; /* Negro para texto sobre dorado */
-    --secondary: 0 0% 10%; /* Negro muy oscuro */
+    --secondary: 0 0% 8%; /* Negro muy oscuro */
     --secondary-foreground: 0 0% 100%; /* Blanco puro */
-    --muted: 0 0% 10%; /* Negro muy oscuro */
-    --muted-foreground: 0 0% 70%; /* Gris claro */
-    --accent: 45 100% 50%; /* Dorado */
+    --muted: 0 0% 8%; /* Negro muy oscuro */
+    --muted-foreground: 0 0% 65%; /* Gris medio */
+    --accent: 43 96% 56%; /* Dorado más vibrante */
     --accent-foreground: 0 0% 0%; /* Negro para texto sobre dorado */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Blanco puro */
-    --border: 0 0% 20%; /* Gris oscuro */
-    --input: 0 0% 10%; /* Negro muy oscuro */
-    --ring: 45 100% 50%; /* Dorado para focus */
+    --border: 0 0% 15%; /* Gris oscuro para bordes */
+    --input: 0 0% 8%; /* Negro muy oscuro para inputs */
+    --ring: 43 96% 56%; /* Dorado para focus */
     --radius: 0.5rem;
   }
 }
@@ -43,49 +43,74 @@
   }
 }
 
-/* Forzar colores específicos */
+/* Utilidades personalizadas para la paleta dorado/negro/blanco */
 @layer utilities {
   .bg-primary {
-    background-color: #FFD700 !important; /* Dorado */
+    background-color: #F59E0B !important; /* Dorado vibrante */
   }
   .text-primary {
-    color: #FFD700 !important; /* Dorado */
+    color: #F59E0B !important; /* Dorado vibrante */
   }
   .border-primary {
-    border-color: #FFD700 !important; /* Dorado */
+    border-color: #F59E0B !important; /* Dorado vibrante */
   }
   .bg-background {
-    background-color: #000000 !important; /* Negro */
+    background-color: #000000 !important; /* Negro puro */
   }
   .text-foreground {
-    color: #FFFFFF !important; /* Blanco */
+    color: #FFFFFF !important; /* Blanco puro */
   }
   .bg-card {
-    background-color: #000000 !important; /* Negro */
+    background-color: #0A0A0A !important; /* Negro muy oscuro para cards */
   }
   .text-card-foreground {
-    color: #FFFFFF !important; /* Blanco */
+    color: #FFFFFF !important; /* Blanco puro */
+  }
+  
+  /* Colores dorados personalizados */
+  .bg-gold {
+    background-color: #F59E0B !important;
+  }
+  .text-gold {
+    color: #F59E0B !important;
+  }
+  .border-gold {
+    border-color: #F59E0B !important;
+  }
+  
+  /* Hover effects dorados */
+  .hover-gold:hover {
+    color: #F59E0B !important;
+  }
+  .hover-bg-gold:hover {
+    background-color: #F59E0B !important;
   }
   
   /* Forzar colores en elementos específicos */
   header {
     background-color: #000000 !important;
+    border-bottom-color: #1A1A1A !important;
   }
   
   footer {
     background-color: #000000 !important;
+    border-top-color: #1A1A1A !important;
   }
   
-  button {
-    background-color: #FFD700 !important;
+  /* Botones con estilo dorado */
+  .btn-primary {
+    background-color: #F59E0B !important;
     color: #000000 !important;
+    border: none !important;
   }
   
-  .bg-primary {
-    background-color: #FFD700 !important;
+  .btn-primary:hover {
+    background-color: #D97706 !important;
   }
   
-  .text-primary {
-    color: #FFD700 !important;
+  /* Cards con fondo oscuro */
+  .card-dark {
+    background-color: #0A0A0A !important;
+    border-color: #1A1A1A !important;
   }
 }

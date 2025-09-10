@@ -14,11 +14,11 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-background border-t">
+    <footer className="bg-background border-t border-border">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline">
+            <Link href="/" className="flex items-center gap-2 font-bold text-lg font-headline text-foreground hover:text-primary transition-colors">
               <Image src="/img/logo.png" alt="PodiumBarber Logo" width={32} height={32} />
               PodiumBarber
             </Link>
@@ -27,7 +27,7 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold">Navegación</h3>
+            <h3 className="font-semibold text-foreground">Navegación</h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="/services" className="text-muted-foreground hover:text-primary">Servicios</Link></li>
               <li><Link href="/stylists" className="text-muted-foreground hover:text-primary">Estilistas</Link></li>
@@ -36,14 +36,14 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold">Legal</h3>
+            <h3 className="font-semibold text-foreground">Legal</h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li><Link href="#" className="text-muted-foreground hover:text-primary">Términos y Condiciones</Link></li>
               <li><Link href="#" className="text-muted-foreground hover:text-primary">Política de Privacidad</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold">Redes Sociales</h3>
+            <h3 className="font-semibold text-foreground">Redes Sociales</h3>
             <div className="flex mt-4 space-x-4">
               <Link href="https://www.instagram.com/podium.barberstudio" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Instagram /></Link>
               <Link href="#" className="text-muted-foreground hover:text-primary"><Facebook /></Link>

@@ -39,13 +39,13 @@ export default function ServicesPage() {
       <div className="space-y-12">
         {sortedCategories.map((category) => (
           <div key={category}>
-            <h2 className="text-3xl font-headline font-semibold mb-8 border-b-2 border-primary pb-2">{category}</h2>
+            <h2 className="text-3xl font-headline font-semibold mb-8 border-b-2 border-primary pb-2 text-foreground">{category}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {categories[category].map((service) => (
-                <Card key={service.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <Card key={service.id} className="flex flex-col shadow-lg hover:shadow-xl transition-all duration-300 bg-card border-border hover:border-primary/50">
                   <CardHeader>
-                    <CardTitle>{service.name}</CardTitle>
-                    <CardDescription>{service.description}</CardDescription>
+                    <CardTitle className="text-foreground">{service.name}</CardTitle>
+                    <CardDescription className="text-muted-foreground">{service.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow">
                      <div className="flex items-center justify-between text-muted-foreground">
@@ -60,7 +60,7 @@ export default function ServicesPage() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                       <Link href={`/book?service=${service.id}`}>
                         Reservar ahora <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
