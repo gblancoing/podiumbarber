@@ -85,14 +85,14 @@ export function BookingClient() {
   }, [selectedStylist]);
 
   useEffect(() => {
-    if (selectedDate && selectedStylist) {
+    if (selectedDate && selectedStylist && selectedService) {
         setIsLoadingTimes(true);
         setAvailableTimeSlots([]);
         setSelectedTime(null);
 
         const fetchTimes = async () => {
             try {
-                const slots = await getAvailableTimeSlots(selectedDate, selectedStylist!.id);
+                const slots = await getAvailableTimeSlots(selectedDate, selectedStylist.id);
                 setAvailableTimeSlots(slots);
             } catch (error) {
                 console.error("Fallo al cargar los horarios:", error);
@@ -103,7 +103,7 @@ export function BookingClient() {
         };
         fetchTimes();
     }
-  }, [selectedDate, selectedStylist, toast]);
+  }, [selectedDate, selectedStylist, selectedService, toast]);
 
   const handleNextStep = () => {
     const steps: Step[] = ["service", "stylist", "datetime", "details", "confirm"];
