@@ -20,6 +20,13 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Allow reading reservations (for availability checking)
+    match /reservations/{reservationId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
     // -- New Rule --
     
     // Allow anyone to read the available time slots for any stylist
