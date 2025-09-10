@@ -85,8 +85,8 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
           <tbody>
             {validBookings.map((booking) => {
               // Obtener nombre y email de cualquier campo disponible
-              const customerName = (booking as any).customerName || (booking as any).userName || 'Sin nombre';
-              const customerEmail = (booking as any).customerEmail || (booking as any).userEmail || 'Sin email';
+              const customerName = booking.customerName || booking.userName || 'Sin nombre';
+              const customerEmail = booking.customerEmail || booking.userEmail || 'Sin email';
               
               return (
                 <tr key={booking.id} className="border-b border-gray-800 hover:bg-gray-700/50 transition-colors">

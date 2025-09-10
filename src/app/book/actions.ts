@@ -70,6 +70,8 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
             await sendBookingConfirmationEmail(docRefId, {
                 customerName: bookingInput.customerName,
                 customerEmail: bookingInput.customerEmail,
+                userName: (bookingInput as any).userName,
+                userEmail: (bookingInput as any).userEmail,
                 date: bookingInput.date,
                 time: bookingInput.time,
                 stylistId: bookingInput.stylistId,

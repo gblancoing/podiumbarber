@@ -29,8 +29,10 @@ export interface Booking {
   stylistId: string;
   date: string; // YYYY-MM-DD
   time: string; // HH:MM
-  customerName: string;
-  customerEmail: string;
+  customerName?: string;
+  customerEmail?: string;
+  userName?: string; // Campo antiguo
+  userEmail?: string; // Campo antiguo
   status: 'confirmed' | 'completed' | 'canceled';
   serviceName?: string;
   stylistName?: string;

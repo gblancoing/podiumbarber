@@ -5,8 +5,10 @@ import { services, stylists } from '@/lib/data'; // Importamos los datos necesar
 
 // Tipo de datos para la función
 type BookingDataForEmail = {
-    customerName: string;
-    customerEmail: string;
+    customerName?: string;
+    customerEmail?: string;
+    userName?: string; // Campo antiguo
+    userEmail?: string; // Campo antiguo
     date: string;
     time: string;
     stylistId: string;
@@ -58,7 +60,7 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
         }
 
         // Usar customerName o userName como fallback
-        const customerName = bookingData.customerName || (bookingData as any).userName;
+        const customerName = bookingData.customerName || bookingData.userName || 'Cliente';
         
         const subject = `¡Tu cita en PodiumBarber está confirmada!`;
         const body = `
@@ -81,7 +83,11 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
         // --- Fin de la lógica de correo genérico ---
 
         // Usar customerEmail o userEmail como fallback
-        const customerEmail = bookingData.customerEmail || (bookingData as any).userEmail;
+        const customerEmail = bookingData.customerEmail || bookingData.userEmail;
+        if (!customerEmail) {
+            throw new Error('No se encontró email del cliente');
+        }
+        
         const recipients = [customerEmail];
         // Agregar correo del administrador
         recipients.push('contacto@podiumbarber.cl');
