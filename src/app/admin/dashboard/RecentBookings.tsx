@@ -24,11 +24,6 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export function RecentBookings({ bookings }: RecentBookingsProps) {
   console.log("=== DASHBOARD: DATOS RECIBIDOS ===");
   console.log("bookings recibidos:", bookings);
-  
-  // Alert visible para debug
-  if (typeof window !== 'undefined') {
-    alert(`Dashboard recibió ${bookings.length} reservas. Primera reserva: ${JSON.stringify(bookings[0] || 'No hay datos')}`);
-  }
 
   const validBookings = bookings.reduce<ValidBooking[]>((acc, booking) => {
     // Se busca el servicio y el estilista en los datos estáticos importados.
@@ -88,10 +83,15 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
             </tr>
           </thead>
           <tbody>
-            {validBookings.map((booking) => (
+            {validBookings.map((booking) => {
+              // Obtener nombre y email de cualquier campo disponible
+              const customerName = (booking as any).customerName || (booking as any).userName || 'Sin nombre';
+              const customerEmail = (booking as any).customerEmail || (booking as any).userEmail || 'Sin email';
+              
+              return (
                 <tr key={booking.id} className="border-b border-gray-800 hover:bg-gray-700/50 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerName || (booking as any).userName || 'N/A'}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerEmail || (booking as any).userEmail || 'N/A'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{customerName}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{customerEmail}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{booking.serviceName}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{booking.stylistName}</td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -100,7 +100,8 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
                   <td className="px-4 py-3 whitespace-nowrap">{booking.time}</td>
                   <td className="px-4 py-3 whitespace-nowrap text-right">{booking.formattedPrice}</td>
                 </tr>
-              ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
