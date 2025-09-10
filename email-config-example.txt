@@ -1,0 +1,23 @@
+# Configuración de correo para PodiumBarber
+# Copia estas variables a tu archivo .env.local en Vercel
+
+# Configuración SMTP (Zoho Mail)
+ZOHO_SMTP_HOST=smtp.zoho.com
+ZOHO_SMTP_PORT=587
+ZOHO_SMTP_USER=contacto@podiumbarber.cl
+ZOHO_SMTP_PASS=Inging1989$$
+
+# Email desde el cual se envían los correos
+EMAIL_FROM=contacto@podiumbarber.cl
+
+# INSTRUCCIONES PARA CONFIGURAR:
+# 1. Ve a tu dashboard de Vercel
+# 2. Selecciona el proyecto "podiumbarber"
+# 3. Ve a Settings → Environment Variables
+# 4. Agrega cada variable con su valor correspondiente
+# 5. Reinicia el deployment
+
+# NOTAS IMPORTANTES:
+# - ZOHO_SMTP_PASS debe ser una "App Password" de Zoho, no tu contraseña normal
+# - EMAIL_FROM debe ser un email verificado en tu cuenta de Zoho
+# - Todas las variables deben estar configuradas para "Production"

@@ -6,6 +6,7 @@ import { db as firestore } from "@/lib/firebase";
 import { doc, setDoc, collection } from "firebase/firestore";
 import { stylists, services } from "@/lib/data";
 import { sendBookingConfirmationEmail } from "./email";
+import { sendBookingConfirmationEmailImproved } from "./email-improved";
 
 // --- Esquema de Validación --- 
 const BookingSchema = z.object({
@@ -65,9 +66,9 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
 
         console.log("Reserva guardada con éxito en Firestore con ID:", docRefId);
 
-        // Enviar correo de confirmación
+        // Enviar correos de confirmación mejorados
         try {
-            await sendBookingConfirmationEmail(docRefId, {
+            const emailResult = await sendBookingConfirmationEmailImproved(docRefId, {
                 customerName: bookingInput.customerName,
                 customerEmail: bookingInput.customerEmail,
                 userName: (bookingInput as any).userName,
@@ -77,10 +78,26 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
                 stylistId: bookingInput.stylistId,
                 serviceId: bookingInput.serviceId,
             });
-            console.log("Correo de confirmación enviado exitosamente");
+            console.log("Correos de confirmación enviados exitosamente:", emailResult);
         } catch (emailError) {
-            console.error("Error al enviar correo:", emailError);
-            // No fallamos la reserva por un error de correo, pero lo registramos
+            console.error("Error al enviar correos:", emailError);
+            // Intentar con el sistema anterior como fallback
+            try {
+                await sendBookingConfirmationEmail(docRefId, {
+                    customerName: bookingInput.customerName,
+                    customerEmail: bookingInput.customerEmail,
+                    userName: (bookingInput as any).userName,
+                    userEmail: (bookingInput as any).userEmail,
+                    date: bookingInput.date,
+                    time: bookingInput.time,
+                    stylistId: bookingInput.stylistId,
+                    serviceId: bookingInput.serviceId,
+                });
+                console.log("Correo de confirmación enviado con sistema anterior");
+            } catch (fallbackError) {
+                console.error("Error en sistema de correos fallback:", fallbackError);
+                // No fallamos la reserva por un error de correo, pero lo registramos
+            }
         }
 
         return {
