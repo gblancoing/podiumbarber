@@ -14,9 +14,19 @@ type BookingDataForEmail = {
 };
 
 export async function sendBookingConfirmationEmail(bookingId: string, bookingData: BookingDataForEmail) {
+    console.log("=== INICIANDO ENVÍO DE CORREO ===");
+    console.log("Booking ID:", bookingId);
+    console.log("Datos de reserva:", bookingData);
+    
     // Verificamos las credenciales más básicas.
     if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM || !process.env.ZOHO_SMTP_HOST || !process.env.ZOHO_SMTP_PASS) {
         console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP. Revisa las variables de entorno.`);
+        console.log("Variables de entorno disponibles:", {
+            ZOHO_SMTP_USER: !!process.env.ZOHO_SMTP_USER,
+            EMAIL_FROM: !!process.env.EMAIL_FROM,
+            ZOHO_SMTP_HOST: !!process.env.ZOHO_SMTP_HOST,
+            ZOHO_SMTP_PASS: !!process.env.ZOHO_SMTP_PASS,
+        });
         // Lanzamos un error para que la acción que llama lo sepa.
         throw new Error('La configuración del servidor de correo está incompleta.');
     }

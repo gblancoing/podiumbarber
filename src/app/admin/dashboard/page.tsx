@@ -29,6 +29,7 @@ export default function DashboardPage() {
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
             const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
+            console.log("Datos de reservas recibidos:", bookingsData); // Debug
             setBookings(bookingsData);
             setLoading(false); // La carga finaliza cuando se reciben las reservas.
         }, (err) => {
