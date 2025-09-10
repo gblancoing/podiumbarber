@@ -1,5 +1,3 @@
-'use client';
-
 import type { Service, Stylist } from './types';
 
 // --- LISTA DE SERVICIOS --- 

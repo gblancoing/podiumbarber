@@ -2,18 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Regla para una colección 'bookings' en la raíz.
-    match /bookings/{bookingId} {
-      allow read, create: if true;
-      allow update, delete: if false;
-    }
-
-    // Regla para una colección 'bookings' anidada un nivel más abajo
-    // (ej: /stylists/{stylistId}/bookings/{bookingId})
-    match /{path=**}/bookings/{bookingId} {
-      allow read, create: if true;
-      allow update, delete: if false;
-    }
+    // -- Existing Rules --
 
     // Allow read access to services
     match /services/{serviceId} {
@@ -22,6 +11,19 @@ service cloud.firestore {
 
     // Allow read access to stylists
     match /stylists/{stylistId} {
+      allow read: if true;
+    }
+
+    // Allow creating bookings
+    match /bookings/{bookingId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+
+    // -- New Rule --
+    
+    // Allow anyone to read the available time slots for any stylist
+    match /stylists/{stylistId}/availableSlots/{slotId} {
       allow read: if true;
     }
   }
