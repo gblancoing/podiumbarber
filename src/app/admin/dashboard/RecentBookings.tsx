@@ -24,6 +24,11 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export function RecentBookings({ bookings }: RecentBookingsProps) {
   console.log("=== DASHBOARD: DATOS RECIBIDOS ===");
   console.log("bookings recibidos:", bookings);
+  
+  // Alert visible para debug
+  if (typeof window !== 'undefined') {
+    alert(`Dashboard recibió ${bookings.length} reservas. Primera reserva: ${JSON.stringify(bookings[0] || 'No hay datos')}`);
+  }
 
   const validBookings = bookings.reduce<ValidBooking[]>((acc, booking) => {
     // Se busca el servicio y el estilista en los datos estáticos importados.
