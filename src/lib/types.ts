@@ -20,6 +20,7 @@ export interface Stylist {
   avatarUrl: string;
   specialties: string[];
   services: string[]; // array of service IDs
+  workingHours: { [key: string]: { start: string; end: string } | null };
 }
 
 export interface Booking {
