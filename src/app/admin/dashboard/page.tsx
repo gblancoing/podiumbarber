@@ -6,6 +6,7 @@ import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
 import { DashboardStats } from './DashboardStats';
 import { RecentBookings } from './RecentBookings';
+// Se importa la información estática para asegurar la consistencia de los datos.
 import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 
 export const dynamic = 'force-dynamic';
@@ -22,16 +23,17 @@ export default function DashboardPage() {
             return;
         }
 
-        // Se establece un listener en tiempo real solo para la colección de reservas.
+        // Se establece un listener en tiempo real únicamente para la colección de reservas.
+        // Los datos de servicios y estilistas se obtienen de la fuente estática.
         const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
             const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
             setBookings(bookingsData);
-            setLoading(false); // La carga finaliza una vez que se tienen las reservas.
+            setLoading(false); // La carga finaliza cuando se reciben las reservas.
         }, (err) => {
-            console.error("Error al cargar las reservas:", err);
-            setError("No se pudieron cargar las reservas. Por favor, revisa la consola para más detalles.");
+            console.error("Error al cargar las reservas:", err); // Log para depuración
+            setError("No se pudieron cargar las reservas. Verifica los permisos de lectura de Firestore.");
             setLoading(false);
         });
 
@@ -52,10 +54,8 @@ export default function DashboardPage() {
 
     return (
         <div className="flex flex-col gap-8">
-            {/* El componente de estadísticas ahora también usará los datos estáticos */}
+            {/* Los componentes hijos usan los datos estáticos para consistencia */}
             <DashboardStats bookings={bookings} services={staticServices} />
-            
-            {/* El componente de reservas recientes ya no necesita los props de servicios y estilistas */}
             <RecentBookings bookings={bookings} />
         </div>
     );
