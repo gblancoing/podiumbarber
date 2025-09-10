@@ -42,3 +42,50 @@
     background-color: #000000 !important;
   }
 }
+
+/* Forzar colores específicos */
+@layer utilities {
+  .bg-primary {
+    background-color: #FFD700 !important; /* Dorado */
+  }
+  .text-primary {
+    color: #FFD700 !important; /* Dorado */
+  }
+  .border-primary {
+    border-color: #FFD700 !important; /* Dorado */
+  }
+  .bg-background {
+    background-color: #000000 !important; /* Negro */
+  }
+  .text-foreground {
+    color: #FFFFFF !important; /* Blanco */
+  }
+  .bg-card {
+    background-color: #000000 !important; /* Negro */
+  }
+  .text-card-foreground {
+    color: #FFFFFF !important; /* Blanco */
+  }
+  
+  /* Forzar colores en elementos específicos */
+  header {
+    background-color: #000000 !important;
+  }
+  
+  footer {
+    background-color: #000000 !important;
+  }
+  
+  button {
+    background-color: #FFD700 !important;
+    color: #000000 !important;
+  }
+  
+  .bg-primary {
+    background-color: #FFD700 !important;
+  }
+  
+  .text-primary {
+    color: #FFD700 !important;
+  }
+}
