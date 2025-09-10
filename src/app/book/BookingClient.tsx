@@ -134,8 +134,8 @@ export function BookingClient() {
         stylistId: selectedStylist.id,
         date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedTime,
-        userName: customerName,
-        userEmail: customerEmail,
+        customerName: customerName,
+        customerEmail: customerEmail,
         duration: selectedService.duration,
         price: selectedService.price,
       };

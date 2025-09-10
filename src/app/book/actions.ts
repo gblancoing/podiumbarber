@@ -5,11 +5,12 @@ import { z } from "zod";
 import { db as firestore } from "@/lib/firebase"; 
 import { doc, setDoc, collection } from "firebase/firestore";
 import { stylists, services } from "@/lib/data";
+import { sendBookingConfirmationEmail } from "./email";
 
 // --- Esquema de Validación --- 
 const BookingSchema = z.object({
-  userName: z.string().min(2, "El nombre es requerido"),
-  userEmail: z.string().email("El email no es válido"),
+  customerName: z.string().min(2, "El nombre es requerido"),
+  customerEmail: z.string().email("El email no es válido"),
   stylistId: z.string(),
   serviceId: z.string(),
   date: z.string(),
@@ -53,6 +54,22 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
         });
 
         console.log("Reserva guardada con éxito en Firestore con ID:", docRefId);
+
+        // Enviar correo de confirmación
+        try {
+            await sendBookingConfirmationEmail(docRefId, {
+                customerName: bookingInput.customerName,
+                customerEmail: bookingInput.customerEmail,
+                date: bookingInput.date,
+                time: bookingInput.time,
+                stylistId: bookingInput.stylistId,
+                serviceId: bookingInput.serviceId,
+            });
+            console.log("Correo de confirmación enviado exitosamente");
+        } catch (emailError) {
+            console.error("Error al enviar correo:", emailError);
+            // No fallamos la reserva por un error de correo, pero lo registramos
+        }
 
         return {
             success: true,

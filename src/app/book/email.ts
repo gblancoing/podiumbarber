@@ -61,9 +61,8 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
         // --- Fin de la lógica de correo genérico ---
 
         const recipients = [bookingData.customerEmail];
-        if (process.env.ADMIN_EMAIL) {
-            recipients.push(process.env.ADMIN_EMAIL);
-        }
+        // Agregar correo del administrador
+        recipients.push('contacto@podiumbarber.cl');
 
         await transporter.sendMail({
             from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
