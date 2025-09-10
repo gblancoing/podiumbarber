@@ -32,6 +32,8 @@ export type CreateBookingResult = {
 
 // --- Acción del Servidor: Crear Reserva ---
 export async function createBooking(bookingInput: BookingInput): Promise<CreateBookingResult> {
+    console.log("=== SERVIDOR: DATOS RECIBIDOS ===");
+    console.log("bookingInput recibido:", bookingInput);
     
     const validation = BookingSchema.safeParse(bookingInput);
     if (!validation.success) {
@@ -41,17 +43,25 @@ export async function createBooking(bookingInput: BookingInput): Promise<CreateB
             error: "Los datos de la reserva no son válidos.",
         };
     }
+    
+    console.log("=== SERVIDOR: VALIDACIÓN EXITOSA ===");
+    console.log("Datos validados:", validation.data);
 
     try {
         // Ahora 'firestore' se refiere a 'db' y es válido
         const docRef = doc(collection(firestore, "bookings"));
         const docRefId = docRef.id;
         
-        await setDoc(docRef, {
+        const dataToSave = {
             ...bookingInput,
             createdAt: new Date(),
             status: "confirmed",
-        });
+        };
+        
+        console.log("=== SERVIDOR: GUARDANDO EN FIREBASE ===");
+        console.log("Datos a guardar:", dataToSave);
+        
+        await setDoc(docRef, dataToSave);
 
         console.log("Reserva guardada con éxito en Firestore con ID:", docRefId);
 

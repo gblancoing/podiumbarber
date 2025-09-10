@@ -125,7 +125,18 @@ export function BookingClient() {
 
   const handleConfirmBooking = () => {
     const { customerName, customerEmail } = form.getValues();
-    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerName || !customerEmail) return;
+    console.log("=== DATOS DEL FORMULARIO ===");
+    console.log("customerName:", customerName);
+    console.log("customerEmail:", customerEmail);
+    console.log("selectedService:", selectedService);
+    console.log("selectedStylist:", selectedStylist);
+    console.log("selectedDate:", selectedDate);
+    console.log("selectedTime:", selectedTime);
+    
+    if (!selectedService || !selectedStylist || !selectedDate || !selectedTime || !customerName || !customerEmail) {
+      console.log("FALTAN DATOS REQUERIDOS");
+      return;
+    }
     
     startTransition(async () => {
       // CORREGIDO: Objeto de reserva completo y con nombres correctos
@@ -140,8 +151,14 @@ export function BookingClient() {
         price: selectedService.price,
       };
       
+      console.log("=== ENVIANDO A SERVIDOR ===");
+      console.log("bookingInput:", bookingInput);
+      
       // CORREGIDO: Llamar a createBooking
       const result = await createBooking(bookingInput);
+      
+      console.log("=== RESULTADO DEL SERVIDOR ===");
+      console.log("result:", result);
 
       if (result.success && result.bookingId) {
         setBookingId(result.bookingId);
