@@ -83,8 +83,8 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
           <tbody>
             {validBookings.map((booking) => (
                 <tr key={booking.id} className="border-b border-gray-800 hover:bg-gray-700/50 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerName}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerEmail}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerName || (booking as any).userName || 'N/A'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{booking.customerEmail || (booking as any).userEmail || 'N/A'}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{booking.serviceName}</td>
                   <td className="px-4 py-3 whitespace-nowrap">{booking.stylistName}</td>
                   <td className="px-4 py-3 whitespace-nowrap">

@@ -57,9 +57,12 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
             throw new Error('Estilista o servicio no encontrado para generar el correo.');
         }
 
+        // Usar customerName o userName como fallback
+        const customerName = bookingData.customerName || (bookingData as any).userName;
+        
         const subject = `¡Tu cita en PodiumBarber está confirmada!`;
         const body = `
-            <h1>¡Hola, ${bookingData.customerName}!</h1>
+            <h1>¡Hola, ${customerName}!</h1>
             <p>Tu cita en PodiumBarber ha sido confirmada con éxito.</p>
             <h2>Detalles de tu Cita:</h2>
             <ul>
@@ -77,7 +80,9 @@ export async function sendBookingConfirmationEmail(bookingId: string, bookingDat
         const emailContent = { subject, body };
         // --- Fin de la lógica de correo genérico ---
 
-        const recipients = [bookingData.customerEmail];
+        // Usar customerEmail o userEmail como fallback
+        const customerEmail = bookingData.customerEmail || (bookingData as any).userEmail;
+        const recipients = [customerEmail];
         // Agregar correo del administrador
         recipients.push('contacto@podiumbarber.cl');
 
