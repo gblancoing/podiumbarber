@@ -33,5 +33,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: #000000 !important;
+  }
+  html {
+    background-color: #000000 !important;
+  }
+  #__next {
+    background-color: #000000 !important;
   }
 }
