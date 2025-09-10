@@ -22,6 +22,8 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 // El componente ahora solo necesita la lista de reservas.
 export function RecentBookings({ bookings }: RecentBookingsProps) {
+  console.log("=== DASHBOARD: DATOS RECIBIDOS ===");
+  console.log("bookings recibidos:", bookings);
 
   const validBookings = bookings.reduce<ValidBooking[]>((acc, booking) => {
     // Se busca el servicio y el estilista en los datos estáticos importados.
