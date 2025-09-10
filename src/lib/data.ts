@@ -12,6 +12,8 @@ export const services: Service[] = [
   { id: 'mascarilla-negra', name: 'Mascarilla Negra', category: 'Otros Servicios', duration: 20, price: 10000, description: 'Mascarilla peel-off para eliminar impurezas y dejar la piel con una sensación de frescura.' },
 ];
 
+// ... resto del archivo
+
 // Generamos una lista con todos los IDs de los servicios. Útil para asignar todos los servicios a un estilista.
 const allServiceIds = services.map(s => s.id);
 
