@@ -11,7 +11,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "db:seed": "tsx seed.ts",
-    "delete-andres": "node delete-andres.js"
+    "delete-andres": "node delete-andres.js",
+    "fix-stylists": "node fix-stylists.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
