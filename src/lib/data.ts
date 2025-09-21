@@ -49,6 +49,8 @@ export const stylists: Stylist[] = [
     services: allServiceIds,
     workingHours: defaultWorkingHours,
   },
+  // NOTA: Andrés Leyton ha sido eliminado completamente del sistema
+  // Solo deben aparecer Stiven Vargas y Kamilo Fonseca
 ];
 
 // --- DATOS DESTACADOS PARA LA PÁGINA DE INICIO ---
