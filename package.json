@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "db:seed": "tsx seed.ts"
+    "db:seed": "tsx seed.ts",
+    "delete-andres": "node delete-andres.js"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
