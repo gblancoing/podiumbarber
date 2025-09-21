@@ -49,15 +49,6 @@ export const stylists: Stylist[] = [
     services: allServiceIds,
     workingHours: defaultWorkingHours,
   },
-  {
-    id: 'andres-leyton',
-    name: 'Andres Leyton',
-    bio: 'Andres es un estilista versátil con pasión por las últimas tendencias. Se destaca en la creación de looks personalizados que reflejan la personalidad de cada cliente.',
-    avatarUrl: '/img/camilo.png', // Asignación temporal
-    specialties: ['Corte y Estilo', 'Coloración Creativa', 'Tratamientos Capilares'],
-    services: allServiceIds,
-    workingHours: defaultWorkingHours,
-  },
 ];
 
 // --- DATOS DESTACADOS PARA LA PÁGINA DE INICIO ---
