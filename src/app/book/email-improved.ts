@@ -155,14 +155,15 @@ export async function sendBookingConfirmationEmailImproved(bookingId: string, bo
     console.log("Booking ID:", bookingId);
     console.log("Datos de reserva:", bookingData);
     
-    // Verificamos las credenciales más básicas.
-    if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM || !process.env.ZOHO_SMTP_HOST || !process.env.ZOHO_SMTP_PASS) {
-        console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP. Revisa las variables de entorno.`);
+    // Verificamos las credenciales y el email del admin.
+    if (!process.env.ZOHO_SMTP_USER || !process.env.EMAIL_FROM || !process.env.ZOHO_SMTP_HOST || !process.env.ZOHO_SMTP_PASS || !process.env.ADMIN_EMAIL) {
+        console.warn(`Correo para ${bookingId} no enviado: Faltan credenciales SMTP o email de admin. Revisa las variables de entorno.`);
         console.log("Variables de entorno disponibles:", {
             ZOHO_SMTP_USER: !!process.env.ZOHO_SMTP_USER,
             EMAIL_FROM: !!process.env.EMAIL_FROM,
             ZOHO_SMTP_HOST: !!process.env.ZOHO_SMTP_HOST,
             ZOHO_SMTP_PASS: !!process.env.ZOHO_SMTP_PASS,
+            ADMIN_EMAIL: !!process.env.ADMIN_EMAIL,
         });
         throw new Error('La configuración del servidor de correo está incompleta.');
     }
@@ -218,7 +219,7 @@ export async function sendBookingConfirmationEmailImproved(bookingId: string, bo
         // Enviar correo al administrador
         const adminMailOptions = {
             from: `"PodiumBarber" <${process.env.EMAIL_FROM}>`,
-            to: 'contacto@podiumbarber.cl',
+            to: process.env.ADMIN_EMAIL,
             subject: adminEmailTemplate.subject,
             html: adminEmailTemplate.html,
         };

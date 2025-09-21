@@ -1,0 +1,3 @@
+Archivo para forzar el push a GitHub
+Timestamp: $(Get-Date)
+Cambios: Colores negro/dorado/blanco + Sistema de correos
