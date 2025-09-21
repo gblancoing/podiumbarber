@@ -1,0 +1,13 @@
+FORZAR DESPLIEGUE - ELIMINAR ANDRÉS LEYTON
+==========================================
+
+Fecha: $(date)
+Motivo: Eliminar completamente a Andrés Leyton del sistema
+Cambios: Solo deben aparecer Stiven Vargas y Kamilo Fonseca
+
+Este archivo fuerza un nuevo despliegue para sincronizar:
+- Código local (correcto - solo 2 estilistas)
+- Base de datos Firebase (puede tener datos antiguos)
+- Sitio web en producción
+
+Después del despliegue, verificar en: https://podiumbarber.cl/
