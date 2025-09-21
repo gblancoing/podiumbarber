@@ -1,0 +1,18 @@
+FORZAR DESPLIEGUE INMEDIATO - ELIMINAR CACHÉ
+=============================================
+
+Fecha: $(date)
+Motivo: Forzar nuevo despliegue para reflejar cambios de Firebase
+Acción: Eliminar Andrés Leyton de Firebase Console
+
+Este archivo fuerza un nuevo despliegue completo en Vercel para:
+- Limpiar cualquier caché
+- Reflejar los cambios realizados en Firebase
+- Mostrar solo Stiven Vargas y Kamilo Fonseca
+
+Después del despliegue, verificar en:
+- https://podiumbarber.cl/
+- https://podiumbarber.cl/stylists
+
+Si aún aparece Andrés Leyton después de este despliegue,
+el problema puede estar en el código que carga datos de Firebase.
