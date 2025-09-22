@@ -24,8 +24,7 @@ export default function DeletedBookingsPage() {
         // Solo mostrar reservas eliminadas
         const bookingsQuery = query(
             collection(db, 'bookings'), 
-            where('status', '==', 'deleted'),
-            orderBy('deletedAt', 'desc')
+            where('status', '==', 'deleted')
         );
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {

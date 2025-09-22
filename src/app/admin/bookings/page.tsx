@@ -24,8 +24,7 @@ export default function BookingsPage() {
         // Solo mostrar reservas confirmadas y canceladas (NO eliminadas ni completadas)
         const bookingsQuery = query(
             collection(db, 'bookings'), 
-            where('status', 'in', ['confirmed', 'canceled']),
-            orderBy('createdAt', 'desc')
+            where('status', 'in', ['confirmed', 'canceled'])
         );
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {

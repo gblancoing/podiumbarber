@@ -23,8 +23,7 @@ export default function CompletedPage() {
         // Solo mostrar reservas completadas
         const bookingsQuery = query(
             collection(db, 'bookings'), 
-            where('status', '==', 'completed'),
-            orderBy('createdAt', 'desc')
+            where('status', '==', 'completed')
         );
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
