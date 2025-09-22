@@ -46,7 +46,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/40 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-800/80 to-gray-700/60 z-10" />
         <div className="relative z-20 flex flex-col items-center justify-center text-center h-full p-8">
           <h1 className="text-5xl md:text-7xl font-headline font-bold drop-shadow-lg max-w-4xl">
             Experimenta tu Mejor Look

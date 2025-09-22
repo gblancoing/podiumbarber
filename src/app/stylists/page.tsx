@@ -20,7 +20,7 @@ export default function StylistsPage() {
                 fill
                 className="object-cover object-center"
             />
-            <div className="absolute inset-0 bg-black/70" />
+            <div className="absolute inset-0 bg-gray-900/80" />
             <div className="relative z-10 py-20 px-4">
                 <h1 className="text-4xl font-headline font-bold text-white">Conoce a Nuestros Estilistas</h1>
                 <p className="mt-2 text-lg text-slate-300">
