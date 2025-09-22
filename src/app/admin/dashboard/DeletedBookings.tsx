@@ -113,7 +113,13 @@ export function DeletedBookings({ bookings, onBookingRestore }: DeletedBookingsP
                   <TableCell>{getStatusBadge(booking.status)}</TableCell>
                   <TableCell>${booking.price?.toLocaleString() || 'N/A'}</TableCell>
                   <TableCell>
-                    {booking.deletedAt ? format(new Date(booking.deletedAt), 'dd/MM/yyyy HH:mm') : 'N/A'}
+                    {booking.deletedAt ? (() => {
+                      try {
+                        return format(new Date(booking.deletedAt), 'dd/MM/yyyy HH:mm');
+                      } catch {
+                        return 'N/A';
+                      }
+                    })() : 'N/A'}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
