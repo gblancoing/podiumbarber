@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
-import { DashboardStats } from './DashboardStats';
-// Se importa la información estática para asegurar la consistencia de los datos.
-import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
+import { RecentBookings } from '../dashboard/RecentBookings';
+import { updateBooking, deleteBooking } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default function DashboardPage() {
+export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -22,40 +21,50 @@ export default function DashboardPage() {
             return;
         }
 
-        // Se establece un listener en tiempo real únicamente para la colección de reservas.
-        // Los datos de servicios y estilistas se obtienen de la fuente estática.
         const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
             const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
-            console.log("Datos de reservas recibidos:", bookingsData); // Debug
             setBookings(bookingsData);
-            setLoading(false); // La carga finaliza cuando se reciben las reservas.
+            setLoading(false);
         }, (err) => {
-            console.error("Error al cargar las reservas:", err); // Log para depuración
+            console.error("Error al cargar las reservas:", err);
             setError("No se pudieron cargar las reservas. Verifica los permisos de lectura de Firestore.");
             setLoading(false);
         });
 
-        // Limpieza: se desuscribe del listener cuando el componente se desmonta.
         return () => {
             unsubscribeBookings();
         };
-
-    }, []); // El array vacío asegura que esto se ejecute solo una vez.
+    }, []);
 
     if (loading) {
         return <div className="flex items-center justify-center h-full">Cargando reservas...</div>;
     }
 
-    if (error) {
-        return <div className="flex items-center justify-center h-full text-red-500">{error}</div>;
-    }
+    const handleBookingUpdate = async (bookingId: string, updates: Partial<Booking>) => {
+        const success = await updateBooking(bookingId, updates);
+        if (success) {
+            // La actualización se reflejará automáticamente gracias al listener de Firebase
+            console.log('Reserva actualizada:', bookingId, updates);
+        }
+    };
+
+    const handleBookingDelete = async (bookingId: string) => {
+        const success = await deleteBooking(bookingId);
+        if (success) {
+            // La eliminación se reflejará automáticamente gracias al listener de Firebase
+            console.log('Reserva eliminada:', bookingId);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-8">
-            {/* Solo mostrar estadísticas en el dashboard principal */}
-            <DashboardStats bookings={bookings} services={staticServices} />
+            <RecentBookings 
+                bookings={bookings} 
+                onBookingUpdate={handleBookingUpdate}
+                onBookingDelete={handleBookingDelete}
+            />
         </div>
     );
 }

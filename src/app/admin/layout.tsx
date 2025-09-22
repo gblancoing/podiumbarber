@@ -2,6 +2,7 @@ import { getSession } from "@/app/login/actions";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
+import { Toaster } from "sonner";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {children}
         </main>
       </div>
+      <Toaster />
     </div>
   );
 }

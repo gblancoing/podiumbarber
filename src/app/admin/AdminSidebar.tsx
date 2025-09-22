@@ -4,19 +4,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, List, Scissors, Bell, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, List, Scissors, Bell, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { logout } from "../login/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useState } from "react";
+import { useSidebar } from "./SidebarContext";
 
 const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/bookings", label: "Reservas Recientes", icon: List },
+  { href: "/admin/completed", label: "Reservas Completadas", icon: CheckCircle },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
 
   return (
     <div className={cn(

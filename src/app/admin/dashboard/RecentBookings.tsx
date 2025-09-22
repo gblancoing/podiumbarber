@@ -1,14 +1,26 @@
 'use client';
 
-// Se importa la información estática de servicios y estilistas como única fuente de verdad.
+import { useState } from 'react';
 import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 import type { Booking } from '../../../lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Edit, Trash2, CheckCircle, XCircle, MoreHorizontal } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Las props de servicios y estilistas ya no son necesarias.
 interface RecentBookingsProps {
   bookings: Booking[];
+  onBookingUpdate?: (bookingId: string, updates: Partial<Booking>) => void;
+  onBookingDelete?: (bookingId: string) => void;
 }
 
 type ValidBooking = Booking & {
@@ -21,7 +33,11 @@ type ValidBooking = Booking & {
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 // El componente ahora solo necesita la lista de reservas.
-export function RecentBookings({ bookings }: RecentBookingsProps) {
+export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: RecentBookingsProps) {
+  const [editingBooking, setEditingBooking] = useState<ValidBooking | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState<ValidBooking | null>(null);
   console.log("=== DASHBOARD: DATOS RECIBIDOS ===");
   console.log("bookings recibidos:", bookings);
 
@@ -55,56 +71,128 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
     return acc;
   }, []);
 
+  const handleEditBooking = (booking: ValidBooking) => {
+    setEditingBooking(booking);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDeleteBooking = (booking: ValidBooking) => {
+    setBookingToDelete(booking);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleStatusChange = (bookingId: string, newStatus: 'confirmed' | 'completed' | 'canceled') => {
+    if (onBookingUpdate) {
+      onBookingUpdate(bookingId, { status: newStatus });
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (bookingToDelete && onBookingDelete) {
+      onBookingDelete(bookingToDelete.id);
+      setIsDeleteDialogOpen(false);
+      setBookingToDelete(null);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return <Badge variant="secondary">Confirmada</Badge>;
+      case 'completed':
+        return <Badge variant="default" className="bg-green-600">Completada</Badge>;
+      case 'canceled':
+        return <Badge variant="destructive">Cancelada</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   if (validBookings.length === 0) {
     return (
-      <div className="bg-gray-800/50 rounded-lg p-6 text-center">
-        <p className="text-gray-400">No hay reservas válidas para mostrar todavía.</p>
-        {/* Mensaje de ayuda para depuración en caso de que haya reservas pero no sean válidas */}
-        {bookings.length > 0 && <p className="text-xs text-gray-500 mt-2">Se encontraron {bookings.length} reservas, pero no se pudieron validar con los datos de servicios/estilistas actuales.</p>}
-      </div>
+      <Card>
+        <CardContent className="p-6 text-center">
+          <p className="text-muted-foreground">No hay reservas válidas para mostrar todavía.</p>
+          {bookings.length > 0 && <p className="text-xs text-muted-foreground mt-2">Se encontraron {bookings.length} reservas, pero no se pudieron validar con los datos de servicios/estilistas actuales.</p>}
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-gray-800/50 rounded-lg p-4 md:p-6">
-      <h2 className="text-xl font-bold mb-4 text-white">Reservas Recientes</h2>
-      <p className="text-sm text-gray-400 mb-6">Aquí están las últimas reservas registradas en el sistema.</p>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-left text-sm text-gray-300">
-          <thead className="border-b border-gray-700">
-            <tr>
-              <th scope="col" className="px-4 py-3 font-medium">Cliente</th>
-              <th scope="col" className="px-4 py-3 font-medium">Email</th>
-              <th scope="col" className="px-4 py-3 font-medium">Servicio</th>
-              <th scope="col" className="px-4 py-3 font-medium">Estilista</th>
-              <th scope="col" className="px-4 py-3 font-medium">Fecha</th>
-              <th scope="col" className="px-4 py-3 font-medium">Hora</th>
-              <th scope="col" className="px-4 py-3 font-medium text-right">Precio</th>
-            </tr>
-          </thead>
-          <tbody>
+    <Card>
+      <CardHeader>
+        <CardTitle>Reservas Recientes</CardTitle>
+        <CardDescription>Aquí están las últimas reservas registradas en el sistema.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Cliente</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Servicio</TableHead>
+              <TableHead>Estilista</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Hora</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>Precio</TableHead>
+              <TableHead>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {validBookings.map((booking) => {
-              // Obtener nombre y email de cualquier campo disponible
               const customerName = booking.customerName || booking.userName || 'Sin nombre';
               const customerEmail = booking.customerEmail || booking.userEmail || 'Sin email';
               
               return (
-                <tr key={booking.id} className="border-b border-gray-800 hover:bg-gray-700/50 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap">{customerName}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{customerEmail}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.serviceName}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.stylistName}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">
+                <TableRow key={booking.id}>
+                  <TableCell className="font-medium">{customerName}</TableCell>
+                  <TableCell>{customerEmail}</TableCell>
+                  <TableCell>{booking.serviceName}</TableCell>
+                  <TableCell>{booking.stylistName}</TableCell>
+                  <TableCell>
                     {capitalize(format(booking.safeDate, "dd 'de' MMMM 'de' yyyy", { locale: es }))}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">{booking.time}</td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right">{booking.formattedPrice}</td>
-                </tr>
+                  </TableCell>
+                  <TableCell>{booking.time}</TableCell>
+                  <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                  <TableCell className="text-right">{booking.formattedPrice}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditBooking(booking)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Editar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'completed')}>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Marcar como Completada
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'canceled')}>
+                          <XCircle className="h-4 w-4 mr-2" />
+                          Cancelar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteBooking(booking)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Eliminar
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
