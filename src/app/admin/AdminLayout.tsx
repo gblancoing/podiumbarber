@@ -1,5 +1,5 @@
-import { getSession } from "@/app/login/actions";
-import { redirect } from "next/navigation";
+'use client';
+
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
 import { SidebarProvider } from "./SidebarContext";
@@ -28,12 +28,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSession();
-  if (!session?.loggedIn) {
-    redirect('/login');
-  }
-
+export function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AdminLayoutContent>{children}</AdminLayoutContent>
