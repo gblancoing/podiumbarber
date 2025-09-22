@@ -5,7 +5,7 @@ import { db } from '../../../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
 import { RecentBookings } from '../dashboard/RecentBookings';
-import { handleBookingUpdate, handleBookingDelete } from '../actions-wrapper';
+import { handleBookingUpdateSimple, handleBookingDeleteSimple } from '../actions-wrapper-simple';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,11 +43,11 @@ export default function BookingsPage() {
     }
 
     const handleUpdate = async (bookingId: string, updates: Partial<Booking>) => {
-        await handleBookingUpdate(bookingId, updates);
+        await handleBookingUpdateSimple(bookingId, updates);
     };
 
     const handleDelete = async (bookingId: string) => {
-        await handleBookingDelete(bookingId);
+        await handleBookingDeleteSimple(bookingId);
     };
 
     return (
