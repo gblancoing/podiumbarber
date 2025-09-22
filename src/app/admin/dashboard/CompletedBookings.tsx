@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, CheckCircle, DollarSign } from 'lucide-react';
 import type { Booking } from '../../../lib/types';
-import { services } from '../../../lib/data';
+import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 
 interface CompletedBooking extends Booking {
   status: 'completed';
@@ -33,10 +33,19 @@ export function CompletedBookings({ bookings }: CompletedBookingsProps) {
   const [newService, setNewService] = useState('');
   const [newServicePrice, setNewServicePrice] = useState('');
 
-  // Filtrar solo las reservas completadas
+  // Filtrar solo las reservas completadas y procesar datos
   const completedBookings = bookings.filter(booking => 
     booking.status === 'completed'
-  ) as CompletedBooking[];
+  ).map(booking => {
+    const service = staticServices.find(s => s.id === booking.serviceId);
+    const stylist = staticStylists.find(s => s.id === booking.stylistId);
+    
+    return {
+      ...booking,
+      serviceName: booking.serviceName || service?.name || 'Servicio no encontrado',
+      stylistName: booking.stylistName || stylist?.name || 'Estilista no encontrado',
+    } as CompletedBooking;
+  });
 
   const handleAddService = () => {
     if (!selectedBooking || !newService || !newServicePrice) return;

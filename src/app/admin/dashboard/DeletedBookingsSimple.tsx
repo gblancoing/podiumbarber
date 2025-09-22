@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +15,37 @@ interface DeletedBookingsSimpleProps {
   onBookingRestore?: (bookingId: string) => Promise<boolean>;
 }
 
+type ValidBooking = Booking & {
+  serviceName: string;
+  stylistName: string;
+};
+
 export function DeletedBookingsSimple({ bookings, onBookingRestore }: DeletedBookingsSimpleProps) {
   const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+
+  // Procesar las reservas para obtener nombres de servicios y estilistas
+  const validBookings = bookings.reduce<ValidBooking[]>((acc, booking) => {
+    const service = staticServices.find(s => s.id === booking.serviceId);
+    const stylist = staticStylists.find(s => s.id === booking.stylistId);
+
+    if (service && stylist) {
+      acc.push({
+        ...booking,
+        serviceName: booking.serviceName || service.name,
+        stylistName: booking.stylistName || stylist.name,
+      });
+    } else {
+      // Si no encontramos el servicio o estilista, usar los datos que ya tiene
+      acc.push({
+        ...booking,
+        serviceName: booking.serviceName || 'Servicio no encontrado',
+        stylistName: booking.stylistName || 'Estilista no encontrado',
+      });
+    }
+
+    return acc;
+  }, []);
 
   const handleRestoreBooking = async (bookingId: string) => {
     if (onBookingRestore) {
@@ -28,7 +57,7 @@ export function DeletedBookingsSimple({ bookings, onBookingRestore }: DeletedBoo
     }
   };
 
-  if (bookings.length === 0) {
+  if (validBookings.length === 0) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -46,7 +75,7 @@ export function DeletedBookingsSimple({ bookings, onBookingRestore }: DeletedBoo
       <CardHeader>
         <CardTitle>Reservas Eliminadas</CardTitle>
         <CardDescription>
-          Total de reservas eliminadas: {bookings.length}
+          Total de reservas eliminadas: {validBookings.length}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -65,14 +94,14 @@ export function DeletedBookingsSimple({ bookings, onBookingRestore }: DeletedBoo
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bookings.map((booking) => (
+              {validBookings.map((booking) => (
                 <TableRow key={booking.id}>
                   <TableCell className="font-medium">
                     {booking.customerName || booking.userName || 'N/A'}
                   </TableCell>
                   <TableCell>{booking.customerEmail || booking.userEmail || 'N/A'}</TableCell>
-                  <TableCell>{booking.serviceName || 'N/A'}</TableCell>
-                  <TableCell>{booking.stylistName || 'N/A'}</TableCell>
+                  <TableCell>{booking.serviceName}</TableCell>
+                  <TableCell>{booking.stylistName}</TableCell>
                   <TableCell>{booking.date || 'N/A'}</TableCell>
                   <TableCell>{booking.time || 'N/A'}</TableCell>
                   <TableCell>
