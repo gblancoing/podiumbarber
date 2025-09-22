@@ -27,7 +27,7 @@ export default function ServicesPage() {
           fill
           className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gray-900/80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-gray-800/40 to-transparent" />
         <div className="relative z-10 py-20 px-4">
             <h1 className="text-4xl font-headline font-bold text-white">Nuestros Servicios</h1>
             <p className="mt-2 text-lg text-slate-300">
