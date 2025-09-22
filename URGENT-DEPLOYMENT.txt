@@ -1,0 +1,5 @@
+FORCE DEPLOYMENT - ELIMINAR ANDRES LEYTON
+Timestamp: 2025-09-10 23:45
+Status: URGENT - Vercel no detecta cambios
+Action: Force new deployment
+

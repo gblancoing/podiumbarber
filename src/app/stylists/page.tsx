@@ -26,6 +26,7 @@ export default function StylistsPage() {
                 <p className="mt-2 text-lg text-slate-300">
                     Los talentosos artistas que darán vida a tu visión.
                 </p>
+                {/* URGENT: Solo Stiven Vargas y Kamilo Fonseca - Andres Leyton eliminado */}
             </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

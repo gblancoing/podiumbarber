@@ -1,0 +1,47 @@
+[33m3a5251b[m Hotfix: Remove faulty data sync and fix permission error
+[1mdiff --git a/src/app/admin/dashboard/page.tsx b/src/app/admin/dashboard/page.tsx[m
+[1mindex b3225a9..6fe3410 100644[m
+[1m--- a/src/app/admin/dashboard/page.tsx[m
+[1m+++ b/src/app/admin/dashboard/page.tsx[m
+[36m@@ -6,6 +6,7 @@[m [mimport { collection, onSnapshot, query, orderBy } from 'firebase/firestore';[m
+ import type { Booking } from '../../../lib/types';[m
+ import { DashboardStats } from './DashboardStats';[m
+ import { RecentBookings } from './RecentBookings';[m
+[32m+[m[32m// Se importa la información estática para asegurar la consistencia de los datos.[m
+ import { services as staticServices, stylists as staticStylists } from '../../../lib/data';[m
+ [m
+ export const dynamic = 'force-dynamic';[m
+[36m@@ -22,16 +23,17 @@[m [mexport default function DashboardPage() {[m
+             return;[m
+         }[m
+ [m
+[31m-        // Se establece un listener en tiempo real solo para la colección de reservas.[m
+[32m+[m[32m        // Se establece un listener en tiempo real únicamente para la colección de reservas.[m
+[32m+[m[32m        // Los datos de servicios y estilistas se obtienen de la fuente estática.[m
+         const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));[m
+ [m
+         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {[m
+             const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];[m
+             setBookings(bookingsData);[m
+[31m-            setLoading(false); // La carga finaliza una vez que se tienen las reservas.[m
+[32m+[m[32m            setLoading(false); // La carga finaliza cuando se reciben las reservas.[m
+         }, (err) => {[m
+[31m-            console.error("Error al cargar las reservas:", err);[m
+[31m-            setError("No se pudieron cargar las reservas. Por favor, revisa la consola para más detalles.");[m
+[32m+[m[32m            console.error("Error al cargar las reservas:", err); // Log para depuración[m
+[32m+[m[32m            setError("No se pudieron cargar las reservas. Verifica los permisos de lectura de Firestore.");[m
+             setLoading(false);[m
+         });[m
+ [m
+[36m@@ -52,10 +54,8 @@[m [mexport default function DashboardPage() {[m
+ [m
+     return ([m
+         <div className="flex flex-col gap-8">[m
+[31m-            {/* El componente de estadísticas ahora también usará los datos estáticos */}[m
+[32m+[m[32m            {/* Los componentes hijos usan los datos estáticos para consistencia */}[m
+             <DashboardStats bookings={bookings} services={staticServices} />[m
+[31m-            [m
+[31m-            {/* El componente de reservas recientes ya no necesita los props de servicios y estilistas */}[m
+             <RecentBookings bookings={bookings} />[m
+         </div>[m
+     );[m
