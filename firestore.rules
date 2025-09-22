@@ -14,17 +14,17 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // Allow creating bookings
+    // Allow creating bookings and admin operations
     match /bookings/{bookingId} {
       allow read, create: if true;
-      allow update, delete: if false;
+      allow update, delete: if true; // Permitir actualizaciones y eliminaciones para admin
     }
 
-    // Allow reading reservations (for availability checking)
+    // Allow reading reservations (for availability checking) and admin operations
     match /reservations/{reservationId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if false;
+      allow update, delete: if true; // Permitir actualizaciones y eliminaciones para admin
     }
 
     // -- New Rule --
