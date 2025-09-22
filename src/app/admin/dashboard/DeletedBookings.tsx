@@ -43,21 +43,24 @@ export function DeletedBookings({ bookings, onBookingRestore }: DeletedBookingsP
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'N/A';
       return format(date, 'dd MMMM yyyy', { locale: es });
     } catch {
-      return dateString;
+      return 'N/A';
     }
   };
 
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string | undefined) => {
+    if (!timeString) return 'N/A';
     try {
       const [hours, minutes] = timeString.split(':');
       return `${hours}:${minutes}`;
     } catch {
-      return timeString;
+      return 'N/A';
     }
   };
 
@@ -110,7 +113,7 @@ export function DeletedBookings({ bookings, onBookingRestore }: DeletedBookingsP
                   <TableCell>{booking.stylistName || 'N/A'}</TableCell>
                   <TableCell>{formatDate(booking.date)}</TableCell>
                   <TableCell>{formatTime(booking.time)}</TableCell>
-                  <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                  <TableCell>{getStatusBadge(booking.status || 'unknown')}</TableCell>
                   <TableCell>${booking.price?.toLocaleString() || 'N/A'}</TableCell>
                   <TableCell>
                     {booking.deletedAt ? (() => {

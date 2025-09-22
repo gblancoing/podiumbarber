@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
-import { DeletedBookings } from "../dashboard/DeletedBookings";
+import { DeletedBookingsSimple } from "../dashboard/DeletedBookingsSimple";
 import { handleBookingRestore } from "../actions-wrapper-simple";
 
 export const dynamic = 'force-dynamic';
@@ -59,7 +59,7 @@ export default function DeletedBookingsPage() {
                 </p>
             </div>
             
-            <DeletedBookings bookings={bookings} onBookingRestore={handleBookingRestore} />
+            <DeletedBookingsSimple bookings={bookings} onBookingRestore={handleBookingRestore} />
         </div>
     );
 }
