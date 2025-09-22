@@ -76,6 +76,21 @@ export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: R
     setIsEditDialogOpen(true);
   };
 
+  const handleSaveEdit = async () => {
+    if (!editingBooking || !onBookingUpdate) return;
+    
+    const success = await onBookingUpdate(editingBooking.id, {
+      time: editingBooking.time,
+      date: editingBooking.date,
+      status: editingBooking.status
+    });
+    
+    if (success) {
+      setIsEditDialogOpen(false);
+      setEditingBooking(null);
+    }
+  };
+
   const handleDeleteBooking = (booking: ValidBooking) => {
     setBookingToDelete(booking);
     setIsDeleteDialogOpen(true);
@@ -194,5 +209,149 @@ export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: R
         </Table>
       </CardContent>
     </Card>
+
+    {/* Diálogo de Edición */}
+    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Editar Reserva</DialogTitle>
+          <DialogDescription>
+            Modifica los detalles de la reserva. Puedes cambiar la hora y el estado.
+          </DialogDescription>
+        </DialogHeader>
+        {editingBooking && (
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="customer" className="text-right">
+                Cliente
+              </Label>
+              <Input
+                id="customer"
+                value={editingBooking.customerName || editingBooking.userName || ''}
+                className="col-span-3"
+                disabled
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="service" className="text-right">
+                Servicio
+              </Label>
+              <Input
+                id="service"
+                value={editingBooking.serviceName}
+                className="col-span-3"
+                disabled
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="stylist" className="text-right">
+                Estilista
+              </Label>
+              <Input
+                id="stylist"
+                value={editingBooking.stylistName}
+                className="col-span-3"
+                disabled
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="date" className="text-right">
+                Fecha
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                value={editingBooking.date}
+                onChange={(e) => setEditingBooking({
+                  ...editingBooking,
+                  date: e.target.value
+                })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="time" className="text-right">
+                Hora
+              </Label>
+              <Input
+                id="time"
+                type="time"
+                value={editingBooking.time}
+                onChange={(e) => setEditingBooking({
+                  ...editingBooking,
+                  time: e.target.value
+                })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right">
+                Estado
+              </Label>
+              <Select
+                value={editingBooking.status}
+                onValueChange={(value) => setEditingBooking({
+                  ...editingBooking,
+                  status: value as 'confirmed' | 'completed' | 'canceled'
+                })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="confirmed">Confirmada</SelectItem>
+                  <SelectItem value="completed">Completada</SelectItem>
+                  <SelectItem value="canceled">Cancelada</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setIsEditDialogOpen(false)}
+          >
+            Cancelar
+          </Button>
+          <Button onClick={handleSaveEdit}>
+            Guardar Cambios
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Diálogo de Eliminación */}
+    <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar Reserva</DialogTitle>
+          <DialogDescription>
+            ¿Estás seguro de que quieres eliminar esta reserva? 
+            Se moverá a la tabla de reservas eliminadas.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              if (bookingToDelete && onBookingDelete) {
+                onBookingDelete(bookingToDelete.id);
+                setIsDeleteDialogOpen(false);
+                setBookingToDelete(null);
+              }
+            }}
+          >
+            Eliminar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -33,7 +33,7 @@ export interface Booking {
   customerEmail?: string;
   userName?: string; // Campo antiguo
   userEmail?: string; // Campo antiguo
-  status: 'confirmed' | 'completed' | 'canceled';
+  status: 'confirmed' | 'completed' | 'canceled' | 'deleted';
   serviceName?: string;
   stylistName?: string;
   price?: number;
@@ -46,6 +46,8 @@ export interface Booking {
   }>;
   totalAmount?: number; // Precio total incluyendo servicios adicionales
   createdAt?: any;
+  deletedAt?: Date; // Fecha de eliminación para soft delete
+  deletedBy?: string; // Quien eliminó la reserva
 }
 
 export interface Availability {

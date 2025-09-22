@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/bookings", label: "Reservas Recientes", icon: List },
   { href: "/admin/completed", label: "Reservas Completadas", icon: CheckCircle },
+  { href: "/admin/deleted", label: "Reservas Eliminadas", icon: Trash2 },
 ];
 
 export function AdminSidebar() {
