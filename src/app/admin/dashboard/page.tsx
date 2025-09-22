@@ -6,6 +6,7 @@ import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
 import { DashboardStats } from './DashboardStats';
 import { RecentBookings } from './RecentBookings';
+import { CompletedBookings } from './CompletedBookings';
 // Se importa la información estática para asegurar la consistencia de los datos.
 import { services as staticServices, stylists as staticStylists } from '../../../lib/data';
 
@@ -58,6 +59,7 @@ export default function DashboardPage() {
             {/* Los componentes hijos usan los datos estáticos para consistencia */}
             <DashboardStats bookings={bookings} services={staticServices} />
             <RecentBookings bookings={bookings} />
+            <CompletedBookings bookings={bookings} />
         </div>
     );
 }

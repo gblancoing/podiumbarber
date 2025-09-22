@@ -37,6 +37,14 @@ export interface Booking {
   serviceName?: string;
   stylistName?: string;
   price?: number;
+  servicePrice?: number; // Precio del servicio principal
+  additionalServices?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    addedAt: Date;
+  }>;
+  totalAmount?: number; // Precio total incluyendo servicios adicionales
   createdAt?: any;
 }
 
