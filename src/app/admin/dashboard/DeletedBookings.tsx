@@ -12,23 +12,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Trash2, RotateCcw, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { updateBooking, restoreBooking } from "../actions";
 import type { Booking } from "@/lib/types";
 
 interface DeletedBookingsProps {
   bookings: Booking[];
+  onBookingRestore?: (bookingId: string) => Promise<boolean>;
 }
 
-export function DeletedBookings({ bookings }: DeletedBookingsProps) {
+export function DeletedBookings({ bookings, onBookingRestore }: DeletedBookingsProps) {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false);
 
   const handleRestoreBooking = async (bookingId: string) => {
-    const success = await restoreBooking(bookingId);
-    if (success) {
-      setIsRestoreDialogOpen(false);
-      setSelectedBooking(null);
+    if (onBookingRestore) {
+      const success = await onBookingRestore(bookingId);
+      if (success) {
+        setIsRestoreDialogOpen(false);
+        setSelectedBooking(null);
+      }
     }
   };
 

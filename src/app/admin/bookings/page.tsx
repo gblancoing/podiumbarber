@@ -5,7 +5,7 @@ import { db } from '../../../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
 import { RecentBookings } from '../dashboard/RecentBookings';
-import { updateBooking, deleteBooking } from '../actions';
+import { handleBookingUpdate, handleBookingDelete } from '../actions-wrapper';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,28 +42,20 @@ export default function BookingsPage() {
         return <div className="flex items-center justify-center h-full">Cargando reservas...</div>;
     }
 
-    const handleBookingUpdate = async (bookingId: string, updates: Partial<Booking>) => {
-        const success = await updateBooking(bookingId, updates);
-        if (success) {
-            // La actualización se reflejará automáticamente gracias al listener de Firebase
-            console.log('Reserva actualizada:', bookingId, updates);
-        }
+    const handleUpdate = async (bookingId: string, updates: Partial<Booking>) => {
+        await handleBookingUpdate(bookingId, updates);
     };
 
-    const handleBookingDelete = async (bookingId: string) => {
-        const success = await deleteBooking(bookingId);
-        if (success) {
-            // La eliminación se reflejará automáticamente gracias al listener de Firebase
-            console.log('Reserva eliminada:', bookingId);
-        }
+    const handleDelete = async (bookingId: string) => {
+        await handleBookingDelete(bookingId);
     };
 
     return (
         <div className="flex flex-col gap-8">
             <RecentBookings 
                 bookings={bookings} 
-                onBookingUpdate={handleBookingUpdate}
-                onBookingDelete={handleBookingDelete}
+                onBookingUpdate={handleUpdate}
+                onBookingDelete={handleDelete}
             />
         </div>
     );

@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import { DeletedBookings } from "../dashboard/DeletedBookings";
+import { handleBookingRestore } from "../actions-wrapper";
 
 export default async function DeletedBookingsPage() {
   let bookings = [];
@@ -32,7 +33,7 @@ export default async function DeletedBookingsPage() {
         </p>
       </div>
       
-      <DeletedBookings bookings={bookings} />
+      <DeletedBookings bookings={bookings} onBookingRestore={handleBookingRestore} />
     </div>
   );
 }
