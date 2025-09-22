@@ -21,7 +21,12 @@ export default function BookingsPage() {
             return;
         }
 
-        const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
+        // Solo mostrar reservas confirmadas y canceladas (NO eliminadas ni completadas)
+        const bookingsQuery = query(
+            collection(db, 'bookings'), 
+            where('status', 'in', ['confirmed', 'canceled']),
+            orderBy('createdAt', 'desc')
+        );
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
             const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];

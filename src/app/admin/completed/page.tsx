@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
 import { CompletedBookings } from '../dashboard/CompletedBookings';
 
@@ -20,7 +20,12 @@ export default function CompletedPage() {
             return;
         }
 
-        const bookingsQuery = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
+        // Solo mostrar reservas completadas
+        const bookingsQuery = query(
+            collection(db, 'bookings'), 
+            where('status', '==', 'completed'),
+            orderBy('createdAt', 'desc')
+        );
 
         const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
             const bookingsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];

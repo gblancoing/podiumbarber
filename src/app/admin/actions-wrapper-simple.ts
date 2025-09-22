@@ -3,6 +3,35 @@
 import { updateBookingSimple, deleteBookingSimple } from './actions-simple';
 import { toast } from 'sonner';
 
+// Función para restaurar reservas (cambiar de 'deleted' a 'confirmed')
+export async function handleBookingRestore(bookingId: string) {
+  console.log('=== WRAPPER RESTORE ===');
+  console.log('bookingId:', bookingId);
+  
+  try {
+    const result = await updateBookingSimple(bookingId, {
+      status: 'confirmed',
+      deletedAt: null,
+      deletedBy: null,
+      restoredAt: new Date(),
+      restoredBy: 'admin'
+    });
+    console.log('Result from server:', result);
+    
+    if (result.success) {
+      toast.success('Reserva restaurada exitosamente');
+      return true;
+    } else {
+      toast.error(`Error al restaurar la reserva: ${result.error}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Wrapper error:', error);
+    toast.error('Error al restaurar la reserva');
+    return false;
+  }
+}
+
 export async function handleBookingUpdateSimple(bookingId: string, updates: any) {
   console.log('=== WRAPPER UPDATE ===');
   console.log('bookingId:', bookingId);
