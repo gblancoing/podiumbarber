@@ -9,21 +9,5 @@
     "src/app/**/*.ts": {
       "runtime": "nodejs18.x"
     }
-  },
-  "env": {
-    "NEXT_PUBLIC_FIREBASE_API_KEY": "@firebase-api-key",
-    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN": "@firebase-auth-domain",
-    "NEXT_PUBLIC_FIREBASE_PROJECT_ID": "@firebase-project-id",
-    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET": "@firebase-storage-bucket",
-    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "@firebase-messaging-sender-id",
-    "NEXT_PUBLIC_FIREBASE_APP_ID": "@firebase-app-id",
-    "ADMIN_EMAIL": "@admin-email",
-    "ADMIN_PASSWORD": "@admin-password",
-    "ZOHO_SMTP_HOST": "@zoho-smtp-host",
-    "ZOHO_SMTP_PORT": "@zoho-smtp-port",
-    "ZOHO_SMTP_USER": "@zoho-smtp-user",
-    "ZOHO_SMTP_PASS": "@zoho-smtp-pass",
-    "EMAIL_FROM": "@email-from",
-    "FIREBASE_SERVICE_ACCOUNT_KEY": "@firebase-service-account-key"
   }
 }
