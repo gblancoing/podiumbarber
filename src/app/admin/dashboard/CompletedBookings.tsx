@@ -149,7 +149,7 @@ export function CompletedBookings({ bookings }: CompletedBookingsProps) {
                               <SelectValue placeholder="Seleccionar servicio" />
                             </SelectTrigger>
                             <SelectContent>
-                              {services.map((service) => (
+                              {staticServices.map((service) => (
                                 <SelectItem key={service.id} value={service.name}>
                                   {service.name} - ${service.price.toLocaleString()}
                                 </SelectItem>
