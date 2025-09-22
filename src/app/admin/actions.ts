@@ -1,8 +1,7 @@
-'use client';
+'use server';
 
 import { db } from '../../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { toast } from 'sonner';
 import { revalidatePath } from 'next/cache';
 
 export async function updateBooking(bookingId: string, updates: any) {
@@ -20,11 +19,9 @@ export async function updateBooking(bookingId: string, updates: any) {
     revalidatePath('/admin/bookings');
     revalidatePath('/admin/completed');
     revalidatePath('/admin/deleted');
-    toast.success('Reserva actualizada exitosamente');
     return true;
   } catch (error) {
     console.error('Error al actualizar reserva:', error);
-    toast.error('Error al actualizar la reserva');
     return false;
   }
 }
@@ -47,11 +44,9 @@ export async function restoreBooking(bookingId: string) {
     revalidatePath('/admin/bookings');
     revalidatePath('/admin/completed');
     revalidatePath('/admin/deleted');
-    toast.success('Reserva restaurada exitosamente');
     return true;
   } catch (error) {
     console.error('Error al restaurar reserva:', error);
-    toast.error('Error al restaurar la reserva');
     return false;
   }
 }

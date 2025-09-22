@@ -135,7 +135,8 @@ export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: R
   }
 
   return (
-    <Card>
+    <>
+      <Card>
       <CardHeader>
         <CardTitle>Reservas Recientes</CardTitle>
         <CardDescription>Aquí están las últimas reservas registradas en el sistema.</CardDescription>
@@ -353,5 +354,6 @@ export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: R
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
