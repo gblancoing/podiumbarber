@@ -48,6 +48,8 @@ export interface Booking {
   createdAt?: any;
   deletedAt?: Date; // Fecha de eliminación para soft delete
   deletedBy?: string; // Quien eliminó la reserva
+  restoredAt?: Date; // Fecha de restauración
+  restoredBy?: string; // Quien restauró la reserva
 }
 
 export interface Availability {

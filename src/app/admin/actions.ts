@@ -3,6 +3,7 @@
 import { db } from '../../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
+import { revalidatePath } from 'next/cache';
 
 export async function updateBooking(bookingId: string, updates: any) {
   try {
@@ -16,6 +17,9 @@ export async function updateBooking(bookingId: string, updates: any) {
       updatedAt: new Date()
     });
 
+    revalidatePath('/admin/bookings');
+    revalidatePath('/admin/completed');
+    revalidatePath('/admin/deleted');
     toast.success('Reserva actualizada exitosamente');
     return true;
   } catch (error) {
@@ -40,6 +44,9 @@ export async function restoreBooking(bookingId: string) {
       restoredBy: 'admin'
     });
 
+    revalidatePath('/admin/bookings');
+    revalidatePath('/admin/completed');
+    revalidatePath('/admin/deleted');
     toast.success('Reserva restaurada exitosamente');
     return true;
   } catch (error) {
