@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
-import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
 import { CompletedBookings } from '../dashboard/CompletedBookings';
 
