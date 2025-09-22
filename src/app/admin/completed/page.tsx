@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { db } from '../../../lib/firebase';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import type { Booking } from '../../../lib/types';
-import { CompletedBookings } from '../dashboard/CompletedBookings';
+import { CompletedBookingsSimple } from '../dashboard/CompletedBookingsSimple';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,7 +51,7 @@ export default function CompletedPage() {
 
     return (
         <div className="flex flex-col gap-8">
-            <CompletedBookings bookings={bookings} />
+            <CompletedBookingsSimple bookings={bookings} />
         </div>
     );
 }
