@@ -12,7 +12,6 @@ import Image from "next/image";
 const navLinks = [
   { href: "/services", label: "Servicios" },
   { href: "/stylists", label: "Estilistas" },
-  { href: "/ai-advisor", label: "Asesor con IA" },
 ];
 
 export function Header() {
