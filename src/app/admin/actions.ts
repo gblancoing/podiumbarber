@@ -6,16 +6,23 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateBooking(bookingId: string, updates: any) {
   try {
+    console.log('=== UPDATE BOOKING ===');
+    console.log('bookingId:', bookingId);
+    console.log('updates:', updates);
+    
     if (!db) {
       throw new Error('Base de datos no disponible');
     }
 
     const bookingRef = doc(db, 'bookings', bookingId);
+    console.log('bookingRef:', bookingRef);
+    
     await updateDoc(bookingRef, {
       ...updates,
       updatedAt: new Date()
     });
 
+    console.log('Update successful');
     revalidatePath('/admin/bookings');
     revalidatePath('/admin/completed');
     revalidatePath('/admin/deleted');
@@ -28,11 +35,16 @@ export async function updateBooking(bookingId: string, updates: any) {
 
 export async function deleteBooking(bookingId: string) {
   try {
+    console.log('=== DELETE BOOKING ===');
+    console.log('bookingId:', bookingId);
+    
     if (!db) {
       throw new Error('Base de datos no disponible');
     }
 
     const bookingRef = doc(db, 'bookings', bookingId);
+    console.log('bookingRef:', bookingRef);
+    
     // Soft delete: cambiar estado a 'deleted' en lugar de eliminar físicamente
     await updateDoc(bookingRef, {
       status: 'deleted',
@@ -40,6 +52,7 @@ export async function deleteBooking(bookingId: string) {
       deletedBy: 'admin' // Podrías obtener el usuario actual aquí
     });
 
+    console.log('Delete successful');
     revalidatePath('/admin/bookings');
     revalidatePath('/admin/completed');
     revalidatePath('/admin/deleted');

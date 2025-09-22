@@ -96,15 +96,15 @@ export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: R
     setIsDeleteDialogOpen(true);
   };
 
-  const handleStatusChange = (bookingId: string, newStatus: 'confirmed' | 'completed' | 'canceled') => {
+  const handleStatusChange = async (bookingId: string, newStatus: 'confirmed' | 'completed' | 'canceled') => {
     if (onBookingUpdate) {
-      onBookingUpdate(bookingId, { status: newStatus });
+      await onBookingUpdate(bookingId, { status: newStatus });
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (bookingToDelete && onBookingDelete) {
-      onBookingDelete(bookingToDelete.id);
+      await onBookingDelete(bookingToDelete.id);
       setIsDeleteDialogOpen(false);
       setBookingToDelete(null);
     }
@@ -341,13 +341,7 @@ export function RecentBookings({ bookings, onBookingUpdate, onBookingDelete }: R
           </Button>
           <Button
             variant="destructive"
-            onClick={() => {
-              if (bookingToDelete && onBookingDelete) {
-                onBookingDelete(bookingToDelete.id);
-                setIsDeleteDialogOpen(false);
-                setBookingToDelete(null);
-              }
-            }}
+            onClick={handleConfirmDelete}
           >
             Eliminar
           </Button>
